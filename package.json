@@ -1,0 +1,12 @@
+{
+  "name": "weekflow-web",
+  "version": "1.0.0",
+  "description": "WeekFlow - AI Agent 驱动的极简周看板与成长伴跑助手",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve ."
+  },
+  "keywords": ["ai-agent", "kanban", "productivity", "dify", "function-calling"],
+  "author": "Sylvia Song",
+  "license": "MIT"
+}
