@@ -1,40 +1,78 @@
-/**
- * Serverless Webhook Endpoint for Dify Tool: manage_project
- * Handles project category actions (create_project, update_project)
- */
+import { getUserStore, setUserStore, setCorsHeaders } from './_store.js';
+
+function resolveColorHex(str) {
+  if (!str) return '';
+  const s = String(str).toLowerCase().trim();
+  if (s.startsWith('#')) return s;
+  const map = {
+    '蓝': '#06b6d4', '蓝色': '#06b6d4', '天蓝': '#06b6d4', '深蓝': '#6366f1', 'blue': '#06b6d4',
+    '粉': '#ec4899', '粉色': '#ec4899', 'pink': '#ec4899',
+    '绿': '#22c55e', '绿色': '#22c55e', '草地绿': '#22c55e', 'green': '#22c55e',
+    '紫': '#8b5cf6', '紫色': '#8b5cf6', 'purple': '#8b5cf6',
+    '橙': '#f97316', '橙色': '#f97316', 'orange': '#f97316',
+    '黄': '#eab308', '黄色': '#eab308', 'yellow': '#eab308',
+    '红': '#ef4444', '红色': '#ef4444', 'red': '#ef4444',
+    '青': '#14b8a6', '青色': '#14b8a6', 'cyan': '#14b8a6'
+  };
+  for (const k in map) {
+    if (s.includes(k)) return map[k];
+  }
+  return str;
+}
 
 export default function handler(req, res) {
-  // Enable CORS
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
-  );
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  setCorsHeaders(res);
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
   const body = req.body || {};
-  const action = body.action || 'create_project';
+  const userId = body.userId || req.query.userId || req.headers['x-user-id'] || 'default_user';
+  const userData = getUserStore(userId);
+
+  const act = (body.action || 'create_project').toLowerCase();
   const name = body.name || '新项目';
-  const color = body.color || '';
+  const color = resolveColorHex(body.color) || '#06b6d4';
   const newName = body.newName || '';
 
-  console.log(`[WeekFlow Webhook] manage_project called with action: ${action}, name: ${name}, color: ${color}, newName: ${newName}`);
+  console.log(`[BFF Project] User: ${userId} | Action: ${act} | Name: ${name} | Color: ${color} | NewName: ${newName}`);
+
+  // 1. CREATE PROJECT
+  if (act === 'create_project' || act === 'create' || act === 'add_project') {
+    const newProj = {
+      id: 'p_' + Math.random().toString(36).substring(2, 7),
+      name: name,
+      color: color,
+      order: userData.projects.length + 1
+    };
+    userData.projects.push(newProj);
+    setUserStore(userId, userData);
+    return res.status(200).json({
+      success: true,
+      message: `已创建项目分类: ${name}`,
+      actionResult: { action: 'create_project', project: newProj },
+      data: userData
+    });
+  }
+
+  // 2. UPDATE PROJECT
+  if (act === 'update_project' || act === 'update' || act === 'edit_project') {
+    const match = name.toLowerCase();
+    const proj = userData.projects.find(p => p.name.toLowerCase().includes(match) || match.includes(p.name.toLowerCase()));
+    if (proj) {
+      if (body.color) proj.color = resolveColorHex(body.color);
+      if (newName) proj.name = newName;
+      setUserStore(userId, userData);
+      return res.status(200).json({
+        success: true,
+        message: `已更新项目: ${proj.name}`,
+        actionResult: { action: 'update_project', project: proj },
+        data: userData
+      });
+    }
+  }
 
   return res.status(200).json({
     success: true,
-    code: 200,
-    message: `Project action [${action}] accepted successfully for: ${name}`,
-    data: {
-      action,
-      name,
-      color,
-      newName,
-      receivedAt: new Date().toISOString()
-    }
+    message: `Project action accepted: ${act}`,
+    data: userData
   });
 }
