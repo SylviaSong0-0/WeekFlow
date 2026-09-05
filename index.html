@@ -5180,11 +5180,21 @@ async function callAIServer(promptObj, onChunk){
       enrichedQuery = ctxPrefix;
     }
     
+function getWeekFlowUserId(){
+  var uid = localStorage.getItem('weekflow_user_id');
+  if(!uid){
+    uid = 'usr_' + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem('weekflow_user_id', uid);
+  }
+  return uid;
+}
+
+    var uid = getWeekFlowUserId();
     var payload = {
-      inputs: promptObj.difyInputs || {},
+      inputs: Object.assign({}, promptObj.difyInputs || {}, { userId: uid }),
       query: enrichedQuery,
       response_mode: "streaming",
-      user: "weekflow_local_user",
+      user: uid,
       conversation_id: data.difyConversationId || ""
     };
     
