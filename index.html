@@ -5809,6 +5809,18 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
       }
     }
 
+    // 3. Parenthesis mapping pattern: e.g. "改简历（找工作）、买菜（生活）、做瑜伽（运动）" or "改简历(找工作)"
+    var parenRegex = /([^\s:：，,、\(\)（）]+?)\s*[（\(]([^）\)]+?)[）\)]/g;
+    while((m = parenRegex.exec(text)) !== null){
+      var pTitle = cleanTaskTitle(m[1]);
+      var pProj = m[2].replace(/项目/g, '').replace(/[\*【】]/g, '').trim();
+      if(pTitle && pProj && pTitle.length <= 25 && pProj.length <= 20 && pTitle !== '今天' && pTitle !== '本周' && pTitle !== '三件事' && pTitle !== '事项'){
+        if(!tasks.some(function(x){ return x.title === pTitle; })){
+          tasks.push({ action: 'create_task', title: pTitle, projectName: pProj, date: defaultDate });
+        }
+      }
+    }
+
     return tasks;
   }
 
