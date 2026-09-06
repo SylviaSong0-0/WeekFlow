@@ -2083,6 +2083,121 @@ input,select,textarea{font-family:inherit}
     </div>
   </div>
 </div>
+
+<!-- ===== Journal Memo Detail Modal ===== -->
+<div class="modal-bg" id="journalMemoModalBg" onclick="if(event.target===this)closeJournalMemoModal()">
+  <div class="modal notion-modal" style="width: 520px;">
+    <div class="notion-modal-header">
+      <span class="notion-top-tag" id="jmmTopTag">📝 备忘小纸条</span>
+      <button class="modal-close" onclick="closeJournalMemoModal()">&times;</button>
+    </div>
+
+    <!-- Properties Grid -->
+    <div class="notion-props" style="margin-bottom: 0.5rem;">
+      <div class="notion-prop-row">
+        <div class="notion-prop-label">
+          <span class="notion-prop-icon">📅</span>
+          <span>记录时间</span>
+        </div>
+        <div class="notion-prop-val" id="jmmTimeVal" style="font-size: 0.83rem; color: #475569; font-weight: 500;"></div>
+      </div>
+      <div class="notion-prop-row">
+        <div class="notion-prop-label">
+          <span class="notion-prop-icon">🏷️</span>
+          <span>类型标签</span>
+        </div>
+        <div class="notion-prop-val">
+          <span style="background: #fef3c7; color: #b45309; padding: 2px 8px; border-radius: 4px; font-size: 0.76rem; font-weight: 600;">📝 备忘录</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="notion-divider"></div>
+
+    <!-- Content Area -->
+    <div class="notion-desc-wrap" style="margin-bottom: 1.25rem;">
+      <textarea id="jmmContentInput" class="notion-textarea" placeholder="备忘录内容..." style="min-height: 140px; font-size: 0.92rem; line-height: 1.6;"></textarea>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="notion-modal-footer">
+      <div style="display: flex; align-items: center; gap: 0.25rem;">
+        <button class="notion-btn-del" onclick="deleteCurrentJournalMemo()" title="删除此小纸条">
+          <span>🗑️</span><span>删除</span>
+        </button>
+        <button class="notion-btn-copy" onclick="copyCurrentJournalMemo()" title="复制备忘内容">
+          <span>📋</span><span>复制</span>
+        </button>
+      </div>
+      <div class="notion-footer-right">
+        <button class="notion-btn-cancel" onclick="closeJournalMemoModal()">取消</button>
+        <button class="notion-btn-save" onclick="saveCurrentJournalMemo()">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Journal Review Detail Modal ===== -->
+<div class="modal-bg" id="journalReviewModalBg" onclick="if(event.target===this)closeJournalReviewModal()">
+  <div class="modal notion-modal" style="width: 580px; max-height: 88vh;">
+    <div class="notion-modal-header">
+      <span class="notion-top-tag" id="jrmTopTag">💬 周度复盘详情</span>
+      <button class="modal-close" onclick="closeJournalReviewModal()">&times;</button>
+    </div>
+
+    <!-- Properties Grid -->
+    <div class="notion-props" style="margin-bottom: 0.5rem;">
+      <div class="notion-prop-row">
+        <div class="notion-prop-label">
+          <span class="notion-prop-icon">📅</span>
+          <span>复盘时间</span>
+        </div>
+        <div class="notion-prop-val" id="jrmTimeVal" style="font-size: 0.83rem; color: #475569; font-weight: 500;"></div>
+      </div>
+      <div class="notion-prop-row">
+        <div class="notion-prop-label">
+          <span class="notion-prop-icon">🗓️</span>
+          <span>对应周期</span>
+        </div>
+        <div class="notion-prop-val" id="jrmWeekVal" style="font-size: 0.83rem; color: #475569; font-weight: 500;"></div>
+      </div>
+    </div>
+
+    <div class="notion-divider"></div>
+
+    <!-- User Reflection Section -->
+    <div style="margin-bottom: 1.1rem;">
+      <div style="font-size: 0.82rem; font-weight: 600; color: #475569; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 5px;">
+        <span>💭</span><span>我的周度复盘 / 心得记录</span>
+      </div>
+      <textarea id="jrmUserInput" class="notion-textarea" placeholder="我的复盘内容..." style="min-height: 90px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.65rem 0.8rem; font-size: 0.88rem; line-height: 1.6;"></textarea>
+    </div>
+
+    <!-- AI Mascot Reply Section -->
+    <div id="jrmAIReplySection" style="margin-bottom: 1.25rem;">
+      <div style="font-size: 0.82rem; font-weight: 600; color: #475569; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 5px;">
+        <span>🐱</span><span>小咪的心灵回信</span>
+      </div>
+      <div id="jrmAIReplyContent" style="background: #fdf2f8; border: 1px solid #fbcfe8; border-radius: 8px; padding: 0.75rem 0.9rem; font-size: 0.86rem; color: #831843; line-height: 1.6; white-space: pre-wrap; word-break: break-word;"></div>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="notion-modal-footer">
+      <div style="display: flex; align-items: center; gap: 0.25rem;">
+        <button class="notion-btn-del" onclick="deleteCurrentJournalReview()" title="删除此复盘小纸条">
+          <span>🗑️</span><span>删除</span>
+        </button>
+        <button class="notion-btn-copy" onclick="copyCurrentJournalReview()" title="复制复盘与回信">
+          <span>📋</span><span>复制</span>
+        </button>
+      </div>
+      <div class="notion-footer-right">
+        <button class="notion-btn-cancel" onclick="closeJournalReviewModal()">取消</button>
+        <button class="notion-btn-save" onclick="saveCurrentJournalReview()">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- ===== Context Menu ===== -->
 <div class="ctx-menu" id="ctxMenu"></div>
 
@@ -2179,6 +2294,18 @@ document.addEventListener('keydown', function(e){
     if(taskModal && taskModal.classList.contains('show')){
       e.preventDefault();
       closeTaskModal();
+      return;
+    }
+    var memoModal = document.getElementById('journalMemoModalBg');
+    if(memoModal && memoModal.classList.contains('show')){
+      e.preventDefault();
+      closeJournalMemoModal();
+      return;
+    }
+    var reviewModal = document.getElementById('journalReviewModalBg');
+    if(reviewModal && reviewModal.classList.contains('show')){
+      e.preventDefault();
+      closeJournalReviewModal();
       return;
     }
     var projModal = document.getElementById('projectModalBg');
@@ -4043,6 +4170,156 @@ function saveTaskToJournal(task){
   });
 }
 
+var currentEditingJournalId = null;
+
+function openJournalMemoModal(journalId){
+  var journals = getJournals();
+  var j = journals.find(function(item){ return item.id === journalId; });
+  if(!j) return;
+  currentEditingJournalId = journalId;
+
+  var dt = new Date(j.timestamp);
+  var timeStr = isNaN(dt.getTime()) ? (j.timestamp || '') : dt.getFullYear() + '-' + (dt.getMonth()+1 < 10 ? '0' : '') + (dt.getMonth()+1) + '-' + (dt.getDate() < 10 ? '0' : '') + dt.getDate() + ' ' + (dt.getHours() < 10 ? '0' : '') + dt.getHours() + ':' + (dt.getMinutes() < 10 ? '0' : '') + dt.getMinutes();
+
+  var timeValEl = document.getElementById('jmmTimeVal');
+  if(timeValEl) timeValEl.textContent = timeStr || '未知时间';
+  var inputEl = document.getElementById('jmmContentInput');
+  if(inputEl) inputEl.value = j.content || j.userContent || '';
+
+  var modal = document.getElementById('journalMemoModalBg');
+  if(modal) modal.classList.add('show');
+}
+
+function closeJournalMemoModal(){
+  var modal = document.getElementById('journalMemoModalBg');
+  if(modal) modal.classList.remove('show');
+  currentEditingJournalId = null;
+}
+
+function saveCurrentJournalMemo(){
+  if(!currentEditingJournalId) return;
+  var val = (document.getElementById('jmmContentInput') ? document.getElementById('jmmContentInput').value : '').trim();
+  var journals = getJournals();
+  var j = journals.find(function(item){ return item.id === currentEditingJournalId; });
+  if(j){
+    j.content = val;
+    j.userContent = val;
+    save(data);
+    renderJournalView();
+    showWeekFlowToast('备忘小纸条已保存 ✨');
+  }
+  closeJournalMemoModal();
+}
+
+function deleteCurrentJournalMemo(){
+  if(!currentEditingJournalId) return;
+  showConfirm('删除确认', '确定删除这条备忘小纸条吗？', function(yes){
+    if(yes){
+      data.journals = (data.journals || []).filter(function(item){ return item.id !== currentEditingJournalId; });
+      save(data);
+      closeJournalMemoModal();
+      renderJournalView();
+      showWeekFlowToast('已删除小纸条 🗑️');
+    }
+  });
+}
+
+function copyCurrentJournalMemo(){
+  var inputEl = document.getElementById('jmmContentInput');
+  var text = inputEl ? inputEl.value : '';
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){
+      showWeekFlowToast('备忘内容已复制 📋');
+    });
+  } else {
+    showWeekFlowToast('备忘内容已复制 📋');
+  }
+}
+
+function openJournalReviewModal(journalId){
+  var journals = getJournals();
+  var j = journals.find(function(item){ return item.id === journalId; });
+  if(!j) return;
+  currentEditingJournalId = journalId;
+
+  var dt = new Date(j.timestamp);
+  var timeStr = isNaN(dt.getTime()) ? (j.timestamp || '') : dt.getFullYear() + '-' + (dt.getMonth()+1 < 10 ? '0' : '') + (dt.getMonth()+1) + '-' + (dt.getDate() < 10 ? '0' : '') + dt.getDate() + ' ' + (dt.getHours() < 10 ? '0' : '') + dt.getHours() + ':' + (dt.getMinutes() < 10 ? '0' : '') + dt.getMinutes();
+
+  var timeValEl = document.getElementById('jrmTimeVal');
+  if(timeValEl) timeValEl.textContent = timeStr || '未知时间';
+  var weekValEl = document.getElementById('jrmWeekVal');
+  if(weekValEl) weekValEl.textContent = j.weekId ? ('第 ' + (j.weekId.substring(6) || j.weekId) + ' 周 (' + j.weekId + ')') : '本周';
+  var userInEl = document.getElementById('jrmUserInput');
+  if(userInEl) userInEl.value = j.userContent || '';
+
+  var aiSection = document.getElementById('jrmAIReplySection');
+  var aiContent = document.getElementById('jrmAIReplyContent');
+  if(j.aiResponse && j.aiResponse.trim()){
+    if(aiSection) aiSection.style.display = 'block';
+    if(aiContent) {
+      aiContent.innerHTML = j.aiResponse
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+        .replace(/\n/g, '<br/>');
+    }
+  } else {
+    if(aiSection) aiSection.style.display = 'none';
+  }
+
+  var modal = document.getElementById('journalReviewModalBg');
+  if(modal) modal.classList.add('show');
+}
+
+function closeJournalReviewModal(){
+  var modal = document.getElementById('journalReviewModalBg');
+  if(modal) modal.classList.remove('show');
+  currentEditingJournalId = null;
+}
+
+function saveCurrentJournalReview(){
+  if(!currentEditingJournalId) return;
+  var val = (document.getElementById('jrmUserInput') ? document.getElementById('jrmUserInput').value : '').trim();
+  var journals = getJournals();
+  var j = journals.find(function(item){ return item.id === currentEditingJournalId; });
+  if(j){
+    j.userContent = val;
+    save(data);
+    renderJournalView();
+    showWeekFlowToast('复盘小纸条已保存 ✨');
+  }
+  closeJournalReviewModal();
+}
+
+function deleteCurrentJournalReview(){
+  if(!currentEditingJournalId) return;
+  showConfirm('删除确认', '确定删除这条复盘小纸条吗？', function(yes){
+    if(yes){
+      data.journals = (data.journals || []).filter(function(item){ return item.id !== currentEditingJournalId; });
+      save(data);
+      closeJournalReviewModal();
+      renderJournalView();
+      showWeekFlowToast('已删除小纸条 🗑️');
+    }
+  });
+}
+
+function copyCurrentJournalReview(){
+  var userInEl = document.getElementById('jrmUserInput');
+  var userText = userInEl ? userInEl.value : '';
+  var journals = getJournals();
+  var j = journals.find(function(item){ return item.id === currentEditingJournalId; });
+  var fullText = '【周度复盘】\n' + userText + (j && j.aiResponse ? '\n\n【小咪回信】\n' + j.aiResponse : '');
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(fullText).then(function(){
+      showWeekFlowToast('复盘内容已复制 📋');
+    });
+  } else {
+    showWeekFlowToast('复盘内容已复制 📋');
+  }
+}
+
 function toggleMemoHeight(){
   var ta = document.getElementById('memoInput');
   if(!ta) return;
@@ -4627,7 +4904,27 @@ var currentPrefillDate = '';
 
 function openTaskModal(taskId, prefillProject, prefillDate, prefillStartTime, prefillEndTime){
   editingTask = taskId ? taskById(taskId) : null;
-  currentPrefillDate = prefillDate || '';
+  if (!editingTask && taskId) {
+    var jTask = getJournals().find(function(item){ return item.taskId === taskId || item.id === taskId; });
+    if (jTask) {
+      editingTask = {
+        id: jTask.taskId || ('t_' + jTask.id),
+        title: jTask.title || jTask.userContent || '',
+        projectId: jTask.projectId || '',
+        subProject: jTask.subProject || '',
+        description: (jTask.description !== undefined ? jTask.description : ''),
+        startTime: jTask.startTime || '',
+        endTime: jTask.endTime || '',
+        date: jTask.date || '',
+        weekId: jTask.weekId || currentWeekId(),
+        status: jTask.status || 'todo'
+      };
+      if (!taskById(editingTask.id)) {
+        data.tasks.push(editingTask);
+      }
+    }
+  }
+  currentPrefillDate = prefillDate || (editingTask && editingTask.date) || '';
   var modal = document.getElementById('taskModalBg');
   var isNew = !editingTask;
 
@@ -7396,19 +7693,6 @@ function renderJournalView(){
           effectiveDesc.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br/>');
         bodyDiv.appendChild(descDiv);
       }
-
-      if (j.taskId) {
-        card.title = '双击打开任务详情编辑';
-        card.style.cursor = 'pointer';
-        card.addEventListener('dblclick', function(e){
-          var t = taskById(j.taskId);
-          if (t) {
-            openTaskModal(j.taskId);
-          } else {
-            showToast('原始任务已被删除或不在当前周');
-          }
-        });
-      }
     } else if (isMemo) {
       bodyDiv.textContent = j.content || j.userContent || '';
     } else {
@@ -7432,6 +7716,26 @@ function renderJournalView(){
     }
     
     card.appendChild(bodyDiv);
+
+    // Click on card to open respective detail modal
+    card.style.cursor = 'pointer';
+    if (isTask) {
+      card.title = '点击打开任务详情编辑';
+      card.onclick = function(e){
+        openTaskModal(j.taskId || j.id);
+      };
+    } else if (isMemo) {
+      card.title = '点击打开备忘小纸条详情';
+      card.onclick = function(e){
+        openJournalMemoModal(j.id);
+      };
+    } else {
+      card.title = '点击打开周度复盘详情';
+      card.onclick = function(e){
+        openJournalReviewModal(j.id);
+      };
+    }
+
     container.appendChild(card);
   });
 }
