@@ -5647,20 +5647,27 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
       }
     }
 
-    // Case 5.2: Delete Task (删除任务)
+    // Case 5.2: Delete Task or Delete Single Day Tasks (删除任务 / 清空某天任务)
     if(!actionObj && (uText.indexOf('删') >= 0 || uText.indexOf('清空') >= 0 || uText.indexOf('移除') >= 0 || uText.indexOf('取消') >= 0) &&
-       (aText.indexOf('清理') >= 0 || aText.indexOf('删') >= 0 || aText.indexOf('移除') >= 0 || aText.indexOf('搞定') >= 0 || aText.indexOf('成功') >= 0 || aText.indexOf('取消') >= 0)){
-      var delDate = extractDate(userPromptText) || extractDate(cleanText);
-      var delTitle = extractQuotedTitle(cleanText) || extractQuotedTitle(userPromptText);
-      if(delDate && (uText.indexOf('所有') >= 0 || uText.indexOf('全部') >= 0 || !delTitle)){
-        actionObj = { action: "delete_task", date: delDate };
-      } else if(delTitle){
-        actionObj = { action: "delete_task", match: delTitle, date: delDate };
+       (aText.indexOf('清理') >= 0 || aText.indexOf('删') >= 0 || aText.indexOf('移除') >= 0 || aText.indexOf('搞定') >= 0 || aText.indexOf('成功') >= 0 || aText.indexOf('取消') >= 0 || aText.indexOf('清空') >= 0)){
+      
+      var isClearEntireWeek = (uText.indexOf('本周') >= 0 || uText.indexOf('整周') >= 0 || uText.indexOf('全部') >= 0 || uText.indexOf('所有') >= 0) && (uText.indexOf('今天') === -1 && uText.indexOf('今日') === -1 && uText.indexOf('周') === uText.lastIndexOf('周'));
+      
+      if(isClearEntireWeek && (uText.indexOf('今天') === -1 && uText.indexOf('周一') === -1 && uText.indexOf('周二') === -1 && uText.indexOf('周三') === -1 && uText.indexOf('周四') === -1 && uText.indexOf('周五') === -1 && uText.indexOf('周六') === -1 && uText.indexOf('周日') === -1)){
+        actionObj = { action: "clear_tasks" };
+      } else {
+        var delDate = extractDate(userPromptText) || extractDate(cleanText);
+        var delTitle = extractQuotedTitle(cleanText) || extractQuotedTitle(userPromptText);
+        if(delDate && (uText.indexOf('今天') >= 0 || uText.indexOf('任务') >= 0 || uText.indexOf('所有') >= 0 || uText.indexOf('全部') >= 0 || !delTitle)){
+          actionObj = { action: "delete_task", date: delDate };
+        } else if(delTitle){
+          actionObj = { action: "delete_task", match: delTitle, date: delDate };
+        }
       }
     }
 
-    // Case 5.3: Clear Week Tasks (清空本周)
-    if(!actionObj && (uText.indexOf('本周') >= 0 && (uText.indexOf('清空') >= 0 || uText.indexOf('全部') >= 0)) && (aText.indexOf('清空') >= 0 || aText.indexOf('清理') >= 0)){
+    // Case 5.3: Clear Entire Week Tasks (明确清空整周)
+    if(!actionObj && (uText.indexOf('本周') >= 0 || uText.indexOf('整周') >= 0 || uText.indexOf('清空看板') >= 0) && (aText.indexOf('清空') >= 0 || aText.indexOf('清理') >= 0)){
       actionObj = { action: "clear_tasks" };
     }
 
@@ -6126,10 +6133,16 @@ function executeAIAction(actionObj){
   
   // 4. CLEAR THIS WEEK'S TASKS
   if(act === 'clear_tasks'){
-    var tasksToClear = data.tasks.filter(function(x){ return x.weekId === wid; });
+    var dates = getWeekDates();
+    var dateStrs = dates.map(function(d){ return d.date; });
+    var tasksToClear = data.tasks.filter(function(x){
+      return (x.weekId === wid) || (x.date && dateStrs.indexOf(x.date) >= 0);
+    });
     var clearedCount = tasksToClear.length;
     
-    data.tasks = data.tasks.filter(function(x){ return x.weekId !== wid; });
+    data.tasks = data.tasks.filter(function(x){
+      return !((x.weekId === wid) || (x.date && dateStrs.indexOf(x.date) >= 0));
+    });
     save(data);
     refreshAll();
     playSound('delete');
