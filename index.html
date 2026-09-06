@@ -5625,19 +5625,19 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
     }
 
     // Case 5.1: Create Task (新建/添加任务)
-    var isCreateIntent = (uText.indexOf('建') >= 0 || uText.indexOf('加') >= 0 || uText.indexOf('排') >= 0 || uText.indexOf('安排') >= 0 || uText.indexOf('写') >= 0 || uText.indexOf('做') >= 0 || uText.indexOf('提醒') >= 0 || uText.indexOf('日程') >= 0 || uText.indexOf('计划') >= 0) ||
-                         (aText.indexOf('建好') >= 0 || aText.indexOf('已添加') >= 0 || aText.indexOf('已为你新建') >= 0 || aText.indexOf('创建好') >= 0 || aText.indexOf('安排在') >= 0 || aText.indexOf('捧在') >= 0 || aText.indexOf('放在') >= 0 || aText.indexOf('加入本周') >= 0);
+    var isCreateIntent = (uText.indexOf('建') >= 0 || uText.indexOf('加') >= 0 || uText.indexOf('排') >= 0 || uText.indexOf('安排') >= 0 || uText.indexOf('写') >= 0 || uText.indexOf('做') >= 0 || uText.indexOf('提醒') >= 0 || uText.indexOf('日程') >= 0 || uText.indexOf('计划') >= 0 || uText.indexOf('去') >= 0 || uText.indexOf('打算') >= 0 || uText.indexOf('准备') >= 0 || uText.indexOf('我要') >= 0) ||
+                         (aText.indexOf('建好') >= 0 || aText.indexOf('已添加') >= 0 || aText.indexOf('已为你新建') >= 0 || aText.indexOf('创建好') >= 0 || aText.indexOf('安排在') >= 0 || aText.indexOf('捧在') >= 0 || aText.indexOf('放在') >= 0 || aText.indexOf('加入本周') >= 0 || aText.indexOf('排上') >= 0 || aText.indexOf('为你排好') >= 0);
     
     if(!actionObj && isCreateIntent && uText.indexOf('删') === -1 && uText.indexOf('清空') === -1 && uText.indexOf('移除') === -1){
       var taskTitle = extractQuotedTitle(cleanText) || extractQuotedTitle(userPromptText);
       if(!taskTitle){
-        var mTitle = /(?:新建|添加|加一个|建一个|安排|写|做)\s*(?:一个)?\s*([^\s,，。!！]+?)(?:的任务|的日程|卡片|$)/i.exec(userPromptText);
+        var mTitle = /(?:新建|添加|加一个|建一个|安排|写|做|我要去|要去|打算去|准备去|计划去|我要|我想)\s*(?:一个)?\s*([^\s,，。!！]+?)(?:的任务|的日程|卡片|$)/i.exec(userPromptText);
         if(mTitle && mTitle[1]) taskTitle = mTitle[1].trim();
       }
-      var targetDate = extractDate(cleanText) || extractDate(userPromptText);
+      var targetDate = extractDate(cleanText) || extractDate(userPromptText) || todayStr;
       var projName = extractProjectName(cleanText) || extractProjectName(userPromptText);
       var timeM = /\b(\d{1,2}:\d{2})\b/.exec(cleanText) || /\b(\d{1,2}:\d{2})\b/.exec(userPromptText);
-      if(taskTitle){
+      if(taskTitle && taskTitle !== '今天' && taskTitle !== '本周' && taskTitle !== '任务'){
         actionObj = { action: "create_task", title: taskTitle, date: targetDate, projectName: projName, startTime: timeM ? timeM[1] : '' };
       }
     }
