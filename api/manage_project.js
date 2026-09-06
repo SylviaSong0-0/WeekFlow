@@ -68,6 +68,34 @@ export default function handler(req, res) {
     }
   }
 
+  // 3. SET WEEKLY GOAL & MAIN FOCUS
+  if (act === 'set_weekly_goal' || act === 'set_goal' || act === 'set_main_focus' || act === 'set_focus') {
+    const match = name.toLowerCase();
+    const proj = userData.projects.find(p => p.name.toLowerCase().includes(match) || match.includes(p.name.toLowerCase()));
+    if (proj) {
+      if (!userData.weeklyGoals) userData.weeklyGoals = {};
+      const weekId = body.weekId || 'current';
+      if (!userData.weeklyGoals[weekId]) userData.weeklyGoals[weekId] = {};
+      if (!userData.weeklyGoals[weekId][proj.id]) userData.weeklyGoals[weekId][proj.id] = { isFocus: false, goal: '' };
+
+      if (body.goal !== undefined) userData.weeklyGoals[weekId][proj.id].goal = body.goal;
+      if (body.isFocus !== undefined) userData.weeklyGoals[weekId][proj.id].isFocus = Boolean(body.isFocus);
+
+      setUserStore(userId, userData);
+      return res.status(200).json({
+        success: true,
+        message: `已更新【${proj.name}】的本周目标与主线状态`,
+        actionResult: {
+          action: act,
+          id: proj.id,
+          name: proj.name,
+          goal: userData.weeklyGoals[weekId][proj.id].goal,
+          isFocus: userData.weeklyGoals[weekId][proj.id].isFocus
+        }
+      });
+    }
+  }
+
   return res.status(200).json({
     success: true,
     message: `Project action accepted: ${act}`

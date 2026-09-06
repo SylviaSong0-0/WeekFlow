@@ -192,6 +192,126 @@ input,select,textarea{font-family:inherit}
   padding:0.15rem 0.35rem;font-size:0.78rem;outline:none;color:#0f172a;
   width:90px;font-weight:600;box-shadow:0 0 0 2px rgba(37,99,235,0.15);
 }
+/* Main Focus Project & Weekly Goal Styles */
+.ph-header-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+}
+.ph-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  min-height: 20px;
+}
+.ph-title-text {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: #1e293b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.ph-star-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #94a3b8;
+  transition: all 0.15s ease;
+  line-height: 1.2;
+}
+.ph-star-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #f59e0b;
+}
+.ph-star-btn.is-active {
+  background: #fef3c7;
+  color: #d97706;
+  font-weight: 700;
+  font-size: 10.5px;
+  border-color: #fde68a;
+  box-shadow: 0 1px 2px rgba(217, 119, 6, 0.08);
+}
+.matrix-table th.ph.is-main-focus {
+  box-shadow: inset 0 3px 0 #f59e0b, 0 1px 4px rgba(245, 158, 11, 0.12);
+}
+.matrix-table th.ph.is-main-focus .ph-title-text {
+  color: #0f172a;
+  font-weight: 700;
+}
+.matrix-table td.tc.is-main-focus-col {
+  background-color: rgba(245, 158, 11, 0.015);
+}
+.matrix-table td.tc.is-main-focus-col:hover {
+  background-color: rgba(245, 158, 11, 0.035);
+}
+/* Weekly Goal Box */
+.ph-goal-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10.5px;
+  font-weight: 400;
+  color: #64748b;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px dashed rgba(148, 163, 184, 0.45);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  overflow: hidden;
+  text-align: left;
+}
+.ph-goal-row:hover {
+  background: #ffffff;
+  border-color: #94a3b8;
+  color: #334155;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+.ph-goal-row.has-goal {
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  color: #1e293b;
+  font-weight: 500;
+}
+.matrix-table th.ph.is-main-focus .ph-goal-row.has-goal {
+  background: #fffdf5;
+  border-color: #fde68a;
+  color: #92400e;
+}
+.ph-goal-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.ph-goal-placeholder {
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 10px;
+}
+.ph-goal-input {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 10.5px;
+  font-family: inherit;
+  padding: 2px 4px;
+  border: 1px solid #2563eb;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #0f172a;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
 .matrix-table th.ph-sticky-add {
   position: sticky;
   right: 0;
@@ -2454,23 +2574,90 @@ function renderMatrixHeader(){
   colAdd.style.width = '40px';
   colgroup.appendChild(colAdd);
 
+  var currentWid = currentWeekId();
+  if (!data.weeklyGoals) data.weeklyGoals = {};
+  if (!data.weeklyGoals[currentWid]) data.weeklyGoals[currentWid] = {};
+
   projs.forEach(function(proj, idx){
     var th = document.createElement('th');
     th.className = 'ph';
     th.dataset.projId = proj.id;
     th.dataset.colIdx = idx;
     th.draggable = true;
-    th.textContent = proj.name;
+
+    var weekGoalInfo = data.weeklyGoals[currentWid][proj.id] || { isFocus: false, goal: '' };
+    var isMain = !!weekGoalInfo.isFocus;
+    var goalText = (weekGoalInfo.goal || '').trim();
+
+    if (isMain) {
+      th.classList.add('is-main-focus');
+    }
+
     // Layer soft theme color over solid white background to eliminate transparency bleed-through when scrolling
-    th.style.background = 'linear-gradient(' + hexToRgba(proj.color, 0.14) + ', ' + hexToRgba(proj.color, 0.14) + '), #ffffff';
+    th.style.background = 'linear-gradient(' + hexToRgba(proj.color, isMain ? 0.22 : 0.14) + ', ' + hexToRgba(proj.color, isMain ? 0.22 : 0.14) + '), #ffffff';
     th.style.color = '#37352f';
 
+    // Content container
+    var contentWrap = document.createElement('div');
+    contentWrap.className = 'ph-header-content';
+
+    // 1. Title Row
+    var titleRow = document.createElement('div');
+    titleRow.className = 'ph-title-row';
+
+    var titleText = document.createElement('span');
+    titleText.className = 'ph-title-text';
+    titleText.textContent = proj.name;
+    titleText.title = proj.name + ' (双击修改名称)';
+    titleRow.appendChild(titleText);
+
+    var starBtn = document.createElement('button');
+    starBtn.className = 'ph-star-btn' + (isMain ? ' is-active' : '');
+    starBtn.title = isMain ? '本周主线项目 (点击取消)' : '设为本周主线 (最多2个)';
+    starBtn.innerHTML = isMain ? '⭐ 主线' : '☆';
+    starBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      e.preventDefault();
+      toggleMainFocus(currentWid, proj.id);
+    });
+    titleRow.appendChild(starBtn);
+    contentWrap.appendChild(titleRow);
+
+    // 2. Goal Row
+    var goalRow = document.createElement('div');
+    goalRow.className = 'ph-goal-row' + (goalText ? ' has-goal' : '');
+    goalRow.title = goalText ? ('本周目标: ' + goalText + ' (点击修改)') : '点击输入本周目标';
+
+    var goalIcon = document.createElement('span');
+    goalIcon.style.fontSize = '10px';
+    goalIcon.textContent = '🎯';
+    goalRow.appendChild(goalIcon);
+
+    var goalTextSpan = document.createElement('span');
+    if (goalText) {
+      goalTextSpan.className = 'ph-goal-text';
+      goalTextSpan.textContent = goalText;
+    } else {
+      goalTextSpan.className = 'ph-goal-placeholder';
+      goalTextSpan.textContent = '本周目标...';
+    }
+    goalRow.appendChild(goalTextSpan);
+
+    goalRow.addEventListener('click', function(e){
+      e.stopPropagation();
+      e.preventDefault();
+      startEditGoal(goalRow, currentWid, proj.id);
+    });
+
+    contentWrap.appendChild(goalRow);
+    th.appendChild(contentWrap);
+
     // --- Double click to edit name ---
-    th.addEventListener('dblclick', function(e){
+    titleText.addEventListener('dblclick', function(e){
       e.preventDefault();
       e.stopPropagation();
       hideCtxMenu();
-      startEditHeader(th, proj);
+      startEditHeader(titleText, proj);
     });
 
     // --- Right click context menu ---
@@ -2691,13 +2878,20 @@ function initGlobalColResize(){
 // Init on load
 setTimeout(function(){ initGlobalColResize(); }, 100);
 
-function startEditHeader(th, proj){
+function startEditHeader(targetEl, proj){
   var current = proj.name;
   var input = document.createElement('input');
   input.className = 'ph-edit';
   input.value = current;
-  th.innerHTML = '';
-  th.appendChild(input);
+
+  var titleSpan = targetEl.classList.contains('ph-title-text') ? targetEl : targetEl.querySelector('.ph-title-text');
+  if (titleSpan && titleSpan.parentNode) {
+    titleSpan.parentNode.replaceChild(input, titleSpan);
+  } else {
+    targetEl.innerHTML = '';
+    targetEl.appendChild(input);
+  }
+
   input.focus();
   input.select();
 
@@ -2714,6 +2908,70 @@ function startEditHeader(th, proj){
     if(e.key==='Escape'){input.value=current;input.blur();}
     e.stopPropagation();
   });
+}
+
+function startEditGoal(goalRowEl, weekId, projId){
+  if (!data.weeklyGoals) data.weeklyGoals = {};
+  if (!data.weeklyGoals[weekId]) data.weeklyGoals[weekId] = {};
+  if (!data.weeklyGoals[weekId][projId]) data.weeklyGoals[weekId][projId] = { isFocus: false, goal: '' };
+
+  var currentGoal = data.weeklyGoals[weekId][projId].goal || '';
+  var input = document.createElement('input');
+  input.className = 'ph-goal-input';
+  input.placeholder = '输入本周一句话目标...';
+  input.value = currentGoal;
+
+  var parent = goalRowEl.parentNode;
+  if (parent) {
+    parent.replaceChild(input, goalRowEl);
+  }
+  input.focus();
+  input.select();
+
+  var saved = false;
+  function done(){
+    if (saved) return;
+    saved = true;
+    var v = input.value.trim();
+    data.weeklyGoals[weekId][projId].goal = v;
+    save(data);
+    refreshAll();
+  }
+
+  input.addEventListener('blur', done);
+  input.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') {
+      input.blur();
+    } else if (e.key === 'Escape') {
+      saved = true;
+      refreshAll();
+    }
+    e.stopPropagation();
+  });
+}
+
+function toggleMainFocus(weekId, projId){
+  if (!data.weeklyGoals) data.weeklyGoals = {};
+  if (!data.weeklyGoals[weekId]) data.weeklyGoals[weekId] = {};
+  if (!data.weeklyGoals[weekId][projId]) data.weeklyGoals[weekId][projId] = { isFocus: false, goal: '' };
+
+  var current = !!data.weeklyGoals[weekId][projId].isFocus;
+  if (!current) {
+    // Count currently focused projects in this week (Max 2)
+    var focusedPids = Object.keys(data.weeklyGoals[weekId]).filter(function(pid){
+      return !!data.weeklyGoals[weekId][pid].isFocus;
+    });
+    if (focusedPids.length >= 2) {
+      // Auto-swap the oldest focused one
+      var oldestPid = focusedPids[0];
+      data.weeklyGoals[weekId][oldestPid].isFocus = false;
+    }
+    data.weeklyGoals[weekId][projId].isFocus = true;
+  } else {
+    data.weeklyGoals[weekId][projId].isFocus = false;
+  }
+  save(data);
+  refreshAll();
 }
 
 // ============================================================
@@ -2832,6 +3090,16 @@ function showCtxMenu(x, y, proj, thEl){
     startEditHeader(thEl, proj);
   });
   menu.appendChild(editItem);
+
+  // Toggle Main Focus
+  var currentWid = currentWeekId();
+  var goalInfo = (data.weeklyGoals && data.weeklyGoals[currentWid] && data.weeklyGoals[currentWid][proj.id]) || {};
+  var isFocus = !!goalInfo.isFocus;
+  var focusItem = mkCtxItem(isFocus ? '⭐ 取消本周主线' : '⭐ 设为本周主线项目', function(){
+    hideCtxMenu();
+    toggleMainFocus(currentWid, proj.id);
+  });
+  menu.appendChild(focusItem);
 
   // Edit Project Background / Context
   var bgItem = mkCtxItem('💡 项目背景与目标', function(){
@@ -3055,7 +3323,9 @@ function renderMatrix(){
 
   sortedProjects().forEach(function(proj){
     var td = document.createElement('td');
-    td.className = 'tc' + (isCollapsed ? ' collapsed-cell' : '');
+    var weekGoalInfo = (data.weeklyGoals && data.weeklyGoals[wid] && data.weeklyGoals[wid][proj.id]) || {};
+    var isMain = !!weekGoalInfo.isFocus;
+    td.className = 'tc' + (isCollapsed ? ' collapsed-cell' : '') + (isMain ? ' is-main-focus-col' : '');
     attachDrop(td, 'todo', proj.id);
 
     if(!isCollapsed){
@@ -3090,6 +3360,9 @@ function renderMatrix(){
 
     sortedProjects().forEach(function(proj){
       var td = document.createElement('td');
+      var weekGoalInfo = (data.weeklyGoals && data.weeklyGoals[wid] && data.weeklyGoals[wid][proj.id]) || {};
+      var isMain = !!weekGoalInfo.isFocus;
+      td.className = 'tc' + (isMain ? ' is-main-focus-col' : '');
       var cell = document.createElement('div');
       cell.className = 'cc';
       cell.dataset.date = d.date;
