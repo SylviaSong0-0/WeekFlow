@@ -5745,45 +5745,54 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
     }
   }
 
+  function cleanTaskTitle(s){
+    if(!s) return '';
+    return String(s)
+      .replace(/\*+/g, '')
+      .replace(/^[📔🧘🛁✨🐾📝🎯0-9一二三四五六七八九十、.\s•-]+/, '')
+      .replace(/[`「」『』“”"']/g, '')
+      .trim();
+  }
+
   function extractAllMultiTasks(text, defaultDate){
-      if(!text) return [];
-      var tasks = [];
-      
-      // 1. Arrow / dash mapping pattern: e.g. "📔 写手帐 → 放进【景躁兔老师】" or "做瑜伽 → 【运动】" or "1. 给小猫洗澡澡 - 【其他】"
-      var arrowRegex = /(?:[0-9一二三四五六七八九十]+[、.\s]|[-*•📔🧘🛁✨🐾📝🎯]\s*)*[「『“"']?([^「『“"'\s→\-–—:：\n]+?)[」』”"']?\s*(?:→|->|—|-|:|：|\b放进\b|\b归入\b|\b放入\b)\s*(?:放进|归入|放入)?\s*【([^】]+)】/g;
-      var m;
-      while((m = arrowRegex.exec(text)) !== null){
-        var rawTitle = m[1].replace(/^[📔🧘🛁✨🐾📝🎯\s*•-]+/, '').trim();
-        var pName = m[2].replace(/项目/g, '').trim();
-        if(rawTitle && pName && rawTitle !== '项目' && rawTitle.length <= 30){
-          if(!tasks.some(function(x){ return x.title === rawTitle; })){
-            tasks.push({ action: 'create_task', title: rawTitle, projectName: pName, date: defaultDate });
-          }
+    if(!text) return [];
+    var tasks = [];
+    
+    // 1. Arrow / dash mapping pattern: e.g. "📔 **写手帐** → 放进【景躁兔老师】" or "做瑜伽 → 【运动】" or "1. 给小猫洗澡澡 - 【其他】"
+    var arrowRegex = /(?:[0-9一二三四五六七八九十]+[、.\s]|[-*•📔🧘🛁✨🐾📝🎯\s]*)*[「『“"'\*]*([^「『“"'\s→\-–—:：\n]+?)[」』”"'\*]*\s*(?:→|->|—|-|:|：|\b放进\b|\b归入\b|\b放入\b)\s*(?:放进|归入|放入)?\s*【([^】]+)】/g;
+    var m;
+    while((m = arrowRegex.exec(text)) !== null){
+      var rawTitle = cleanTaskTitle(m[1]);
+      var pName = m[2].replace(/项目/g, '').replace(/[\*【】]/g, '').trim();
+      if(rawTitle && pName && rawTitle !== '项目' && rawTitle.length <= 30){
+        if(!tasks.some(function(x){ return x.title === rawTitle; })){
+          tasks.push({ action: 'create_task', title: rawTitle, projectName: pName, date: defaultDate });
         }
       }
-
-      // 2. Quote + Project pattern: e.g. "「写手帐」我放进了【景躁兔老师】，「做瑜伽」...归入【运动】"
-      var quoteProjRegex = /[「『“"']([^」』”"'\n]{2,25})[」』”"']\s*(?:我)?(?:放进了|放进|归入|放入|归到|放到|则放进)\s*【([^】]+)】/g;
-      while((m = quoteProjRegex.exec(text)) !== null){
-        var tTitle = m[1].trim();
-        var tProj = m[2].replace(/项目/g, '').trim();
-        if(!tasks.some(function(x){ return x.title === tTitle; })){
-          tasks.push({ action: 'create_task', title: tTitle, projectName: tProj, date: defaultDate });
-        }
-      }
-
-      return tasks;
     }
 
-    // Multi-Task Reconciliation Check:
-    // If the AI reply confirmed multiple tasks (e.g. 2 or 3 tasks listed in reply), but actionObj only contains 0 or 1 task,
-    // upgrade actionObj to execute all confirmed tasks!
-    var confirmedMultiTasks = extractAllMultiTasks(cleanText, (actionObj && actionObj.date) || extractDate(cleanText) || extractDate(userPromptText) || todayStr);
-    if(confirmedMultiTasks.length > 1){
-      if(!actionObj || !Array.isArray(actionObj.actions) || actionObj.actions.length < confirmedMultiTasks.length){
-        actionObj = { actions: confirmedMultiTasks };
+    // 2. Quote + Project pattern: e.g. "「写手帐」我放进了【景躁兔老师】，「做瑜伽」...归入【运动】"
+    var quoteProjRegex = /[「『“"']([^」』”"'\n]{2,25})[」』”"']\s*(?:我)?(?:放进了|放进|归入|放入|归到|放到|则放进)\s*【([^】]+)】/g;
+    while((m = quoteProjRegex.exec(text)) !== null){
+      var tTitle = cleanTaskTitle(m[1]);
+      var tProj = m[2].replace(/项目/g, '').replace(/[\*【】]/g, '').trim();
+      if(!tasks.some(function(x){ return x.title === tTitle; })){
+        tasks.push({ action: 'create_task', title: tTitle, projectName: tProj, date: defaultDate });
       }
     }
+
+    return tasks;
+  }
+
+  // Multi-Task Reconciliation Check:
+  // If the AI reply confirmed multiple tasks (e.g. 2 or 3 tasks listed in reply), but actionObj only contains 0 or 1 task,
+  // upgrade actionObj to execute all confirmed tasks!
+  var confirmedMultiTasks = extractAllMultiTasks(cleanText, (actionObj && actionObj.date) || extractDate(cleanText) || extractDate(userPromptText) || todayStr);
+  if(confirmedMultiTasks.length > 1){
+    if(!actionObj || !Array.isArray(actionObj.actions) || actionObj.actions.length < confirmedMultiTasks.length){
+      actionObj = { actions: confirmedMultiTasks };
+    }
+  }
 
   console.log('[WeekFlow AI Debug] Action to execute:', actionObj);
 
@@ -6005,7 +6014,10 @@ function executeAIAction(actionObj){
     if(!targetProj && (t.projectId || t.project_id)) targetProj = projById(t.projectId || t.project_id);
     if(!targetProj) targetProj = sortedProjects()[0];
     
-    var taskTitle = t.title || t.name || t.taskTitle || t.cardTitle || t.task_title || '新日程';
+    var taskTitle = String(t.title || t.name || t.taskTitle || t.cardTitle || t.task_title || '新日程')
+      .replace(/\*+/g, '')
+      .replace(/[`「」『』“”"']/g, '')
+      .trim();
     var startTime = t.startTime || t.start_time || t.start || '';
     var endTime = t.endTime || t.end_time || t.end || '';
     
