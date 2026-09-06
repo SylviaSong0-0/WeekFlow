@@ -1264,21 +1264,21 @@ input,select,textarea{font-family:inherit}
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  background: linear-gradient(135deg, rgba(238, 242, 255, 0.95), rgba(243, 232, 255, 0.95));
-  border: 1px solid rgba(199, 210, 254, 0.9);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 20px;
-  padding: 5px 12px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #4f46e5;
-  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.15);
-  animation: capsuleBreathe 2.2s infinite ease-in-out;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #334155;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08);
+  animation: capsuleBreathe 2.0s infinite ease-in-out;
   margin-bottom: 0px;
 }
 @keyframes capsuleBreathe {
-  0% { transform: scale(1); box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15); border-color: rgba(199, 210, 254, 0.8); }
-  50% { transform: scale(1.02); box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3); border-color: rgba(165, 180, 252, 1); }
-  100% { transform: scale(1); box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15); border-color: rgba(199, 210, 254, 0.8); }
+  0% { transform: scale(1); box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08); border-color: #e2e8f0; }
+  50% { transform: scale(1.02); box-shadow: 0 4px 14px rgba(99, 102, 241, 0.22); border-color: #a5b4fc; }
+  100% { transform: scale(1); box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08); border-color: #e2e8f0; }
 }
 .ai-pulse-dot {
   width: 8px;
@@ -1292,15 +1292,23 @@ input,select,textarea{font-family:inherit}
   70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(99, 102, 241, 0); }
   100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
 }
+.ai-capsule-timer {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  color: #6366f1;
+  font-weight: 600;
+  margin-left: 2px;
+  margin-right: 2px;
+}
 .ai-capsule-cancel-btn {
   margin-left: 6px;
-  padding: 1px 7px;
+  padding: 2px 8px;
   border-radius: 10px;
   font-size: 0.68rem;
   font-weight: 600;
   color: #64748b;
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(203, 213, 225, 0.85);
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
   cursor: pointer;
   transition: all 0.15s ease;
   line-height: 1.4;
@@ -6196,9 +6204,13 @@ async function sendFloatingAIChat(){
   
   var abortController = new AbortController();
   var isAborted = false;
+  var timerInterval = null;
+  var phaseTimer = null;
 
   var handleCancel = function(){
     isAborted = true;
+    if(timerInterval) clearInterval(timerInterval);
+    if(phaseTimer) clearTimeout(phaseTimer);
     try {
       abortController.abort();
     } catch(e){}
@@ -6215,8 +6227,19 @@ async function sendFloatingAIChat(){
   var bubbleElem = streamObj ? streamObj.bubble : null;
   var textWrapElem = streamObj ? streamObj.textWrap : null;
   var capsuleElem = streamObj ? streamObj.capsule : null;
+  timerInterval = streamObj ? streamObj.timerInterval : null;
   var firstChunkReceived = false;
   var body = document.getElementById('aiChatBody');
+
+  // Automatic phase transition to "小咪正在规划任务..." after initial reasoning phase (2.5s) if still awaiting output
+  phaseTimer = setTimeout(function(){
+    if(!firstChunkReceived && capsuleElem){
+      var txtSpan = capsuleElem.querySelector('.ai-capsule-text');
+      if(txtSpan){
+        txtSpan.textContent = '📋 小咪正在规划任务...';
+      }
+    }
+  }, 2500);
   
   try {
     var ctxObj = buildAIContext(text, targetProjId);
@@ -6227,16 +6250,15 @@ async function sendFloatingAIChat(){
       if(eventType === 'tool_call'){
         if(capsuleElem){
           var txtSpan = capsuleElem.querySelector('.ai-capsule-text');
-          if(txtSpan) txtSpan.textContent = '📅 小咪正在检查日程...';
+          if(txtSpan) txtSpan.textContent = '📋 小咪正在规划任务...';
         }
       } else if(eventType === 'thought'){
-        if(capsuleElem){
-          var txtSpan = capsuleElem.querySelector('.ai-capsule-text');
-          if(txtSpan) txtSpan.textContent = '💭 小咪正在思考...';
-        }
+        // Keep active or update
       } else if(cleanStreamText && cleanStreamText.trim().length > 0){
         if(!firstChunkReceived){
           firstChunkReceived = true;
+          if(timerInterval) clearInterval(timerInterval);
+          if(phaseTimer) clearTimeout(phaseTimer);
           if(bubbleElem) bubbleElem.classList.remove('ai-msg-streaming');
           if(capsuleElem && capsuleElem.parentNode) capsuleElem.remove();
           if(textWrapElem) textWrapElem.style.display = 'block';
@@ -6256,6 +6278,8 @@ async function sendFloatingAIChat(){
     };
     
     var rawReply = await callAIServer(ctxObj, onChunk, abortController.signal);
+    if(timerInterval) clearInterval(timerInterval);
+    if(phaseTimer) clearTimeout(phaseTimer);
     if(isAborted) return;
     
     var parsed = parseAndExecuteAIAction(rawReply, text);
@@ -6264,6 +6288,8 @@ async function sendFloatingAIChat(){
     
     // Finalize live streaming bubble
     if(bubbleElem){
+      if(timerInterval) clearInterval(timerInterval);
+      if(phaseTimer) clearTimeout(phaseTimer);
       bubbleElem.classList.remove('ai-msg-streaming');
       if(capsuleElem && capsuleElem.parentNode) capsuleElem.remove();
       var finalFormatted = cleanReply
@@ -6326,6 +6352,8 @@ async function sendFloatingAIChat(){
     playSound('chime');
     if(body) body.scrollTop = body.scrollHeight;
   } catch(e) {
+    if(timerInterval) clearInterval(timerInterval);
+    if(phaseTimer) clearTimeout(phaseTimer);
     if(isAborted || (e && (e.name === 'AbortError' || e.message === 'The user aborted a request.'))){
       if(bubbleElem){
         bubbleElem.classList.remove('ai-msg-streaming');
@@ -6338,6 +6366,8 @@ async function sendFloatingAIChat(){
       bubbleElem.innerHTML = '😿 哎呀，遇到了点小状况：' + e.message + '<br/><br/><span style="font-size:0.75rem;color:#94a3b8;">请检查设置中的 API Key 或网络状况。</span>';
     }
   } finally {
+    if(timerInterval) clearInterval(timerInterval);
+    if(phaseTimer) clearTimeout(phaseTimer);
     sendBtn.disabled = false;
     sendBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
   }
@@ -6361,7 +6391,7 @@ function createLiveStreamingAIMessage(onCancel){
   
   var capsule = document.createElement('div');
   capsule.className = 'ai-thinking-capsule';
-  capsule.innerHTML = '<span class="ai-pulse-dot"></span><span class="ai-capsule-text">💭 小咪正在思考...</span><button class="ai-capsule-cancel-btn" title="取消本次回复">✕ 取消</button>';
+  capsule.innerHTML = '<span class="ai-pulse-dot"></span><span class="ai-capsule-text">💭 小咪正在思考...</span><span class="ai-capsule-timer">1s</span><button class="ai-capsule-cancel-btn" title="取消本次回复">✕ 取消</button>';
   
   var cancelBtn = capsule.querySelector('.ai-capsule-cancel-btn');
   if(cancelBtn && onCancel){
@@ -6382,8 +6412,17 @@ function createLiveStreamingAIMessage(onCancel){
   row.appendChild(bubble);
   body.appendChild(row);
   body.scrollTop = body.scrollHeight;
+
+  var t0 = Date.now();
+  var timerEl = capsule.querySelector('.ai-capsule-timer');
+  var timerInterval = setInterval(function(){
+    if(timerEl){
+      var sec = Math.max(1, Math.floor((Date.now() - t0) / 1000));
+      timerEl.textContent = sec + 's';
+    }
+  }, 1000);
   
-  return { id: id, row: row, bubble: bubble, capsule: capsule, textWrap: textWrap };
+  return { id: id, row: row, bubble: bubble, capsule: capsule, textWrap: textWrap, timerInterval: timerInterval };
 }
 
 function renderChatMessageElement(role, content, actionResult, isReview, originalUserText){
