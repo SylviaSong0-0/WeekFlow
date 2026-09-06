@@ -5826,15 +5826,19 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
       }
     }
 
-    // 4. Fallback from User Prompt Comma/Pause Enumeration (e.g. 用户说 "我要改简历、买菜、做瑜伽")
-    if(tasks.length <= 1 && userPromptText){
+    // 4. Fallback from User Prompt Comma/Pause Enumeration (ONLY for explicit task scheduling)
+    var isSchedulingPrompt = /(?:安排|新建|添加|加|做|去|写|买|改|提醒|计划|日程|任务)/.test(userPromptText || '');
+    var isChatOrReview = /(?:复盘|总结|分析|鼓励|聊聊|闲聊|心事|建议|点评|怎样|如何|为什么|你好|早上好|晚安)/.test(userPromptText || '') ||
+                          /(?:高光|精力|微调建议|复盘总结)/.test(text || '');
+
+    if(!isChatOrReview && isSchedulingPrompt && tasks.length <= 1 && userPromptText){
       var rawSplits = userPromptText.replace(/^(?:今天|明天|后天|我要|帮我|安排|计划|做)+/g, '').split(/[、，,\n]|以及|还有|和/);
       if(rawSplits.length >= 2){
         var splitTasks = [];
         var activeProjs = sortedProjects();
         for(var si = 0; si < rawSplits.length; si++){
           var st = cleanTaskTitle(rawSplits[si]);
-          if(st && st.length >= 2 && st.length <= 20 && st !== '今天' && st !== '本周' && st !== '任务'){
+          if(st && st.length >= 2 && st.length <= 20 && st !== '今天' && st !== '本周' && st !== '任务' && !/(?:请根据|项目背景|做一次|复盘|微调建议)/.test(st)){
             // Auto match project affinity
             var bestP = '其他';
             for(var pi = 0; pi < activeProjs.length; pi++){
