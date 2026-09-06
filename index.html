@@ -5746,6 +5746,12 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
     if(cleanText.indexOf('500') >= 0 || cleanText.indexOf('错误') >= 0) cleanText = '喵呜~ 已经为你安排好啦！卡片已实时同步到你的周看板中 🐾';
   }
 
+  // Always strip any remaining JSON action code blocks, machine markdown, or HTML comments
+  cleanText = cleanText.replace(/```(?:json)?\s*\{[\s\S]*?\}\s*```/gi, '').trim();
+  cleanText = cleanText.replace(/```(?:json)?[\s\S]*?```/gi, '').trim();
+  cleanText = cleanText.replace(/\{\s*"action"\s*:[\s\S]*?\}/gi, '').trim();
+  cleanText = cleanText.replace(/<!--[\s\S]*?-->/gi, '').trim();
+
   return { cleanText: cleanText, actionResult: actionResult };
 }
 
