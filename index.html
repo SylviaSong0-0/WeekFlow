@@ -102,6 +102,104 @@ input,select,textarea{font-family:inherit}
 .memo-textarea::placeholder{
   color:#ca8a04;opacity:0.6;
 }
+.memo-save-btn{
+  margin-top:0.35rem;
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0.35rem;
+  padding:0.35rem 0.6rem;
+  background:#fef08a;
+  border:1px solid #fde047;
+  border-radius:6px;
+  color:#713f12;
+  font-size:0.75rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family:inherit;
+  box-shadow:0 1px 2px rgba(234, 179, 8, 0.12);
+}
+.memo-save-btn:hover{
+  background:#fde047;
+  color:#58310c;
+  box-shadow:0 2px 6px rgba(234, 179, 8, 0.25);
+  transform:translateY(-1px);
+}
+.memo-save-btn:active{
+  transform:translateY(0);
+}
+
+/* Toast Container & Toast with Action */
+.weekflow-toast-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.weekflow-toast {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 18px;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.95);
+  color: #f8fafc;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35), 0 0 16px rgba(6, 182, 212, 0.25);
+  border: 1px solid rgba(6, 182, 212, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: wfToastSlideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: auto;
+}
+@keyframes wfToastSlideDown {
+  from { opacity: 0; transform: translateY(-12px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.weekflow-toast.fade-out {
+  animation: wfToastFadeOut 0.25s ease forwards;
+}
+@keyframes wfToastFadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-8px); }
+}
+.toast-action-btn {
+  background: #2563eb;
+  border: none;
+  border-radius: 12px;
+  color: #ffffff;
+  padding: 3px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.4);
+}
+.toast-action-btn:hover {
+  background: #3b82f6;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+  transform: scale(1.05);
+}
+
+@keyframes journalPulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5); }
+  50% { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+}
+.journal-highlight-pulse {
+  animation: journalPulse 1.2s ease;
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#ffffff}
 
 /* Header & View Tabs (Feishu / macOS Segmented Control style) */
@@ -1507,6 +1605,9 @@ input,select,textarea{font-family:inherit}
     <div class="memo-zone">
       <div class="memo-resize-handle" id="memoResizeHandle" title="按住上下拖拽调大小 / 点击快速展开收起">⤢</div>
       <textarea class="memo-textarea" id="memoInput" placeholder="随时记录灵感或闪念..." oninput="handleMemoInput(this.value)"></textarea>
+      <button class="memo-save-btn" id="memoSaveBtn" onclick="saveMemoToJournal()" title="将当前备忘内容存入小纸条">
+        <span>📥 存入小纸条</span>
+      </button>
     </div>
   </div>
 
@@ -1525,7 +1626,7 @@ input,select,textarea{font-family:inherit}
       <div class="view-tabs" style="display: flex; background: #f1f5f9; border-radius: 6px; padding: 2px; gap: 2px;">
         <button class="view-tab-btn active" id="tabMatrix" onclick="switchView('matrix')" style="border: none; padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 4px; cursor: pointer; transition: all 0.1s; font-family: inherit; font-weight: 500;">📊 任务卡</button>
         <button class="view-tab-btn" id="tabTimeline" onclick="switchView('timeline')" style="border: none; padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 4px; cursor: pointer; transition: all 0.1s; font-family: inherit; font-weight: 500;">📅 时间轴</button>
-        <button class="view-tab-btn" id="tabJournal" onclick="switchView('journal')" style="border: none; padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 4px; cursor: pointer; transition: all 0.1s; font-family: inherit; font-weight: 500;">📖 复盘与记忆</button>
+        <button class="view-tab-btn" id="tabJournal" onclick="switchView('journal')" style="border: none; padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 4px; cursor: pointer; transition: all 0.1s; font-family: inherit; font-weight: 500;">📝 小纸条</button>
       </div>
       <div class="spacer"></div>
       <!-- Settings Dropdown -->
@@ -1581,9 +1682,9 @@ input,select,textarea{font-family:inherit}
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; background: #ffffff; padding: 1rem 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
           <div>
             <h2 style="font-size: 1.15rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
-              <span>📖 复盘与成长记忆</span>
+              <span>📝 小纸条</span>
             </h2>
-            <p style="font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;">记录你与 AI 伴跑助手的每一次复盘洞察、操作记录与心路历程</p>
+            <p style="font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;">收纳你的灵感便签、闪念备忘与周度复盘记忆</p>
           </div>
           <div style="display: flex; gap: 0.4rem;" id="journalFilterWrap">
             <!-- Filter tags injected by JS -->
@@ -3521,6 +3622,91 @@ function renderMemo(){
 function handleMemoInput(val){
   data.memo = val;
   save(data);
+}
+
+function showToastWithAction(message, actionText, onAction){
+  var container = document.getElementById('wfToastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'wfToastContainer';
+    container.className = 'weekflow-toast-container';
+    document.body.appendChild(container);
+  }
+
+  var toast = document.createElement('div');
+  toast.className = 'weekflow-toast';
+  
+  var textSpan = document.createElement('span');
+  textSpan.textContent = message;
+  toast.appendChild(textSpan);
+
+  if (actionText && onAction) {
+    var btn = document.createElement('button');
+    btn.className = 'toast-action-btn';
+    btn.textContent = actionText;
+    btn.onclick = function(e){
+      e.stopPropagation();
+      onAction();
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    };
+    toast.appendChild(btn);
+  }
+
+  container.appendChild(toast);
+
+  setTimeout(function(){
+    toast.classList.add('fade-out');
+    setTimeout(function(){
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 260);
+  }, 4000);
+}
+
+function showWeekFlowToast(message, type){
+  showToastWithAction(message, null, null);
+}
+
+function highlightJournalCard(itemId){
+  setTimeout(function(){
+    var card = document.querySelector('[data-journal-id="' + itemId + '"]');
+    if (card) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      card.classList.add('journal-highlight-pulse');
+      setTimeout(function(){
+        card.classList.remove('journal-highlight-pulse');
+      }, 2000);
+    }
+  }, 120);
+}
+
+function saveMemoToJournal(){
+  var el = document.getElementById('memoInput');
+  var val = (el ? el.value : (data.memo || '')).trim();
+  if(!val){
+    showWeekFlowToast('备忘录还没有内容哦~ 📝');
+    return;
+  }
+  
+  var newItemId = uid();
+  var memoItem = {
+    id: newItemId,
+    type: 'memo',
+    timestamp: isoNow(),
+    userContent: val,
+    content: val,
+    tags: ['备忘便签']
+  };
+
+  getJournals().unshift(memoItem);
+  data.memo = '';
+  if(el) el.value = '';
+  save(data);
+  playSound('chime');
+
+  showToastWithAction('已存入小纸条 📝', '查看', function(){
+    switchView('journal');
+    highlightJournalCard(newItemId);
+  });
 }
 
 function toggleMemoHeight(){
@@ -6452,7 +6638,7 @@ async function sendFloatingAIChat(){
         
         var archiveBtn = document.createElement('button');
         archiveBtn.className = 'ai-archive-btn';
-        archiveBtn.innerHTML = '<span>📥 一键归档到「复盘与记忆」</span>';
+        archiveBtn.innerHTML = '<span>📥 一键存入「小纸条」</span>';
         archiveBtn.onclick = function(){
           archiveReviewToJournal(text || '周度深度复盘', cleanReply, '周度复盘', archiveBtn);
         };
@@ -6595,7 +6781,7 @@ function renderChatMessageElement(role, content, actionResult, isReview, origina
     
     var archiveBtn = document.createElement('button');
     archiveBtn.className = 'ai-archive-btn';
-    archiveBtn.innerHTML = '<span>📥 一键归档到「复盘与记忆」</span>';
+    archiveBtn.innerHTML = '<span>📥 一键存入「小纸条」</span>';
     archiveBtn.onclick = function(){
       archiveReviewToJournal(originalUserText || '周度深度复盘', content, '周度复盘', archiveBtn);
     };
@@ -6636,26 +6822,31 @@ function removeTypingIndicator(id){
 }
 
 function archiveReviewToJournal(userText, aiReply, tag, btnElem){
+  var newItemId = uid();
   var journalItem = {
-    id: uid(),
+    id: newItemId,
+    type: 'review',
     timestamp: isoNow(),
     projectId: selectedFloatingMentionProjId || '',
     userContent: userText,
     aiResponse: aiReply,
-    tags: [tag || '复盘洞察']
+    tags: [tag || '周度复盘']
   };
   
   getJournals().unshift(journalItem);
   save(data);
   
   if(btnElem){
-    btnElem.innerHTML = '<span>✓ 已成功归档至记忆</span>';
+    btnElem.innerHTML = '<span>✓ 已成功存入小纸条</span>';
     btnElem.style.background = '#15803d';
     btnElem.disabled = true;
   }
   
   playSound('chime');
-  showAlert('归档成功', '已保存至顶部【📖 复盘与记忆】页面！可在该标签页随时回顾。');
+  showToastWithAction('已存入小纸条 📝', '查看', function(){
+    switchView('journal');
+    highlightJournalCard(newItemId);
+  });
 }
 
 // ============================================================
@@ -6666,18 +6857,42 @@ function renderJournalView(){
   var filterWrap = document.getElementById('journalFilterWrap');
   if(!container || !filterWrap) return;
   
+  var allJournals = getJournals();
+
   // Render Filters
   filterWrap.innerHTML = '';
   var allTag = document.createElement('button');
   allTag.className = 'btn' + (activeJournalFilter==='all'?' btn-primary':'');
   allTag.style.fontSize = '0.75rem';
   allTag.style.padding = '0.25rem 0.6rem';
-  allTag.textContent = '全部记忆 (' + getJournals().length + ')';
+  allTag.textContent = '全部小纸条 (' + allJournals.length + ')';
   allTag.onclick = function(){ activeJournalFilter = 'all'; renderJournalView(); };
   filterWrap.appendChild(allTag);
+
+  var memoCount = allJournals.filter(function(j){ return j.type === 'memo' || (!j.aiResponse && (!j.tags || j.tags.includes('备忘便签'))); }).length;
+  if(memoCount > 0){
+    var memoBtn = document.createElement('button');
+    memoBtn.className = 'btn' + (activeJournalFilter==='memo'?' btn-primary':'');
+    memoBtn.style.fontSize = '0.75rem';
+    memoBtn.style.padding = '0.25rem 0.6rem';
+    memoBtn.textContent = '📝 备忘便签 (' + memoCount + ')';
+    memoBtn.onclick = function(){ activeJournalFilter = 'memo'; renderJournalView(); };
+    filterWrap.appendChild(memoBtn);
+  }
+
+  var reviewCount = allJournals.filter(function(j){ return j.type === 'review' || j.aiResponse; }).length;
+  if(reviewCount > 0){
+    var revBtn = document.createElement('button');
+    revBtn.className = 'btn' + (activeJournalFilter==='review'?' btn-primary':'');
+    revBtn.style.fontSize = '0.75rem';
+    revBtn.style.padding = '0.25rem 0.6rem';
+    revBtn.textContent = '📖 周度复盘 (' + reviewCount + ')';
+    revBtn.onclick = function(){ activeJournalFilter = 'review'; renderJournalView(); };
+    filterWrap.appendChild(revBtn);
+  }
   
   sortedProjects().forEach(function(p){
-    var pCount = getJournals().filter(function(j){ return j.projectId === p.id; }).length;
+    var pCount = allJournals.filter(function(j){ return j.projectId === p.id; }).length;
     if(pCount > 0){
       var btn = document.createElement('button');
       btn.className = 'btn' + (activeJournalFilter===p.id?' btn-primary':'');
@@ -6690,8 +6905,10 @@ function renderJournalView(){
   });
   
   // Filter Journals
-  var journals = getJournals().filter(function(j){
+  var journals = allJournals.filter(function(j){
     if(activeJournalFilter === 'all') return true;
+    if(activeJournalFilter === 'memo') return j.type === 'memo' || (!j.aiResponse && (!j.tags || j.tags.includes('备忘便签')));
+    if(activeJournalFilter === 'review') return j.type === 'review' || j.aiResponse;
     return j.projectId === activeJournalFilter;
   });
   
@@ -6700,26 +6917,29 @@ function renderJournalView(){
   if(journals.length === 0){
     container.innerHTML = `
       <div style="text-align:center;padding:3.5rem 1rem;color:#94a3b8;font-size:0.88rem;background:#fff;border-radius:12px;border:1px solid #e2e8f0;">
-        <div style="font-size:2.2rem;margin-bottom:0.6rem;">📖</div>
-        <div style="font-weight:600;color:#475569;margin-bottom:0.3rem;">暂无复盘与成长记忆</div>
-        <div>点击右下角的 <b>🐱 伴跑助手</b>，进行一次【周度复盘】或倾诉心事，即可一键归档至此！</div>
+        <div style="font-size:2.2rem;margin-bottom:0.6rem;">📝</div>
+        <div style="font-weight:600;color:#475569;margin-bottom:0.3rem;">暂无小纸条</div>
+        <div>在左侧备忘录点击<b>【📥 存入小纸条】</b>，或在右下角 <b>🐱 伴跑助手</b> 复盘后一键存入！</div>
       </div>
     `;
     return;
   }
   
   journals.forEach(function(j){
+    var isMemo = (j.type === 'memo') || (!j.aiResponse && (!j.tags || j.tags.includes('备忘便签')));
     var card = document.createElement('div');
+    card.dataset.journalId = j.id;
     card.style.background = '#ffffff';
     card.style.borderRadius = '12px';
-    card.style.border = '1px solid #e2e8f0';
+    card.style.border = isMemo ? '1px solid #fde047' : '1px solid #e2e8f0';
     card.style.padding = '1.25rem';
-    card.style.boxShadow = '0 1px 3px rgba(0,0,0,0.02)';
+    card.style.boxShadow = isMemo ? '0 2px 8px rgba(234,179,8,0.06)' : '0 1px 3px rgba(0,0,0,0.02)';
     card.style.display = 'flex';
     card.style.flexDirection = 'column';
     card.style.gap = '0.8rem';
+    card.style.transition = 'all 0.2s ease';
     
-    // Header (Time + Tag)
+    // Header (Time + Tag + Delete)
     var head = document.createElement('div');
     head.style.display = 'flex';
     head.style.alignItems = 'center';
@@ -6734,11 +6954,15 @@ function renderJournalView(){
     
     var tagSpan = document.createElement('span');
     tagSpan.style.fontSize = '0.72rem';
-    tagSpan.style.padding = '0.15rem 0.5rem';
+    tagSpan.style.padding = '0.18rem 0.55rem';
     tagSpan.style.borderRadius = '12px';
     tagSpan.style.fontWeight = '600';
     
-    if(j.projectId && projById(j.projectId)){
+    if (isMemo) {
+      tagSpan.style.background = '#fef3c7';
+      tagSpan.style.color = '#92400e';
+      tagSpan.textContent = '📝 备忘便签';
+    } else if (j.projectId && projById(j.projectId)){
       var p = projById(j.projectId);
       tagSpan.style.background = hexToRgba(p.color, 0.15);
       tagSpan.style.color = '#1e293b';
@@ -6746,7 +6970,7 @@ function renderJournalView(){
     } else {
       tagSpan.style.background = '#eff6ff';
       tagSpan.style.color = '#1d4ed8';
-      tagSpan.textContent = j.tags && j.tags[0] ? j.tags[0] : '复盘记忆';
+      tagSpan.textContent = j.tags && j.tags[0] ? j.tags[0] : '周度复盘';
     }
     
     var leftWrap = document.createElement('div');
@@ -6762,10 +6986,10 @@ function renderJournalView(){
     delBtn.style.color = '#94a3b8';
     delBtn.style.cursor = 'pointer';
     delBtn.style.fontSize = '0.8rem';
-    delBtn.title = '删除此条记忆';
+    delBtn.title = '删除此条小纸条';
     delBtn.textContent = '🗑';
     delBtn.onclick = function(){
-      showConfirm('删除记录', '确定删除这条复盘与记忆记录吗？', function(yes){
+      showConfirm('删除记录', '确定删除这条小纸条吗？', function(yes){
         if(yes){
           data.journals = data.journals.filter(function(item){ return item.id !== j.id; });
           save(data);
@@ -6778,42 +7002,62 @@ function renderJournalView(){
     head.appendChild(delBtn);
     card.appendChild(head);
     
-    // User Quote
-    var userBubble = document.createElement('div');
-    userBubble.style.background = '#f8fafc';
-    userBubble.style.borderLeft = '3px solid #cbd5e1';
-    userBubble.style.padding = '0.65rem 0.85rem';
-    userBubble.style.borderRadius = '0 8px 8px 0';
-    userBubble.style.fontSize = '0.84rem';
-    userBubble.style.color = '#334155';
-    userBubble.style.lineHeight = '1.5';
-    userBubble.textContent = j.userContent;
-    card.appendChild(userBubble);
-    
-    // AI Response Card
-    var aiBox = document.createElement('div');
-    aiBox.style.background = 'linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%)';
-    aiBox.style.border = '1px solid #dbeafe';
-    aiBox.style.borderRadius = '8px';
-    aiBox.style.padding = '0.85rem 1rem';
-    aiBox.style.display = 'flex';
-    aiBox.style.gap = '0.75rem';
-    
-    var icon = document.createElement('div');
-    icon.style.fontSize = '1.2rem';
-    icon.textContent = '🐱';
-    
-    var textDiv = document.createElement('div');
-    textDiv.style.flex = '1';
-    textDiv.style.fontSize = '0.84rem';
-    textDiv.style.color = '#1e293b';
-    textDiv.style.lineHeight = '1.6';
-    textDiv.style.whiteSpace = 'pre-wrap';
-    textDiv.textContent = j.aiResponse;
-    
-    aiBox.appendChild(icon);
-    aiBox.appendChild(textDiv);
-    card.appendChild(aiBox);
+    if (isMemo) {
+      // Memo Content
+      var memoBody = document.createElement('div');
+      memoBody.style.background = '#fefce8';
+      memoBody.style.border = '1px solid #fef08a';
+      memoBody.style.borderRadius = '8px';
+      memoBody.style.padding = '0.85rem 1rem';
+      memoBody.style.fontSize = '0.86rem';
+      memoBody.style.color = '#713f12';
+      memoBody.style.lineHeight = '1.6';
+      memoBody.style.whiteSpace = 'pre-wrap';
+      memoBody.style.wordBreak = 'break-word';
+      memoBody.textContent = j.content || j.userContent || '';
+      card.appendChild(memoBody);
+    } else {
+      // User Quote
+      if (j.userContent) {
+        var userBubble = document.createElement('div');
+        userBubble.style.background = '#f8fafc';
+        userBubble.style.borderLeft = '3px solid #cbd5e1';
+        userBubble.style.padding = '0.65rem 0.85rem';
+        userBubble.style.borderRadius = '0 8px 8px 0';
+        userBubble.style.fontSize = '0.84rem';
+        userBubble.style.color = '#334155';
+        userBubble.style.lineHeight = '1.5';
+        userBubble.textContent = j.userContent;
+        card.appendChild(userBubble);
+      }
+      
+      // AI Response Card
+      if (j.aiResponse) {
+        var aiBox = document.createElement('div');
+        aiBox.style.background = 'linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%)';
+        aiBox.style.border = '1px solid #dbeafe';
+        aiBox.style.borderRadius = '8px';
+        aiBox.style.padding = '0.85rem 1rem';
+        aiBox.style.display = 'flex';
+        aiBox.style.gap = '0.75rem';
+        
+        var icon = document.createElement('div');
+        icon.style.fontSize = '1.2rem';
+        icon.textContent = '🐱';
+        
+        var textDiv = document.createElement('div');
+        textDiv.style.flex = '1';
+        textDiv.style.fontSize = '0.84rem';
+        textDiv.style.color = '#1e293b';
+        textDiv.style.lineHeight = '1.6';
+        textDiv.style.whiteSpace = 'pre-wrap';
+        textDiv.textContent = j.aiResponse;
+        
+        aiBox.appendChild(icon);
+        aiBox.appendChild(textDiv);
+        card.appendChild(aiBox);
+      }
+    }
     
     container.appendChild(card);
   });
