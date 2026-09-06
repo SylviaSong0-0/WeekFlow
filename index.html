@@ -169,11 +169,61 @@ input,select,textarea{font-family:inherit}
   min-width:60px;color:#334155;
 }
 .matrix-table th.corner{
-  position:sticky;left:0;top:0;z-index:15;background:#f8fafc;
+  position:sticky;left:0;z-index:20;background:#f8fafc;
   min-width:54px;width:54px;
 }
+.matrix-table th.corner-goal{
+  top:0;z-index:22;height:27px;padding:0 0.35rem;font-size:0.7rem;color:#64748b;
+  font-weight:600;text-align:center;vertical-align:middle;border-bottom:1px solid #cbd5e1;
+}
+.matrix-table th.corner-proj{
+  top:27px;z-index:20;
+}
+.matrix-table th.gh{
+  position:sticky;top:0;z-index:14;background:#f8fafc;
+  border:1px solid #e2e8f0;border-bottom:1px solid #cbd5e1;
+  padding:0.15rem 0.5rem;font-size:0.72rem;font-weight:500;color:#475569;
+  height:27px;max-height:27px;box-sizing:border-box;user-select:none;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  transition:background 0.15s ease;text-align:left;vertical-align:middle;
+}
+.matrix-table th.gh:hover{background:#f1f5f9}
+.matrix-table th.gh.is-main-focus{
+  background:linear-gradient(rgba(245,158,11,0.08),rgba(245,158,11,0.08)),#ffffff;
+  color:#92400e;font-weight:600;border-top:2px solid #f59e0b;
+}
+.matrix-table th.gh .gh-goal-text{
+  cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  display:block;width:100%;
+}
+.matrix-table th.gh .gh-goal-text:hover{
+  color:#0f172a;text-decoration:underline;text-underline-offset:2px;
+}
+.matrix-table th.gh .gh-add-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:16px;height:16px;border-radius:4px;border:1px solid #cbd5e1;
+  background:#ffffff;color:#64748b;font-size:11px;line-height:1;
+  cursor:pointer;opacity:0;transition:all 0.15s ease;
+}
+.matrix-table th.gh:hover .gh-add-btn{opacity:0.85}
+.matrix-table th.gh .gh-add-btn:hover{
+  opacity:1!important;background:#2563eb;color:#ffffff;border-color:#2563eb;
+}
+.matrix-table th.gh .gh-goal-input{
+  width:100%;height:20px;box-sizing:border-box;font-size:11px;font-family:inherit;
+  padding:1px 4px;border:1px solid #2563eb;border-radius:4px;background:#ffffff;
+  color:#0f172a;outline:none;box-shadow:0 0 0 2px rgba(37,99,235,0.15);
+}
+.matrix-table th.gh .gh-goal-input::placeholder{
+  color:#94a3b8;font-style:italic;font-size:10px;
+}
+.matrix-table th.gh-sticky-add{
+  position:sticky;right:0;top:0;z-index:22;background:#f8fafc!important;
+  height:27px;border-bottom:1px solid #cbd5e1;border-left:none;border-right:none;
+}
+
 .matrix-table th.ph{
-  position:sticky;top:0;z-index:10;background:#f8fafc;
+  position:sticky;top:27px;z-index:10;background:#f8fafc;
   cursor:grab;user-select:none;transition:background 0.15s ease;
 }
 .matrix-table th.ph:hover{background:#f1f5f9}
@@ -191,13 +241,6 @@ input,select,textarea{font-family:inherit}
   background:#ffffff;border:1px solid #2563eb;border-radius:4px;
   padding:0.15rem 0.35rem;font-size:0.78rem;outline:none;color:#0f172a;
   width:90px;font-weight:600;box-shadow:0 0 0 2px rgba(37,99,235,0.15);
-}
-/* Main Focus Project & Weekly Goal Styles (Minimalist Edition) */
-.ph-header-content {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  width: 100%;
 }
 .ph-title-row {
   display: flex;
@@ -230,35 +273,6 @@ input,select,textarea{font-family:inherit}
   flex-shrink: 0;
   user-select: none;
 }
-.ph-add-goal-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-  border: 1px solid #cbd5e1;
-  background: #ffffff;
-  color: #64748b;
-  font-size: 12px;
-  line-height: 1;
-  cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.15s ease;
-  flex-shrink: 0;
-}
-.matrix-table th.ph:hover .ph-add-goal-btn {
-  opacity: 0.85;
-  pointer-events: auto;
-}
-.ph-add-goal-btn:hover {
-  opacity: 1 !important;
-  background: #f1f5f9;
-  color: #0f172a;
-  border-color: #94a3b8;
-  transform: scale(1.08);
-}
 .matrix-table th.ph.is-main-focus {
   box-shadow: inset 0 3px 0 #f59e0b, 0 1px 4px rgba(245, 158, 11, 0.12);
 }
@@ -271,63 +285,6 @@ input,select,textarea{font-family:inherit}
 }
 .matrix-table td.tc.is-main-focus-col:hover {
   background-color: rgba(245, 158, 11, 0.035);
-}
-
-/* Weekly Goal Box */
-.ph-goal-container {
-  display: flex;
-  flex-direction: column;
-}
-.ph-goal-row {
-  display: flex;
-  align-items: center;
-  font-size: 11px;
-  color: #64748b;
-  padding: 1px 0;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  overflow: hidden;
-  text-align: left;
-  font-weight: 500;
-  line-height: 1.3;
-}
-.ph-goal-row:hover {
-  color: #0f172a;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-.matrix-table th.ph.is-main-focus .ph-goal-row {
-  color: #b45309;
-  font-weight: 600;
-}
-.matrix-table th.ph.is-main-focus .ph-goal-row:hover {
-  color: #92400e;
-}
-.ph-goal-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
-}
-.ph-goal-input {
-  width: 100%;
-  box-sizing: border-box;
-  font-size: 11px;
-  font-family: inherit;
-  padding: 2px 4px;
-  border: 1px solid #2563eb;
-  border-radius: 4px;
-  background: #ffffff;
-  color: #0f172a;
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
-}
-.ph-goal-input::placeholder {
-  color: #94a3b8;
-  font-style: italic;
-  font-size: 10px;
 }
 
 /* Floating Toast Notifications */
@@ -374,7 +331,7 @@ input,select,textarea{font-family:inherit}
 .matrix-table th.ph-sticky-add {
   position: sticky;
   right: 0;
-  top: 0;
+  top: 27px;
   z-index: 20;
   background: #f8fafc !important;
   backdrop-filter: blur(10px);
@@ -1779,7 +1736,10 @@ input,select,textarea{font-family:inherit}
     <div class="matrix-wrap" id="matrixView">
       <table class="matrix-table" id="matrixTable">
         <colgroup id="mColgroup"></colgroup>
-        <thead><tr id="mHead"><th class="corner"></th></tr></thead>
+        <thead>
+          <tr id="mGoalHead"></tr>
+          <tr id="mHead"><th class="corner"></th></tr>
+        </thead>
         <tbody id="mBody"></tbody>
       </table>
     </div>
@@ -2586,12 +2546,24 @@ function renderSidebar(){
 var colDragSrc = null; // track column drag source index
 
 function renderMatrixHeader(){
-  var row = document.getElementById('mHead');
-  row.innerHTML = '';
+  var goalRow = document.getElementById('mGoalHead');
+  var projRow = document.getElementById('mHead');
+  if (goalRow) goalRow.innerHTML = '';
+  if (projRow) projRow.innerHTML = '';
+
   var isCollapsed = !!data.todoCollapsed;
 
-  var cornerTh = document.createElement('th');
-  cornerTh.className = 'corner';
+  // --- Row 1: Goal Row Corner ---
+  if (goalRow) {
+    var cornerGoalTh = document.createElement('th');
+    cornerGoalTh.className = 'corner corner-goal';
+    cornerGoalTh.textContent = '🎯 目标';
+    goalRow.appendChild(cornerGoalTh);
+  }
+
+  // --- Row 2: Project Row Corner ---
+  var cornerProjTh = document.createElement('th');
+  cornerProjTh.className = 'corner corner-proj';
   var toggleBtn = document.createElement('button');
   toggleBtn.className = 'todo-corner-toggle' + (isCollapsed ? ' collapsed' : '');
   toggleBtn.title = isCollapsed ? '展开 TO DO 行' : '收起 TO DO 行';
@@ -2609,8 +2581,8 @@ function renderMatrixHeader(){
       wrap.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
-  cornerTh.appendChild(toggleBtn);
-  row.appendChild(cornerTh);
+  cornerProjTh.appendChild(toggleBtn);
+  projRow.appendChild(cornerProjTh);
 
   var projs = sortedProjects();
 
@@ -2638,15 +2610,52 @@ function renderMatrixHeader(){
   if (!data.weeklyGoals[currentWid]) data.weeklyGoals[currentWid] = {};
 
   projs.forEach(function(proj, idx){
+    var weekGoalInfo = data.weeklyGoals[currentWid][proj.id] || { isFocus: false, goal: '' };
+    var isMain = !!weekGoalInfo.isFocus;
+    var goalText = (weekGoalInfo.goal || '').trim();
+
+    // 1. Goal Cell (Row 1)
+    if (goalRow) {
+      var gh = document.createElement('th');
+      gh.className = 'gh';
+      gh.dataset.projId = proj.id;
+      if (isMain) gh.classList.add('is-main-focus');
+
+      if (goalText) {
+        var gText = document.createElement('span');
+        gText.className = 'gh-goal-text';
+        gText.textContent = goalText;
+        gText.title = '本周目标: ' + goalText + ' (点击修改)';
+        gText.addEventListener('click', function(e){
+          e.stopPropagation();
+          startEditGoal(gh, currentWid, proj.id);
+        });
+        gh.appendChild(gText);
+      } else {
+        var gAdd = document.createElement('button');
+        gAdd.className = 'gh-add-btn';
+        gAdd.textContent = '+';
+        gAdd.title = '设定本周目标';
+        gAdd.addEventListener('click', function(e){
+          e.stopPropagation();
+          startEditGoal(gh, currentWid, proj.id);
+        });
+        gh.appendChild(gAdd);
+        gh.addEventListener('click', function(e){
+          if (e.target !== gAdd) {
+            startEditGoal(gh, currentWid, proj.id);
+          }
+        });
+      }
+      goalRow.appendChild(gh);
+    }
+
+    // 2. Project Cell (Row 2)
     var th = document.createElement('th');
     th.className = 'ph';
     th.dataset.projId = proj.id;
     th.dataset.colIdx = idx;
     th.draggable = true;
-
-    var weekGoalInfo = data.weeklyGoals[currentWid][proj.id] || { isFocus: false, goal: '' };
-    var isMain = !!weekGoalInfo.isFocus;
-    var goalText = (weekGoalInfo.goal || '').trim();
 
     if (isMain) {
       th.classList.add('is-main-focus');
@@ -2660,7 +2669,7 @@ function renderMatrixHeader(){
     var contentWrap = document.createElement('div');
     contentWrap.className = 'ph-header-content';
 
-    // 1. Title Row
+    // Title Row
     var titleRow = document.createElement('div');
     titleRow.className = 'ph-title-row';
 
@@ -2679,43 +2688,7 @@ function renderMatrixHeader(){
       titleRow.appendChild(focusBadge);
     }
 
-    // Hover "+" button to add/edit goal
-    var addGoalBtn = document.createElement('button');
-    addGoalBtn.className = 'ph-add-goal-btn';
-    addGoalBtn.title = goalText ? '修改本周目标' : '设定本周目标';
-    addGoalBtn.innerHTML = '+';
-    addGoalBtn.addEventListener('click', function(e){
-      e.stopPropagation();
-      e.preventDefault();
-      startEditGoal(goalContainer, currentWid, proj.id);
-    });
-    titleRow.appendChild(addGoalBtn);
     contentWrap.appendChild(titleRow);
-
-    // 2. Goal Container (Clean: only shown when goal is set or being edited)
-    var goalContainer = document.createElement('div');
-    goalContainer.className = 'ph-goal-container';
-
-    if (goalText) {
-      var goalRow = document.createElement('div');
-      goalRow.className = 'ph-goal-row';
-      goalRow.title = '本周目标: ' + goalText + ' (点击修改)';
-
-      var goalTextSpan = document.createElement('span');
-      goalTextSpan.className = 'ph-goal-text';
-      goalTextSpan.textContent = goalText;
-      goalRow.appendChild(goalTextSpan);
-
-      goalRow.addEventListener('click', function(e){
-        e.stopPropagation();
-        e.preventDefault();
-        startEditGoal(goalContainer, currentWid, proj.id);
-      });
-
-      goalContainer.appendChild(goalRow);
-    }
-
-    contentWrap.appendChild(goalContainer);
     th.appendChild(contentWrap);
 
     // --- Double click to edit name ---
@@ -2751,7 +2724,6 @@ function renderMatrixHeader(){
     // --- Column drag: dragover on header for reordering ---
     th.addEventListener('dragover', function(e){
       e.preventDefault();
-      // Only handle column reorder (not card drag)
       if(e.dataTransfer.types.indexOf('text/x-col-idx') < 0) return;
       e.dataTransfer.dropEffect = 'move';
       clearColHighlight();
@@ -2768,19 +2740,24 @@ function renderMatrixHeader(){
       var fromIdx = parseInt(e.dataTransfer.getData('text/x-col-idx'));
       var toIdx = idx;
       if(fromIdx === toIdx) return;
-      // Reorder projects array
       var sp = sortedProjects();
       var moved = sp.splice(fromIdx, 1)[0];
       sp.splice(toIdx, 0, moved);
-      // Update order
       sp.forEach(function(p, i){ p.order = i + 1; });
       save(data); refreshAll();
     });
 
-    row.appendChild(th);
+    projRow.appendChild(th);
   });
 
-  // --- "+" column to add new project (sticky right with translucent gradient) ---
+  // Sticky add in Row 1 (Goal Row)
+  if (goalRow) {
+    var ghAdd = document.createElement('th');
+    ghAdd.className = 'gh-sticky-add';
+    goalRow.appendChild(ghAdd);
+  }
+
+  // Sticky add in Row 2 (Project Row)
   var thAdd = document.createElement('th');
   thAdd.className = 'ph ph-sticky-add';
   var addBtn = document.createElement('button');
@@ -2792,7 +2769,7 @@ function renderMatrixHeader(){
     quickAddProject();
   });
   thAdd.appendChild(addBtn);
-  row.appendChild(thAdd);
+  projRow.appendChild(thAdd);
 }
 
 // ============================================================
@@ -2998,19 +2975,19 @@ function showWeekFlowToast(message, type){
   }, 2600);
 }
 
-function startEditGoal(goalContainerEl, weekId, projId){
+function startEditGoal(goalCellEl, weekId, projId){
   if (!data.weeklyGoals) data.weeklyGoals = {};
   if (!data.weeklyGoals[weekId]) data.weeklyGoals[weekId] = {};
   if (!data.weeklyGoals[weekId][projId]) data.weeklyGoals[weekId][projId] = { isFocus: false, goal: '' };
 
   var currentGoal = data.weeklyGoals[weekId][projId].goal || '';
-  goalContainerEl.innerHTML = '';
+  goalCellEl.innerHTML = '';
 
   var input = document.createElement('input');
-  input.className = 'ph-goal-input';
+  input.className = 'gh-goal-input';
   input.placeholder = '输入本周目标';
   input.value = currentGoal;
-  goalContainerEl.appendChild(input);
+  goalCellEl.appendChild(input);
 
   input.focus();
   input.select();
@@ -3193,9 +3170,9 @@ function showCtxMenu(x, y, proj, thEl){
   // Set / Edit Weekly Goal
   var goalItem = mkCtxItem(hasGoal ? '🎯 修改本周目标' : '🎯 设定本周目标', function(){
     hideCtxMenu();
-    var goalContainer = thEl.querySelector('.ph-goal-container');
-    if (goalContainer) {
-      startEditGoal(goalContainer, currentWid, proj.id);
+    var goalCell = document.querySelector('#mGoalHead th.gh[data-proj-id="' + proj.id + '"]');
+    if (goalCell) {
+      startEditGoal(goalCell, currentWid, proj.id);
     }
   });
   menu.appendChild(goalItem);
