@@ -169,61 +169,11 @@ input,select,textarea{font-family:inherit}
   min-width:60px;color:#334155;
 }
 .matrix-table th.corner{
-  position:sticky;left:0;z-index:20;background:#f8fafc;
+  position:sticky;left:0;top:0;z-index:15;background:#f8fafc;
   min-width:54px;width:54px;
 }
-.matrix-table th.corner-goal{
-  top:0;z-index:22;height:27px;padding:0 0.35rem;font-size:0.7rem;color:#64748b;
-  font-weight:600;text-align:center;vertical-align:middle;border-bottom:1px solid #cbd5e1;
-}
-.matrix-table th.corner-proj{
-  top:27px;z-index:20;
-}
-.matrix-table th.gh{
-  position:sticky;top:0;z-index:14;background:#f8fafc;
-  border:1px solid #e2e8f0;border-bottom:1px solid #cbd5e1;
-  padding:0.15rem 0.5rem;font-size:0.72rem;font-weight:500;color:#475569;
-  height:27px;max-height:27px;box-sizing:border-box;user-select:none;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  transition:background 0.15s ease;text-align:left;vertical-align:middle;
-}
-.matrix-table th.gh:hover{background:#f1f5f9}
-.matrix-table th.gh.is-main-focus{
-  background:linear-gradient(rgba(245,158,11,0.08),rgba(245,158,11,0.08)),#ffffff;
-  color:#92400e;font-weight:600;border-top:2px solid #f59e0b;
-}
-.matrix-table th.gh .gh-goal-text{
-  cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  display:block;width:100%;
-}
-.matrix-table th.gh .gh-goal-text:hover{
-  color:#0f172a;text-decoration:underline;text-underline-offset:2px;
-}
-.matrix-table th.gh .gh-add-btn{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:16px;height:16px;border-radius:4px;border:1px solid #cbd5e1;
-  background:#ffffff;color:#64748b;font-size:11px;line-height:1;
-  cursor:pointer;opacity:0;transition:all 0.15s ease;
-}
-.matrix-table th.gh:hover .gh-add-btn{opacity:0.85}
-.matrix-table th.gh .gh-add-btn:hover{
-  opacity:1!important;background:#2563eb;color:#ffffff;border-color:#2563eb;
-}
-.matrix-table th.gh .gh-goal-input{
-  width:100%;height:20px;box-sizing:border-box;font-size:11px;font-family:inherit;
-  padding:1px 4px;border:1px solid #2563eb;border-radius:4px;background:#ffffff;
-  color:#0f172a;outline:none;box-shadow:0 0 0 2px rgba(37,99,235,0.15);
-}
-.matrix-table th.gh .gh-goal-input::placeholder{
-  color:#94a3b8;font-style:italic;font-size:10px;
-}
-.matrix-table th.gh-sticky-add{
-  position:sticky;right:0;top:0;z-index:22;background:#f8fafc!important;
-  height:27px;border-bottom:1px solid #cbd5e1;border-left:none;border-right:none;
-}
-
 .matrix-table th.ph{
-  position:sticky;top:27px;z-index:10;background:#f8fafc;
+  position:sticky;top:0;z-index:10;background:#f8fafc;
   cursor:grab;user-select:none;transition:background 0.15s ease;
 }
 .matrix-table th.ph:hover{background:#f1f5f9}
@@ -242,96 +192,10 @@ input,select,textarea{font-family:inherit}
   padding:0.15rem 0.35rem;font-size:0.78rem;outline:none;color:#0f172a;
   width:90px;font-weight:600;box-shadow:0 0 0 2px rgba(37,99,235,0.15);
 }
-.ph-title-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 4px;
-  min-height: 20px;
-}
-.ph-title-text {
-  font-weight: 600;
-  font-size: 0.8rem;
-  color: #1e293b;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
-}
-.ph-focus-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  background: #fef3c7;
-  color: #d97706;
-  font-weight: 700;
-  font-size: 10px;
-  padding: 1px 4px;
-  border-radius: 4px;
-  border: 1px solid #fde68a;
-  box-shadow: 0 1px 2px rgba(217, 119, 6, 0.08);
-  flex-shrink: 0;
-  user-select: none;
-}
-.matrix-table th.ph.is-main-focus {
-  box-shadow: inset 0 3px 0 #f59e0b, 0 1px 4px rgba(245, 158, 11, 0.12);
-}
-.matrix-table th.ph.is-main-focus .ph-title-text {
-  color: #0f172a;
-  font-weight: 700;
-}
-.matrix-table td.tc.is-main-focus-col {
-  background-color: rgba(245, 158, 11, 0.015);
-}
-.matrix-table td.tc.is-main-focus-col:hover {
-  background-color: rgba(245, 158, 11, 0.035);
-}
-
-/* Floating Toast Notifications */
-.weekflow-toast-container {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 99999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  pointer-events: none;
-}
-.weekflow-toast {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 18px;
-  border-radius: 20px;
-  background: rgba(15, 23, 42, 0.95);
-  color: #f8fafc;
-  font-size: 13px;
-  font-weight: 600;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35), 0 0 16px rgba(6, 182, 212, 0.25);
-  border: 1px solid rgba(6, 182, 212, 0.45);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  animation: wfToastSlideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  pointer-events: auto;
-}
-@keyframes wfToastSlideDown {
-  from { opacity: 0; transform: translateY(-12px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-.weekflow-toast.fade-out {
-  animation: wfToastFadeOut 0.25s ease forwards;
-}
-@keyframes wfToastFadeOut {
-  from { opacity: 1; transform: translateY(0); }
-  to { opacity: 0; transform: translateY(-8px); }
-}
 .matrix-table th.ph-sticky-add {
   position: sticky;
   right: 0;
-  top: 27px;
+  top: 0;
   z-index: 20;
   background: #f8fafc !important;
   backdrop-filter: blur(10px);
@@ -1736,10 +1600,7 @@ input,select,textarea{font-family:inherit}
     <div class="matrix-wrap" id="matrixView">
       <table class="matrix-table" id="matrixTable">
         <colgroup id="mColgroup"></colgroup>
-        <thead>
-          <tr id="mGoalHead"></tr>
-          <tr id="mHead"><th class="corner"></th></tr>
-        </thead>
+        <thead><tr id="mHead"><th class="corner"></th></tr></thead>
         <tbody id="mBody"></tbody>
       </table>
     </div>
@@ -2546,24 +2407,12 @@ function renderSidebar(){
 var colDragSrc = null; // track column drag source index
 
 function renderMatrixHeader(){
-  var goalRow = document.getElementById('mGoalHead');
-  var projRow = document.getElementById('mHead');
-  if (goalRow) goalRow.innerHTML = '';
-  if (projRow) projRow.innerHTML = '';
-
+  var row = document.getElementById('mHead');
+  row.innerHTML = '';
   var isCollapsed = !!data.todoCollapsed;
 
-  // --- Row 1: Goal Row Corner ---
-  if (goalRow) {
-    var cornerGoalTh = document.createElement('th');
-    cornerGoalTh.className = 'corner corner-goal';
-    cornerGoalTh.textContent = '🎯 目标';
-    goalRow.appendChild(cornerGoalTh);
-  }
-
-  // --- Row 2: Project Row Corner ---
-  var cornerProjTh = document.createElement('th');
-  cornerProjTh.className = 'corner corner-proj';
+  var cornerTh = document.createElement('th');
+  cornerTh.className = 'corner';
   var toggleBtn = document.createElement('button');
   toggleBtn.className = 'todo-corner-toggle' + (isCollapsed ? ' collapsed' : '');
   toggleBtn.title = isCollapsed ? '展开 TO DO 行' : '收起 TO DO 行';
@@ -2581,8 +2430,8 @@ function renderMatrixHeader(){
       wrap.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
-  cornerProjTh.appendChild(toggleBtn);
-  projRow.appendChild(cornerProjTh);
+  cornerTh.appendChild(toggleBtn);
+  row.appendChild(cornerTh);
 
   var projs = sortedProjects();
 
@@ -2605,98 +2454,23 @@ function renderMatrixHeader(){
   colAdd.style.width = '40px';
   colgroup.appendChild(colAdd);
 
-  var currentWid = currentWeekId();
-  if (!data.weeklyGoals) data.weeklyGoals = {};
-  if (!data.weeklyGoals[currentWid]) data.weeklyGoals[currentWid] = {};
-
   projs.forEach(function(proj, idx){
-    var weekGoalInfo = data.weeklyGoals[currentWid][proj.id] || { isFocus: false, goal: '' };
-    var isMain = !!weekGoalInfo.isFocus;
-    var goalText = (weekGoalInfo.goal || '').trim();
-
-    // 1. Goal Cell (Row 1)
-    if (goalRow) {
-      var gh = document.createElement('th');
-      gh.className = 'gh';
-      gh.dataset.projId = proj.id;
-      if (isMain) gh.classList.add('is-main-focus');
-
-      if (goalText) {
-        var gText = document.createElement('span');
-        gText.className = 'gh-goal-text';
-        gText.textContent = goalText;
-        gText.title = '本周目标: ' + goalText + ' (点击修改)';
-        gText.addEventListener('click', function(e){
-          e.stopPropagation();
-          startEditGoal(gh, currentWid, proj.id);
-        });
-        gh.appendChild(gText);
-      } else {
-        var gAdd = document.createElement('button');
-        gAdd.className = 'gh-add-btn';
-        gAdd.textContent = '+';
-        gAdd.title = '设定本周目标';
-        gAdd.addEventListener('click', function(e){
-          e.stopPropagation();
-          startEditGoal(gh, currentWid, proj.id);
-        });
-        gh.appendChild(gAdd);
-        gh.addEventListener('click', function(e){
-          if (e.target !== gAdd) {
-            startEditGoal(gh, currentWid, proj.id);
-          }
-        });
-      }
-      goalRow.appendChild(gh);
-    }
-
-    // 2. Project Cell (Row 2)
     var th = document.createElement('th');
     th.className = 'ph';
     th.dataset.projId = proj.id;
     th.dataset.colIdx = idx;
     th.draggable = true;
-
-    if (isMain) {
-      th.classList.add('is-main-focus');
-    }
-
+    th.textContent = proj.name;
     // Layer soft theme color over solid white background to eliminate transparency bleed-through when scrolling
-    th.style.background = 'linear-gradient(' + hexToRgba(proj.color, isMain ? 0.22 : 0.14) + ', ' + hexToRgba(proj.color, isMain ? 0.22 : 0.14) + '), #ffffff';
+    th.style.background = 'linear-gradient(' + hexToRgba(proj.color, 0.14) + ', ' + hexToRgba(proj.color, 0.14) + '), #ffffff';
     th.style.color = '#37352f';
 
-    // Content container
-    var contentWrap = document.createElement('div');
-    contentWrap.className = 'ph-header-content';
-
-    // Title Row
-    var titleRow = document.createElement('div');
-    titleRow.className = 'ph-title-row';
-
-    var titleText = document.createElement('span');
-    titleText.className = 'ph-title-text';
-    titleText.textContent = proj.name;
-    titleText.title = proj.name + ' (双击修改名称)';
-    titleRow.appendChild(titleText);
-
-    // If it is a main focus project, show the ⭐ badge
-    if (isMain) {
-      var focusBadge = document.createElement('span');
-      focusBadge.className = 'ph-focus-badge';
-      focusBadge.innerHTML = '⭐ 主线';
-      focusBadge.title = '当前为本周主线项目 (右键可取消)';
-      titleRow.appendChild(focusBadge);
-    }
-
-    contentWrap.appendChild(titleRow);
-    th.appendChild(contentWrap);
-
     // --- Double click to edit name ---
-    titleText.addEventListener('dblclick', function(e){
+    th.addEventListener('dblclick', function(e){
       e.preventDefault();
       e.stopPropagation();
       hideCtxMenu();
-      startEditHeader(titleText, proj);
+      startEditHeader(th, proj);
     });
 
     // --- Right click context menu ---
@@ -2724,6 +2498,7 @@ function renderMatrixHeader(){
     // --- Column drag: dragover on header for reordering ---
     th.addEventListener('dragover', function(e){
       e.preventDefault();
+      // Only handle column reorder (not card drag)
       if(e.dataTransfer.types.indexOf('text/x-col-idx') < 0) return;
       e.dataTransfer.dropEffect = 'move';
       clearColHighlight();
@@ -2740,24 +2515,19 @@ function renderMatrixHeader(){
       var fromIdx = parseInt(e.dataTransfer.getData('text/x-col-idx'));
       var toIdx = idx;
       if(fromIdx === toIdx) return;
+      // Reorder projects array
       var sp = sortedProjects();
       var moved = sp.splice(fromIdx, 1)[0];
       sp.splice(toIdx, 0, moved);
+      // Update order
       sp.forEach(function(p, i){ p.order = i + 1; });
       save(data); refreshAll();
     });
 
-    projRow.appendChild(th);
+    row.appendChild(th);
   });
 
-  // Sticky add in Row 1 (Goal Row)
-  if (goalRow) {
-    var ghAdd = document.createElement('th');
-    ghAdd.className = 'gh-sticky-add';
-    goalRow.appendChild(ghAdd);
-  }
-
-  // Sticky add in Row 2 (Project Row)
+  // --- "+" column to add new project (sticky right with translucent gradient) ---
   var thAdd = document.createElement('th');
   thAdd.className = 'ph ph-sticky-add';
   var addBtn = document.createElement('button');
@@ -2769,7 +2539,7 @@ function renderMatrixHeader(){
     quickAddProject();
   });
   thAdd.appendChild(addBtn);
-  projRow.appendChild(thAdd);
+  row.appendChild(thAdd);
 }
 
 // ============================================================
@@ -2921,20 +2691,13 @@ function initGlobalColResize(){
 // Init on load
 setTimeout(function(){ initGlobalColResize(); }, 100);
 
-function startEditHeader(targetEl, proj){
+function startEditHeader(th, proj){
   var current = proj.name;
   var input = document.createElement('input');
   input.className = 'ph-edit';
   input.value = current;
-
-  var titleSpan = targetEl.classList.contains('ph-title-text') ? targetEl : targetEl.querySelector('.ph-title-text');
-  if (titleSpan && titleSpan.parentNode) {
-    titleSpan.parentNode.replaceChild(input, titleSpan);
-  } else {
-    targetEl.innerHTML = '';
-    targetEl.appendChild(input);
-  }
-
+  th.innerHTML = '';
+  th.appendChild(input);
   input.focus();
   input.select();
 
@@ -2951,91 +2714,6 @@ function startEditHeader(targetEl, proj){
     if(e.key==='Escape'){input.value=current;input.blur();}
     e.stopPropagation();
   });
-}
-
-function showWeekFlowToast(message, type){
-  var container = document.getElementById('wfToastContainer');
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'wfToastContainer';
-    container.className = 'weekflow-toast-container';
-    document.body.appendChild(container);
-  }
-
-  var toast = document.createElement('div');
-  toast.className = 'weekflow-toast' + (type ? ' toast-' + type : '');
-  toast.innerHTML = '<span>' + message + '</span>';
-  container.appendChild(toast);
-
-  setTimeout(function(){
-    toast.classList.add('fade-out');
-    setTimeout(function(){
-      if (toast.parentNode) toast.parentNode.removeChild(toast);
-    }, 260);
-  }, 2600);
-}
-
-function startEditGoal(goalCellEl, weekId, projId){
-  if (!data.weeklyGoals) data.weeklyGoals = {};
-  if (!data.weeklyGoals[weekId]) data.weeklyGoals[weekId] = {};
-  if (!data.weeklyGoals[weekId][projId]) data.weeklyGoals[weekId][projId] = { isFocus: false, goal: '' };
-
-  var currentGoal = data.weeklyGoals[weekId][projId].goal || '';
-  goalCellEl.innerHTML = '';
-
-  var input = document.createElement('input');
-  input.className = 'gh-goal-input';
-  input.placeholder = '输入本周目标';
-  input.value = currentGoal;
-  goalCellEl.appendChild(input);
-
-  input.focus();
-  input.select();
-
-  var saved = false;
-  function done(){
-    if (saved) return;
-    saved = true;
-    var v = input.value.trim();
-    data.weeklyGoals[weekId][projId].goal = v;
-    save(data);
-    refreshAll();
-  }
-
-  input.addEventListener('blur', done);
-  input.addEventListener('keydown', function(e){
-    if (e.key === 'Enter') {
-      input.blur();
-    } else if (e.key === 'Escape') {
-      saved = true;
-      refreshAll();
-    }
-    e.stopPropagation();
-  });
-}
-
-function toggleMainFocus(weekId, projId){
-  if (!data.weeklyGoals) data.weeklyGoals = {};
-  if (!data.weeklyGoals[weekId]) data.weeklyGoals[weekId] = {};
-  if (!data.weeklyGoals[weekId][projId]) data.weeklyGoals[weekId][projId] = { isFocus: false, goal: '' };
-
-  var current = !!data.weeklyGoals[weekId][projId].isFocus;
-  if (!current) {
-    // Count currently focused projects in this week (Max 2)
-    var focusedPids = Object.keys(data.weeklyGoals[weekId]).filter(function(pid){
-      return !!data.weeklyGoals[weekId][pid].isFocus;
-    });
-    if (focusedPids.length >= 2) {
-      showWeekFlowToast('主线任务最多设置 2 个，不要太贪心哦~🐾', 'warning');
-      return;
-    }
-    data.weeklyGoals[weekId][projId].isFocus = true;
-    showWeekFlowToast('已设为本周主线项目 ⭐', 'success');
-  } else {
-    data.weeklyGoals[weekId][projId].isFocus = false;
-  }
-  save(data);
-  refreshAll();
 }
 
 // ============================================================
@@ -3154,39 +2832,6 @@ function showCtxMenu(x, y, proj, thEl){
     startEditHeader(thEl, proj);
   });
   menu.appendChild(editItem);
-
-  // Toggle Main Focus
-  var currentWid = currentWeekId();
-  var goalInfo = (data.weeklyGoals && data.weeklyGoals[currentWid] && data.weeklyGoals[currentWid][proj.id]) || {};
-  var isFocus = !!goalInfo.isFocus;
-  var hasGoal = !!(goalInfo.goal && goalInfo.goal.trim());
-
-  var focusItem = mkCtxItem(isFocus ? '⭐ 取消本周主线' : '⭐ 设为本周主线项目', function(){
-    hideCtxMenu();
-    toggleMainFocus(currentWid, proj.id);
-  });
-  menu.appendChild(focusItem);
-
-  // Set / Edit Weekly Goal
-  var goalItem = mkCtxItem(hasGoal ? '🎯 修改本周目标' : '🎯 设定本周目标', function(){
-    hideCtxMenu();
-    var goalCell = document.querySelector('#mGoalHead th.gh[data-proj-id="' + proj.id + '"]');
-    if (goalCell) {
-      startEditGoal(goalCell, currentWid, proj.id);
-    }
-  });
-  menu.appendChild(goalItem);
-
-  if (hasGoal) {
-    var clearGoalItem = mkCtxItem('🗑️ 清除本周目标', function(){
-      hideCtxMenu();
-      data.weeklyGoals[currentWid][proj.id].goal = '';
-      save(data);
-      refreshAll();
-      showWeekFlowToast('已清除本周目标 🗑️', 'info');
-    });
-    menu.appendChild(clearGoalItem);
-  }
 
   // Edit Project Background / Context
   var bgItem = mkCtxItem('💡 项目背景与目标', function(){
@@ -3410,9 +3055,7 @@ function renderMatrix(){
 
   sortedProjects().forEach(function(proj){
     var td = document.createElement('td');
-    var weekGoalInfo = (data.weeklyGoals && data.weeklyGoals[wid] && data.weeklyGoals[wid][proj.id]) || {};
-    var isMain = !!weekGoalInfo.isFocus;
-    td.className = 'tc' + (isCollapsed ? ' collapsed-cell' : '') + (isMain ? ' is-main-focus-col' : '');
+    td.className = 'tc' + (isCollapsed ? ' collapsed-cell' : '');
     attachDrop(td, 'todo', proj.id);
 
     if(!isCollapsed){
@@ -3447,9 +3090,6 @@ function renderMatrix(){
 
     sortedProjects().forEach(function(proj){
       var td = document.createElement('td');
-      var weekGoalInfo = (data.weeklyGoals && data.weeklyGoals[wid] && data.weeklyGoals[wid][proj.id]) || {};
-      var isMain = !!weekGoalInfo.isFocus;
-      td.className = 'tc' + (isMain ? ' is-main-focus-col' : '');
       var cell = document.createElement('div');
       cell.className = 'cc';
       cell.dataset.date = d.date;
