@@ -6056,29 +6056,11 @@ function executeAIAction(actionObj){
       .replace(/[`「」『』“”"']/g, '')
       .trim();
 
-    // Semantic Project Affinity Resolver
+    // Pure Dynamic Project Resolver (Driven 100% by LLM Context)
     if(!targetProj){
       var activeProjs = sortedProjects();
-      var tLower = taskTitle.toLowerCase();
-      
-      // 1. Sports / Workout Affinity
-      if(/(?:跳舞|舞|瑜伽|健身|跑|步|球|游泳|动一动|拉伸|运动|暴走|骑行|普拉提|羽毛球|篮球)/.test(tLower)){
-        targetProj = activeProjs.find(function(p){ return /(?:运动|动一动|健身|健康|身体)/.test(p.name); });
-      }
-      // 2. Job / Career Affinity
-      else if(/(?:简历|面试|offer|投递|找工作|背调|hr|猎头|复试|初试)/.test(tLower)){
-        targetProj = activeProjs.find(function(p){ return /(?:找工作|求职|工作|职业|事业)/.test(p.name); });
-      }
-      // 3. Life / Routine Affinity
-      else if(/(?:买|菜|猫|狗|洗|扫|收拾|做饭|煲汤|超市|牛奶|水果|快递|整理|账|手帐|生活)/.test(tLower)){
-        targetProj = activeProjs.find(function(p){ return /(?:生活|日常|琐事|家|其他)/.test(p.name); });
-      }
-
-      // 4. Default to 【其他】 or 【生活】 before first column
-      if(!targetProj){
-        targetProj = activeProjs.find(function(p){ return /(?:其他|生活|日常)/.test(p.name); });
-      }
-      if(!targetProj) targetProj = activeProjs[0];
+      // Try to match 【其他】 or 【生活】 or fallback safely to general bucket, never hardcode domain keywords
+      targetProj = activeProjs.find(function(p){ return p.name === '其他' || p.name === '生活' || p.name === '默认'; }) || activeProjs[activeProjs.length - 1] || activeProjs[0];
     }
     var startTime = t.startTime || t.start_time || t.start || '';
     var endTime = t.endTime || t.end_time || t.end || '';
