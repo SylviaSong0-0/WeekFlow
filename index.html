@@ -192,11 +192,11 @@ input,select,textarea{font-family:inherit}
   padding:0.15rem 0.35rem;font-size:0.78rem;outline:none;color:#0f172a;
   width:90px;font-weight:600;box-shadow:0 0 0 2px rgba(37,99,235,0.15);
 }
-/* Main Focus Project & Weekly Goal Styles */
+/* Main Focus Project & Weekly Goal Styles (Minimalist Edition) */
 .ph-header-content {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
   width: 100%;
 }
 .ph-title-row {
@@ -215,31 +215,49 @@ input,select,textarea{font-family:inherit}
   white-space: nowrap;
   flex: 1;
 }
-.ph-star-btn {
+.ph-focus-badge {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  border: 1px solid transparent;
-  background: transparent;
-  cursor: pointer;
-  padding: 1px 4px;
-  border-radius: 4px;
-  font-size: 11px;
-  color: #94a3b8;
-  transition: all 0.15s ease;
-  line-height: 1.2;
-}
-.ph-star-btn:hover {
-  background: rgba(0, 0, 0, 0.05);
-  color: #f59e0b;
-}
-.ph-star-btn.is-active {
+  gap: 2px;
   background: #fef3c7;
   color: #d97706;
   font-weight: 700;
-  font-size: 10.5px;
-  border-color: #fde68a;
+  font-size: 10px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  border: 1px solid #fde68a;
   box-shadow: 0 1px 2px rgba(217, 119, 6, 0.08);
+  flex-shrink: 0;
+  user-select: none;
+}
+.ph-add-goal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+.matrix-table th.ph:hover .ph-add-goal-btn {
+  opacity: 0.85;
+  pointer-events: auto;
+}
+.ph-add-goal-btn:hover {
+  opacity: 1 !important;
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #94a3b8;
+  transform: scale(1.08);
 }
 .matrix-table th.ph.is-main-focus {
   box-shadow: inset 0 3px 0 #f59e0b, 0 1px 4px rgba(245, 158, 11, 0.12);
@@ -254,36 +272,36 @@ input,select,textarea{font-family:inherit}
 .matrix-table td.tc.is-main-focus-col:hover {
   background-color: rgba(245, 158, 11, 0.035);
 }
+
 /* Weekly Goal Box */
+.ph-goal-container {
+  display: flex;
+  flex-direction: column;
+}
 .ph-goal-row {
   display: flex;
   align-items: center;
   gap: 3px;
   font-size: 10.5px;
-  font-weight: 400;
-  color: #64748b;
+  color: #334155;
   padding: 2px 4px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.65);
-  border: 1px dashed rgba(148, 163, 184, 0.45);
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.35);
   cursor: pointer;
   transition: all 0.15s ease;
   overflow: hidden;
   text-align: left;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
 }
 .ph-goal-row:hover {
   background: #ffffff;
   border-color: #94a3b8;
-  color: #334155;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-.ph-goal-row.has-goal {
-  background: #ffffff;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  color: #1e293b;
-  font-weight: 500;
-}
-.matrix-table th.ph.is-main-focus .ph-goal-row.has-goal {
+.matrix-table th.ph.is-main-focus .ph-goal-row {
   background: #fffdf5;
   border-color: #fde68a;
   color: #92400e;
@@ -294,23 +312,65 @@ input,select,textarea{font-family:inherit}
   white-space: nowrap;
   flex: 1;
 }
-.ph-goal-placeholder {
-  color: #94a3b8;
-  font-style: italic;
-  font-size: 10px;
-}
 .ph-goal-input {
   width: 100%;
   box-sizing: border-box;
   font-size: 10.5px;
   font-family: inherit;
-  padding: 2px 4px;
+  padding: 2px 5px;
   border: 1px solid #2563eb;
   border-radius: 4px;
   background: #ffffff;
   color: #0f172a;
   outline: none;
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+.ph-goal-input::placeholder {
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 10px;
+}
+
+/* Floating Toast Notifications */
+.weekflow-toast-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.weekflow-toast {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.95);
+  color: #f8fafc;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35), 0 0 16px rgba(6, 182, 212, 0.25);
+  border: 1px solid rgba(6, 182, 212, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: wfToastSlideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: auto;
+}
+@keyframes wfToastSlideDown {
+  from { opacity: 0; transform: translateY(-12px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.weekflow-toast.fade-out {
+  animation: wfToastFadeOut 0.25s ease forwards;
+}
+@keyframes wfToastFadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-8px); }
 }
 .matrix-table th.ph-sticky-add {
   position: sticky;
@@ -2611,45 +2671,57 @@ function renderMatrixHeader(){
     titleText.title = proj.name + ' (双击修改名称)';
     titleRow.appendChild(titleText);
 
-    var starBtn = document.createElement('button');
-    starBtn.className = 'ph-star-btn' + (isMain ? ' is-active' : '');
-    starBtn.title = isMain ? '本周主线项目 (点击取消)' : '设为本周主线 (最多2个)';
-    starBtn.innerHTML = isMain ? '⭐ 主线' : '☆';
-    starBtn.addEventListener('click', function(e){
+    // If it is a main focus project, show the ⭐ badge
+    if (isMain) {
+      var focusBadge = document.createElement('span');
+      focusBadge.className = 'ph-focus-badge';
+      focusBadge.innerHTML = '⭐ 主线';
+      focusBadge.title = '当前为本周主线项目 (右键可取消)';
+      titleRow.appendChild(focusBadge);
+    }
+
+    // Hover "+" button to add/edit goal
+    var addGoalBtn = document.createElement('button');
+    addGoalBtn.className = 'ph-add-goal-btn';
+    addGoalBtn.title = goalText ? '修改本周目标' : '设定本周目标';
+    addGoalBtn.innerHTML = '+';
+    addGoalBtn.addEventListener('click', function(e){
       e.stopPropagation();
       e.preventDefault();
-      toggleMainFocus(currentWid, proj.id);
+      startEditGoal(goalContainer, currentWid, proj.id);
     });
-    titleRow.appendChild(starBtn);
+    titleRow.appendChild(addGoalBtn);
     contentWrap.appendChild(titleRow);
 
-    // 2. Goal Row
-    var goalRow = document.createElement('div');
-    goalRow.className = 'ph-goal-row' + (goalText ? ' has-goal' : '');
-    goalRow.title = goalText ? ('本周目标: ' + goalText + ' (点击修改)') : '点击输入本周目标';
+    // 2. Goal Container (Clean: only shown when goal is set or being edited)
+    var goalContainer = document.createElement('div');
+    goalContainer.className = 'ph-goal-container';
 
-    var goalIcon = document.createElement('span');
-    goalIcon.style.fontSize = '10px';
-    goalIcon.textContent = '🎯';
-    goalRow.appendChild(goalIcon);
-
-    var goalTextSpan = document.createElement('span');
     if (goalText) {
+      var goalRow = document.createElement('div');
+      goalRow.className = 'ph-goal-row';
+      goalRow.title = '本周目标: ' + goalText + ' (点击修改)';
+
+      var goalIcon = document.createElement('span');
+      goalIcon.style.fontSize = '10px';
+      goalIcon.textContent = '🎯';
+      goalRow.appendChild(goalIcon);
+
+      var goalTextSpan = document.createElement('span');
       goalTextSpan.className = 'ph-goal-text';
       goalTextSpan.textContent = goalText;
-    } else {
-      goalTextSpan.className = 'ph-goal-placeholder';
-      goalTextSpan.textContent = '本周目标...';
+      goalRow.appendChild(goalTextSpan);
+
+      goalRow.addEventListener('click', function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        startEditGoal(goalContainer, currentWid, proj.id);
+      });
+
+      goalContainer.appendChild(goalRow);
     }
-    goalRow.appendChild(goalTextSpan);
 
-    goalRow.addEventListener('click', function(e){
-      e.stopPropagation();
-      e.preventDefault();
-      startEditGoal(goalRow, currentWid, proj.id);
-    });
-
-    contentWrap.appendChild(goalRow);
+    contentWrap.appendChild(goalContainer);
     th.appendChild(contentWrap);
 
     // --- Double click to edit name ---
@@ -2910,21 +2982,42 @@ function startEditHeader(targetEl, proj){
   });
 }
 
-function startEditGoal(goalRowEl, weekId, projId){
+function showWeekFlowToast(message, type){
+  var container = document.getElementById('wfToastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'wfToastContainer';
+    container.className = 'weekflow-toast-container';
+    document.body.appendChild(container);
+  }
+
+  var toast = document.createElement('div');
+  toast.className = 'weekflow-toast' + (type ? ' toast-' + type : '');
+  toast.innerHTML = '<span>' + message + '</span>';
+  container.appendChild(toast);
+
+  setTimeout(function(){
+    toast.classList.add('fade-out');
+    setTimeout(function(){
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 260);
+  }, 2600);
+}
+
+function startEditGoal(goalContainerEl, weekId, projId){
   if (!data.weeklyGoals) data.weeklyGoals = {};
   if (!data.weeklyGoals[weekId]) data.weeklyGoals[weekId] = {};
   if (!data.weeklyGoals[weekId][projId]) data.weeklyGoals[weekId][projId] = { isFocus: false, goal: '' };
 
   var currentGoal = data.weeklyGoals[weekId][projId].goal || '';
+  goalContainerEl.innerHTML = '';
+
   var input = document.createElement('input');
   input.className = 'ph-goal-input';
-  input.placeholder = '输入本周一句话目标...';
+  input.placeholder = '输入本周目标';
   input.value = currentGoal;
+  goalContainerEl.appendChild(input);
 
-  var parent = goalRowEl.parentNode;
-  if (parent) {
-    parent.replaceChild(input, goalRowEl);
-  }
   input.focus();
   input.select();
 
@@ -2962,11 +3055,11 @@ function toggleMainFocus(weekId, projId){
       return !!data.weeklyGoals[weekId][pid].isFocus;
     });
     if (focusedPids.length >= 2) {
-      // Auto-swap the oldest focused one
-      var oldestPid = focusedPids[0];
-      data.weeklyGoals[weekId][oldestPid].isFocus = false;
+      showWeekFlowToast('主线任务最多设置 2 个，不要太贪心哦~🐾', 'warning');
+      return;
     }
     data.weeklyGoals[weekId][projId].isFocus = true;
+    showWeekFlowToast('已设为本周主线项目 ⭐', 'success');
   } else {
     data.weeklyGoals[weekId][projId].isFocus = false;
   }
@@ -3095,11 +3188,34 @@ function showCtxMenu(x, y, proj, thEl){
   var currentWid = currentWeekId();
   var goalInfo = (data.weeklyGoals && data.weeklyGoals[currentWid] && data.weeklyGoals[currentWid][proj.id]) || {};
   var isFocus = !!goalInfo.isFocus;
+  var hasGoal = !!(goalInfo.goal && goalInfo.goal.trim());
+
   var focusItem = mkCtxItem(isFocus ? '⭐ 取消本周主线' : '⭐ 设为本周主线项目', function(){
     hideCtxMenu();
     toggleMainFocus(currentWid, proj.id);
   });
   menu.appendChild(focusItem);
+
+  // Set / Edit Weekly Goal
+  var goalItem = mkCtxItem(hasGoal ? '🎯 修改本周目标' : '🎯 设定本周目标', function(){
+    hideCtxMenu();
+    var goalContainer = thEl.querySelector('.ph-goal-container');
+    if (goalContainer) {
+      startEditGoal(goalContainer, currentWid, proj.id);
+    }
+  });
+  menu.appendChild(goalItem);
+
+  if (hasGoal) {
+    var clearGoalItem = mkCtxItem('🗑️ 清除本周目标', function(){
+      hideCtxMenu();
+      data.weeklyGoals[currentWid][proj.id].goal = '';
+      save(data);
+      refreshAll();
+      showWeekFlowToast('已清除本周目标 🗑️', 'info');
+    });
+    menu.appendChild(clearGoalItem);
+  }
 
   // Edit Project Background / Context
   var bgItem = mkCtxItem('💡 项目背景与目标', function(){
