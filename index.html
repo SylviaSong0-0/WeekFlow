@@ -3928,8 +3928,10 @@ function refreshAll(){
   renderMatrixHeader();
   if (currentView === 'matrix') {
     renderMatrix();
-  } else {
+  } else if (currentView === 'timeline') {
     renderTimeline();
+  } else if (currentView === 'journal') {
+    renderJournalView();
   }
 }
 
@@ -3955,8 +3957,6 @@ function switchView(view){
       var scroller = document.getElementById('tlScrollContainer');
       if(scroller) scroller.scrollTop = 400;
     }, 50);
-  } else if(view === 'journal'){
-    renderJournalView();
   }
   
   refreshAll();
@@ -7016,11 +7016,16 @@ function archiveReviewToJournal(userText, aiReply, tag, btnElem){
 }
 
 function isItemInCurrentWeek(j){
+  if(!j) return false;
   if(j.weekId && j.weekId === currentWeekId()) return true;
   if(j.timestamp){
-    var itemDate = formatLocalDate(new Date(j.timestamp));
-    var curDates = weekDates().map(function(d){ return d.date; });
-    return curDates.indexOf(itemDate) >= 0;
+    try {
+      var itemDate = formatLocalDate(new Date(j.timestamp));
+      var curDates = getWeekDates().map(function(d){ return d.date; });
+      return curDates.indexOf(itemDate) >= 0;
+    } catch(e){
+      return false;
+    }
   }
   return false;
 }
