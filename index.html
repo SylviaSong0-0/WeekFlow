@@ -345,15 +345,16 @@ input,select,textarea{font-family:inherit}
   font-weight: 500;
 }
 .sticky-task-desc {
-  background: #f8fafc;
-  border: 1px dashed #cbd5e1;
-  border-radius: 6px;
-  padding: 0.5rem 0.65rem;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px dashed rgba(148, 163, 184, 0.45);
+  border-radius: 8px;
+  padding: 0.55rem 0.7rem;
   font-size: 0.8rem;
-  color: #475569;
-  line-height: 1.5;
+  color: #334155;
+  line-height: 1.55;
   white-space: pre-wrap;
   word-break: break-word;
+  margin-top: 0.35rem;
 }
 
 .notion-btn-bookmark {
@@ -3965,27 +3966,42 @@ function saveMemoToJournal(){
 }
 
 function bookmarkCurrentModalTask(){
+  var titleEl = document.getElementById('tmTitleInput');
+  var descEl = document.getElementById('tmDesc');
+  var projEl = document.getElementById('tmProject');
+  var subEl = document.getElementById('tmSubProject');
+  var sTimeEl = document.getElementById('tmStartTime');
+  var eTimeEl = document.getElementById('tmEndTime');
+
+  var currentTitle = titleEl ? titleEl.value.trim() : '';
+  var currentDesc = descEl ? descEl.value.trim() : '';
+  var currentProj = projEl ? projEl.value : '';
+  var currentSub = subEl ? subEl.value.trim() : '';
+  var currentSTime = sTimeEl ? formatTimeInput(sTimeEl.value) : '';
+  var currentETime = eTimeEl ? formatTimeInput(eTimeEl.value) : '';
+
   if(editingTask){
-    saveTaskToJournal(editingTask);
+    var taskSnapshot = Object.assign({}, editingTask);
+    if(currentTitle) taskSnapshot.title = currentTitle;
+    taskSnapshot.description = currentDesc;
+    if(currentProj) taskSnapshot.projectId = currentProj;
+    taskSnapshot.subProject = currentSub;
+    if(currentSTime) taskSnapshot.startTime = currentSTime;
+    if(currentETime) taskSnapshot.endTime = currentETime;
+    saveTaskToJournal(taskSnapshot);
   } else {
-    var title = document.getElementById('tmTitleInput').value.trim();
-    if(!title){
-      document.getElementById('tmTitleInput').focus();
+    if(!currentTitle){
+      if(titleEl) titleEl.focus();
       return;
     }
-    var projId = document.getElementById('tmProject').value;
-    var sub = document.getElementById('tmSubProject').value.trim();
-    var desc = document.getElementById('tmDesc').value.trim();
-    var sTime = formatTimeInput(document.getElementById('tmStartTime').value);
-    var eTime = formatTimeInput(document.getElementById('tmEndTime').value);
     var tempTask = {
       id: 't' + uid(),
-      title: title,
-      projectId: projId,
-      subProject: sub,
-      description: desc,
-      startTime: sTime,
-      endTime: eTime,
+      title: currentTitle,
+      projectId: currentProj,
+      subProject: currentSub,
+      description: currentDesc,
+      startTime: currentSTime,
+      endTime: currentETime,
       date: currentPrefillDate || '',
       weekId: currentWeekId(),
       status: 'todo'
@@ -3996,22 +4012,24 @@ function bookmarkCurrentModalTask(){
 
 function saveTaskToJournal(task){
   if(!task) return;
+  var live = (task.id && taskById(task.id)) ? taskById(task.id) : null;
+  var desc = (task.description !== undefined && task.description !== '') ? task.description : (live && live.description ? live.description : '');
   var newItemId = uid();
   var journalItem = {
     id: newItemId,
     type: 'task',
     timestamp: isoNow(),
     weekId: task.weekId || currentWeekId(),
-    projectId: task.projectId || '',
+    projectId: task.projectId || (live ? live.projectId : '') || '',
     taskId: task.id || '',
-    title: task.title || '未命名任务',
-    subProject: task.subProject || '',
-    date: task.date || '',
-    startTime: task.startTime || '',
-    endTime: task.endTime || '',
-    status: task.status || 'todo',
-    description: task.description || '',
-    userContent: task.title + (task.description ? '\n' + task.description : ''),
+    title: task.title || (live ? live.title : '') || '未命名任务',
+    subProject: task.subProject || (live ? live.subProject : '') || '',
+    date: task.date || (live ? live.date : '') || '',
+    startTime: task.startTime || (live ? live.startTime : '') || '',
+    endTime: task.endTime || (live ? live.endTime : '') || '',
+    status: task.status || (live ? live.status : 'todo') || 'todo',
+    description: desc,
+    userContent: (task.title || (live ? live.title : '') || '未命名任务') + (desc ? '\n' + desc : ''),
     tags: ['任务卡']
   };
 
@@ -7331,40 +7349,65 @@ function renderJournalView(){
     if (isTask) {
       // Task Card Format
       var isDone = (j.status === 'done');
+      var liveTask = j.taskId ? taskById(j.taskId) : null;
+      var effectiveTitle = j.title || (liveTask && liveTask.title) || j.userContent || '未命名任务';
+      var effectiveDesc = (j.description !== undefined && j.description !== '') ? j.description : (liveTask && liveTask.description ? liveTask.description : '');
+      var effectiveDate = j.date || (liveTask && liveTask.date) || '';
+      var effectiveSub = j.subProject || (liveTask && liveTask.subProject) || '';
+      var effectiveStartTime = j.startTime || (liveTask && liveTask.startTime) || '';
+      var effectiveEndTime = j.endTime || (liveTask && liveTask.endTime) || '';
+      if (liveTask && liveTask.status) {
+        isDone = (liveTask.status === 'done');
+      }
+
       var titleDiv = document.createElement('div');
       titleDiv.className = 'sticky-task-title';
-      titleDiv.innerHTML = '<span class="sticky-task-status-icon ' + (isDone ? 'done' : 'todo') + '">' + (isDone ? '✓' : '○') + '</span><span>' + (j.title || j.userContent || '未命名任务') + '</span>';
+      titleDiv.innerHTML = '<span class="sticky-task-status-icon ' + (isDone ? 'done' : 'todo') + '">' + (isDone ? '✓' : '○') + '</span><span>' + effectiveTitle.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>';
       bodyDiv.appendChild(titleDiv);
 
       var metaWrap = document.createElement('div');
       metaWrap.className = 'sticky-task-meta';
-      if (j.subProject) {
+      if (effectiveSub) {
         var subSpan = document.createElement('span');
         subSpan.className = 'sticky-task-pill';
-        subSpan.textContent = '🏷️ ' + j.subProject;
+        subSpan.textContent = '🏷️ ' + effectiveSub;
         metaWrap.appendChild(subSpan);
       }
-      if (j.date) {
+      if (effectiveDate) {
         var dateSpan = document.createElement('span');
         dateSpan.className = 'sticky-task-pill';
-        dateSpan.textContent = '📅 ' + j.date.substring(5);
+        dateSpan.textContent = '📅 ' + (effectiveDate.length >= 10 ? effectiveDate.substring(5) : effectiveDate);
         metaWrap.appendChild(dateSpan);
       }
-      if (j.startTime) {
+      if (effectiveStartTime) {
         var timePill = document.createElement('span');
         timePill.className = 'sticky-task-pill';
-        timePill.textContent = '⏰ ' + j.startTime + (j.endTime ? '-' + j.endTime : '');
+        timePill.textContent = '⏰ ' + effectiveStartTime + (effectiveEndTime ? '-' + effectiveEndTime : '');
         metaWrap.appendChild(timePill);
       }
       if (metaWrap.children.length > 0) {
         bodyDiv.appendChild(metaWrap);
       }
 
-      if (j.description) {
+      if (effectiveDesc && effectiveDesc.trim()) {
         var descDiv = document.createElement('div');
         descDiv.className = 'sticky-task-desc';
-        descDiv.textContent = j.description;
+        descDiv.innerHTML = '<div style="font-size:0.75rem; font-weight:600; color:#64748b; margin-bottom:0.3rem; display:flex; align-items:center; gap:4px;"><span>📝</span> 任务详情</div>' +
+          effectiveDesc.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br/>');
         bodyDiv.appendChild(descDiv);
+      }
+
+      if (j.taskId) {
+        card.title = '双击打开任务详情编辑';
+        card.style.cursor = 'pointer';
+        card.addEventListener('dblclick', function(e){
+          var t = taskById(j.taskId);
+          if (t) {
+            openTaskModal(j.taskId);
+          } else {
+            showToast('原始任务已被删除或不在当前周');
+          }
+        });
       }
     } else if (isMemo) {
       bodyDiv.textContent = j.content || j.userContent || '';
