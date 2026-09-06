@@ -1253,6 +1253,74 @@ input,select,textarea{font-family:inherit}
   background: #dcfce7;
 }
 
+/* AI Thinking Capsule & Breathing Status Animation */
+.ai-thinking-capsule {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: linear-gradient(135deg, rgba(238, 242, 255, 0.95), rgba(243, 232, 255, 0.95));
+  border: 1px solid rgba(199, 210, 254, 0.9);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #4f46e5;
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.15);
+  animation: capsuleBreathe 2.2s infinite ease-in-out;
+  margin-bottom: 4px;
+}
+@keyframes capsuleBreathe {
+  0% { transform: scale(1); box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15); border-color: rgba(199, 210, 254, 0.8); }
+  50% { transform: scale(1.02); box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3); border-color: rgba(165, 180, 252, 1); }
+  100% { transform: scale(1); box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15); border-color: rgba(199, 210, 254, 0.8); }
+}
+.ai-pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: #6366f1;
+  border-radius: 50%;
+  animation: pulseDot 1.4s infinite cubic-bezier(0.66, 0, 0, 1);
+}
+@keyframes pulseDot {
+  0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(99, 102, 241, 0); }
+  100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+}
+.ai-capsule-cancel-btn {
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #64748b;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(203, 213, 225, 0.85);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1.4;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.ai-capsule-cancel-btn:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+.ai-thought-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  color: #64748b;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
 /* Review Card inside Chat */
 .ai-review-card {
   margin-top: 0.5rem;
@@ -5154,7 +5222,7 @@ function filterStreamText(raw){
   return s.trim();
 }
 
-async function callAIServer(promptObj, onChunk){
+async function callAIServer(promptObj, onChunk, signal){
   var cfg = getAIConfig();
   if(!cfg.apiKey){
     openAIConfigModal();
@@ -5166,28 +5234,17 @@ async function callAIServer(promptObj, onChunk){
     var baseUrl = (cfg.difyEndpoint || 'https://api.dify.ai/v1').replace(/\/+$/, '');
     var endpoint = baseUrl + '/chat-messages';
     
-    // Inject real-time context directly into query to guarantee 100% visibility even if Dify variables are unbound
+    // Streamlined query: pass pure user text since all contexts are structured in inputs
     var enrichedQuery = promptObj.user;
-    if(promptObj.difyInputs){
-      var ctxPrefix = "【系统当前真实时间与任务全景】\n" +
-        "• 今日时间与周跨度: " + (promptObj.difyInputs.today_info || '') + "\n" +
-        "• 用户项目列表: " + (promptObj.difyInputs.projects_context || '暂无') + "\n" +
-        "• 本周已有卡片清单:\n" + (promptObj.difyInputs.tasks_context || '本周暂无任务') + "\n" +
-        "------------------------------------\n" +
-        "【用户指令】: " + promptObj.user + "\n" +
-        "------------------------------------\n" +
-        "【输出强制规范】: 请用温暖可爱的语气回复用户。若涉及新建/删除/修改/清空卡片，或新建/修改项目属性（如修改项目颜色、重命名），必须在自然语言回答的最末尾附带标准 ```json 代码块（包含 action: create_task/delete_task/update_task/clear_tasks/create_project/update_project 等参数），绝不可遗漏！";
-      enrichedQuery = ctxPrefix;
-    }
     
-function getWeekFlowUserId(){
-  var uid = localStorage.getItem('weekflow_user_id');
-  if(!uid){
-    uid = 'usr_' + Math.random().toString(36).substring(2, 10);
-    localStorage.setItem('weekflow_user_id', uid);
-  }
-  return uid;
-}
+    function getWeekFlowUserId(){
+      var uid = localStorage.getItem('weekflow_user_id');
+      if(!uid){
+        uid = 'usr_' + Math.random().toString(36).substring(2, 10);
+        localStorage.setItem('weekflow_user_id', uid);
+      }
+      return uid;
+    }
 
     var uid = getWeekFlowUserId();
     var payload = {
@@ -5204,8 +5261,28 @@ function getWeekFlowUserId(){
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + cfg.apiKey
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
+      signal: signal
     });
+    
+    // Auto self-heal: if conversation expired or deleted on Dify, retry once with empty conversation_id
+    if(!res.ok && (res.status === 404 || res.status === 400)){
+      var errPeek = await res.clone().text();
+      if(errPeek.indexOf('Conversation Not Exists') >= 0 || errPeek.indexOf('conversation') >= 0){
+        data.difyConversationId = null;
+        save(data);
+        payload.conversation_id = "";
+        res = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + cfg.apiKey
+          },
+          body: JSON.stringify(payload),
+          signal: signal
+        });
+      }
+    }
     
     if(!res.ok){
       var errText = await res.text();
@@ -5251,7 +5328,7 @@ function getWeekFlowUserId(){
             fullRawAnswer += chunk;
             if(onChunk){
               var cleanStream = filterStreamText(fullRawAnswer);
-              onChunk(chunk, cleanStream);
+              onChunk(chunk, cleanStream, 'message');
             }
           } else if(ev.event === 'agent_thought'){
             if(ev.tool && ev.tool_input){
@@ -5265,6 +5342,9 @@ function getWeekFlowUserId(){
                 tool: ev.tool,
                 input: pInp
               });
+              if(onChunk) onChunk('', null, 'tool_call', ev.tool);
+            } else if(ev.thought){
+              if(onChunk) onChunk('', null, 'thought', ev.thought);
             }
           } else if(ev.event === 'error'){
             throw new Error(ev.message || 'Dify SSE 发生错误');
@@ -5455,10 +5535,32 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
       if(!txt) return '';
       var isoM = /\b(\d{4}-\d{2}-\d{2})\b/.exec(txt);
       if(isoM) return isoM[1];
+      
+      // Match M月D日 (e.g., 9月5日)
+      var mdM = /(\d{1,2})月(\d{1,2})日/.exec(txt);
+      if(mdM){
+        var mNum = parseInt(mdM[1], 10);
+        var dNum = parseInt(mdM[2], 10);
+        for(var k = 0; k < dates.length; k++){
+          if(dates[k].month === mNum && dates[k].num === dNum) return dates[k].date;
+        }
+      }
+      
+      // Match weekday names (周一 ~ 周日, 星期一 ~ 星期日)
+      // Check in reverse order or match based on appearance in text to respect final correction
+      var lastMatchedDate = '';
+      var maxPos = -1;
       for(var j = 0; j < dates.length; j++){
         var d = dates[j];
-        if(txt.indexOf(d.weekday) >= 0 || txt.indexOf(d.weekday.replace('周','星期')) >= 0) return d.date;
+        var pos1 = txt.lastIndexOf(d.weekday);
+        var pos2 = txt.lastIndexOf(d.weekday.replace('周','星期'));
+        var p = Math.max(pos1, pos2);
+        if(p > maxPos){
+          maxPos = p;
+          lastMatchedDate = d.date;
+        }
       }
+      if(lastMatchedDate) return lastMatchedDate;
       return '';
     }
 
@@ -5471,20 +5573,32 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
     function extractProjectName(txt){
       if(!txt) return '';
       var pm = /【([^】]+)】/.exec(txt);
-      if(pm && pm[1]) return pm[1].trim();
+      if(pm && pm[1] && pm[1].indexOf('项目') === -1) return pm[1].trim();
       var activeProjs = sortedProjects();
       for(var k = 0; k < activeProjs.length; k++){
         var p = activeProjs[k];
         if(txt.indexOf(p.name) >= 0) return p.name;
       }
-      return '';
+      return pm ? pm[1].trim() : '';
+    }
+
+    // Enrich existing actionObj with extracted date & project if missing
+    if(actionObj){
+      if(!actionObj.date || actionObj.date === '未排期'){
+        var foundDate = extractDate(cleanText) || extractDate(userPromptText);
+        if(foundDate) actionObj.date = foundDate;
+      }
+      if(!actionObj.projectName && !actionObj.project){
+        var foundProj = extractProjectName(cleanText) || extractProjectName(userPromptText);
+        if(foundProj) actionObj.projectName = foundProj;
+      }
     }
 
     // Case 5.1: Create Task (新建/添加任务)
     var isCreateIntent = (uText.indexOf('建') >= 0 || uText.indexOf('加') >= 0 || uText.indexOf('排') >= 0 || uText.indexOf('安排') >= 0 || uText.indexOf('写') >= 0 || uText.indexOf('做') >= 0 || uText.indexOf('提醒') >= 0 || uText.indexOf('日程') >= 0 || uText.indexOf('计划') >= 0) ||
                          (aText.indexOf('建好') >= 0 || aText.indexOf('已添加') >= 0 || aText.indexOf('已为你新建') >= 0 || aText.indexOf('创建好') >= 0 || aText.indexOf('安排在') >= 0 || aText.indexOf('捧在') >= 0 || aText.indexOf('放在') >= 0 || aText.indexOf('加入本周') >= 0);
     
-    if(isCreateIntent && uText.indexOf('删') === -1 && uText.indexOf('清空') === -1 && uText.indexOf('移除') === -1){
+    if(!actionObj && isCreateIntent && uText.indexOf('删') === -1 && uText.indexOf('清空') === -1 && uText.indexOf('移除') === -1){
       var taskTitle = extractQuotedTitle(cleanText) || extractQuotedTitle(userPromptText);
       if(!taskTitle){
         var mTitle = /(?:新建|添加|加一个|建一个|安排|写|做)\s*(?:一个)?\s*([^\s,，。!！]+?)(?:的任务|的日程|卡片|$)/i.exec(userPromptText);
@@ -5801,8 +5915,24 @@ function executeAIAction(actionObj){
       var cleanPName = normStr(pName);
       targetProj = sortedProjects().find(function(p){
         var np = normStr(p.name);
-        return np.indexOf(cleanPName) >= 0 || cleanPName.indexOf(np) >= 0;
+        return np && (np.indexOf(cleanPName) >= 0 || cleanPName.indexOf(np) >= 0);
       });
+      // Auto-create new project column if named project doesn't exist yet
+      if(!targetProj && pName.trim() && pName.trim() !== '项目' && pName.trim() !== 'default'){
+        var activeProjs = sortedProjects();
+        var newProjId = 'p' + uid();
+        var newColor = PALETTE[activeProjs.length % PALETTE.length];
+        var newProj = {
+          id: newProjId,
+          name: pName.trim().replace(/【|】|\[|\]/g, ''),
+          color: newColor,
+          order: activeProjs.length + 1,
+          weekId: wid,
+          context: {}
+        };
+        data.projects.push(newProj);
+        targetProj = newProj;
+      }
     }
     if(!targetProj && (t.projectId || t.project_id)) targetProj = projById(t.projectId || t.project_id);
     if(!targetProj) targetProj = sortedProjects()[0];
@@ -6052,28 +6182,67 @@ async function sendFloatingAIChat(){
   sendBtn.disabled = true;
   sendBtn.innerHTML = '<span style="font-size:0.75rem;">⏳</span>';
   
-  // Create live streaming AI message container
-  var streamObj = createLiveStreamingAIMessage();
+  var abortController = new AbortController();
+  var isAborted = false;
+
+  var handleCancel = function(){
+    isAborted = true;
+    try {
+      abortController.abort();
+    } catch(e){}
+    if(streamObj && streamObj.bubble){
+      streamObj.bubble.innerHTML = '<span style="color:#94a3b8;font-size:0.8rem;font-style:italic;">已取消本次回复 🐾</span>';
+    }
+    sendBtn.disabled = false;
+    sendBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
+  };
+
+  // Create live streaming AI message container with live Thinking Capsule
+  var streamObj = createLiveStreamingAIMessage(handleCancel);
   var bubbleElem = streamObj ? streamObj.bubble : null;
+  var textWrapElem = streamObj ? streamObj.textWrap : null;
+  var capsuleElem = streamObj ? streamObj.capsule : null;
+  var firstChunkReceived = false;
   var body = document.getElementById('aiChatBody');
   
   try {
     var ctxObj = buildAIContext(text, targetProjId);
     
-    var onChunk = function(chunk, cleanStreamText){
-      if(bubbleElem && cleanStreamText){
-        var formatted = cleanStreamText
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-          .replace(/\n/g, '<br/>');
-        bubbleElem.innerHTML = formatted + '<span class="ai-stream-cursor">▍</span>';
-        if(body) body.scrollTop = body.scrollHeight;
+    var onChunk = function(chunk, cleanStreamText, eventType, extra){
+      if(!bubbleElem || isAborted) return;
+
+      if(eventType === 'tool_call'){
+        if(capsuleElem){
+          var txtSpan = capsuleElem.querySelector('.ai-capsule-text');
+          if(txtSpan) txtSpan.textContent = '📅 小咪正在检查日程...';
+        }
+      } else if(eventType === 'thought'){
+        if(capsuleElem){
+          var txtSpan = capsuleElem.querySelector('.ai-capsule-text');
+          if(txtSpan) txtSpan.textContent = '💭 小咪正在思考...';
+        }
+      } else if(eventType === 'message' || cleanStreamText){
+        if(!firstChunkReceived){
+          firstChunkReceived = true;
+          if(capsuleElem) capsuleElem.remove();
+          if(textWrapElem) textWrapElem.style.display = 'block';
+        }
+
+        if(textWrapElem && cleanStreamText){
+          var formatted = cleanStreamText
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+            .replace(/\n/g, '<br/>');
+          textWrapElem.innerHTML = formatted + '<span class="ai-stream-cursor">▍</span>';
+          if(body) body.scrollTop = body.scrollHeight;
+        }
       }
     };
     
-    var rawReply = await callAIServer(ctxObj, onChunk);
+    var rawReply = await callAIServer(ctxObj, onChunk, abortController.signal);
+    if(isAborted) return;
     
     var parsed = parseAndExecuteAIAction(rawReply, text);
     var cleanReply = parsed.cleanText || (parsed.actionResult ? '喵呜~ 已经为你处理好啦！🐾' : '喵呜~ 收到！');
@@ -6087,7 +6256,12 @@ async function sendFloatingAIChat(){
         .replace(/>/g, '&gt;')
         .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
         .replace(/\n/g, '<br/>');
-      bubbleElem.innerHTML = finalFormatted;
+        
+      if(textWrapElem){
+        textWrapElem.innerHTML = finalFormatted;
+      } else {
+        bubbleElem.innerHTML = finalFormatted;
+      }
       
       // Append Action Result Card
       if(parsed.actionResult){
@@ -6135,6 +6309,12 @@ async function sendFloatingAIChat(){
     playSound('chime');
     if(body) body.scrollTop = body.scrollHeight;
   } catch(e) {
+    if(isAborted || (e && (e.name === 'AbortError' || e.message === 'The user aborted a request.'))){
+      if(bubbleElem){
+        bubbleElem.innerHTML = '<span style="color:#94a3b8;font-size:0.8rem;font-style:italic;">已取消本次回复 🐾</span>';
+      }
+      return;
+    }
     if(bubbleElem){
       bubbleElem.innerHTML = '😿 哎呀，遇到了点小状况：' + e.message + '<br/><br/><span style="font-size:0.75rem;color:#94a3b8;">请检查设置中的 API Key 或网络状况。</span>';
     }
@@ -6144,7 +6324,7 @@ async function sendFloatingAIChat(){
   }
 }
 
-function createLiveStreamingAIMessage(){
+function createLiveStreamingAIMessage(onCancel){
   var body = document.getElementById('aiChatBody');
   if(!body) return null;
   
@@ -6159,14 +6339,32 @@ function createLiveStreamingAIMessage(){
   
   var bubble = document.createElement('div');
   bubble.className = 'ai-msg-bubble';
-  bubble.innerHTML = '<span style="color:#64748b;font-style:italic;">正在思考并组织回答...🐾</span>';
+  
+  var capsule = document.createElement('div');
+  capsule.className = 'ai-thinking-capsule';
+  capsule.innerHTML = '<span class="ai-pulse-dot"></span><span class="ai-capsule-text">💭 小咪正在思考...</span><button class="ai-capsule-cancel-btn" title="取消本次回复">✕ 取消</button>';
+  
+  var cancelBtn = capsule.querySelector('.ai-capsule-cancel-btn');
+  if(cancelBtn && onCancel){
+    cancelBtn.onclick = function(e){
+      e.stopPropagation();
+      onCancel();
+    };
+  }
+  
+  var textWrap = document.createElement('div');
+  textWrap.className = 'ai-stream-text-wrap';
+  textWrap.style.display = 'none';
+  
+  bubble.appendChild(capsule);
+  bubble.appendChild(textWrap);
   
   row.appendChild(avatar);
   row.appendChild(bubble);
   body.appendChild(row);
   body.scrollTop = body.scrollHeight;
   
-  return { id: id, row: row, bubble: bubble };
+  return { id: id, row: row, bubble: bubble, capsule: capsule, textWrap: textWrap };
 }
 
 function renderChatMessageElement(role, content, actionResult, isReview, originalUserText){

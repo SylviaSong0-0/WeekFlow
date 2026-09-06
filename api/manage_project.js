@@ -48,8 +48,7 @@ export default function handler(req, res) {
     return res.status(200).json({
       success: true,
       message: `已创建项目分类: ${name}`,
-      actionResult: { action: 'create_project', project: newProj },
-      data: userData
+      actionResult: { action: 'create_project', id: newProj.id, name: newProj.name, color: newProj.color }
     });
   }
 
@@ -64,15 +63,13 @@ export default function handler(req, res) {
       return res.status(200).json({
         success: true,
         message: `已更新项目: ${proj.name}`,
-        actionResult: { action: 'update_project', project: proj },
-        data: userData
+        actionResult: { action: 'update_project', id: proj.id, name: proj.name, color: proj.color }
       });
     }
   }
 
   return res.status(200).json({
     success: true,
-    message: `Project action accepted: ${act}`,
-    data: userData
+    message: `Project action accepted: ${act}`
   });
 }

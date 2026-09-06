@@ -44,8 +44,7 @@ export default function handler(req, res) {
     return res.status(200).json({
       success: true,
       message: `已为用户 ${userId} 创建卡片: ${title}`,
-      actionResult: { action: 'create_task', task: newTask },
-      data: userData
+      actionResult: { action: 'create_task', id: newTask.id, title: newTask.title, date: newTask.date, projectName: newTask.projectName }
     });
   }
 
@@ -64,8 +63,7 @@ export default function handler(req, res) {
       return res.status(200).json({
         success: true,
         message: `已更新卡片: ${task.title}`,
-        actionResult: { action: 'update_task', task: task },
-        data: userData
+        actionResult: { action: 'update_task', id: task.id, title: task.title, date: task.date, projectName: task.projectName, status: task.status }
       });
     }
   }
@@ -79,8 +77,7 @@ export default function handler(req, res) {
     return res.status(200).json({
       success: true,
       message: `已删除卡片: ${title}`,
-      actionResult: { action: 'delete_task', deleted: userData.tasks.length < initialCount },
-      data: userData
+      actionResult: { action: 'delete_task', deleted: userData.tasks.length < initialCount }
     });
   }
 
@@ -91,14 +88,12 @@ export default function handler(req, res) {
     return res.status(200).json({
       success: true,
       message: `已清空全部卡片`,
-      actionResult: { action: 'clear_tasks' },
-      data: userData
+      actionResult: { action: 'clear_tasks' }
     });
   }
 
   return res.status(200).json({
     success: true,
-    message: `Action accepted: ${act}`,
-    data: userData
+    message: `Action accepted: ${act}`
   });
 }
