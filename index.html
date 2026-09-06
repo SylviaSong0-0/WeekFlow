@@ -5252,11 +5252,6 @@ async function callAIServer(promptObj, onChunk, signal){
     var projsCtx = (promptObj.difyInputs && promptObj.difyInputs.projects_context) ? promptObj.difyInputs.projects_context : '';
     var tasksCtx = (promptObj.difyInputs && promptObj.difyInputs.tasks_context) ? promptObj.difyInputs.tasks_context : '';
 
-    var enrichedQuery = '【系统实时时间上下文】: ' + todayInfo + '\n' +
-                        '【用户现有全部项目列表】:\n' + projsCtx + '\n' +
-                        '【本周任务全景进度】:\n' + tasksCtx + '\n\n' +
-                        '用户指令: ' + promptObj.user;
-    
     function getWeekFlowUserId(){
       var uid = localStorage.getItem('weekflow_user_id');
       if(!uid){
@@ -5269,7 +5264,7 @@ async function callAIServer(promptObj, onChunk, signal){
     var uid = getWeekFlowUserId();
     var payload = {
       inputs: Object.assign({}, promptObj.difyInputs || {}, { userId: uid }),
-      query: enrichedQuery,
+      query: promptObj.user,
       response_mode: "streaming",
       user: uid,
       conversation_id: data.difyConversationId || ""
