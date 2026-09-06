@@ -5545,57 +5545,59 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
     }
   }
 
+  var dates = getWeekDates();
+  var todayObj = new Date();
+  var todayStr = todayObj.getFullYear() + '-' + ((todayObj.getMonth()+1)<10?'0':'') + (todayObj.getMonth()+1) + '-' + (todayObj.getDate()<10?'0':'') + todayObj.getDate();
+
+  function extractDate(txt){
+    if(!txt) return '';
+    var isoM = /\b(\d{4}-\d{2}-\d{2})\b/.exec(txt);
+    if(isoM) return isoM[1];
+    
+    // Match M月D日 (e.g., 9月5日)
+    var mdM = /(\d{1,2})月(\d{1,2})日/.exec(txt);
+    if(mdM){
+      var mNum = parseInt(mdM[1], 10);
+      var dNum = parseInt(mdM[2], 10);
+      for(var k = 0; k < dates.length; k++){
+        if(dates[k].month === mNum && dates[k].num === dNum) return dates[k].date;
+      }
+    }
+    
+    // Match weekday names (周一 ~ 周日, 星期一 ~ 星期日)
+    var lastMatchedDate = '';
+    var maxPos = -1;
+    for(var j = 0; j < dates.length; j++){
+      var d = dates[j];
+      var pos1 = txt.lastIndexOf(d.weekday);
+      var pos2 = txt.lastIndexOf(d.weekday.replace('周','星期'));
+      var p = Math.max(pos1, pos2);
+      if(p > maxPos){
+        maxPos = p;
+        lastMatchedDate = d.date;
+      }
+    }
+    if(lastMatchedDate) return lastMatchedDate;
+
+    // Match relative day keywords (今天, 明天, 后天, 大后天, 昨晚, 今晚, 下午, 早上)
+    function getOffsetDate(offset){
+      var dt = new Date(todayObj.getTime() + offset * 86400000);
+      return dt.getFullYear() + '-' + ((dt.getMonth()+1)<10?'0':'') + (dt.getMonth()+1) + '-' + (dt.getDate()<10?'0':'') + dt.getDate();
+    }
+    if(txt.indexOf('大后天') >= 0) return getOffsetDate(3);
+    if(txt.indexOf('后天') >= 0) return getOffsetDate(2);
+    if(txt.indexOf('明天') >= 0 || txt.indexOf('明早') >= 0 || txt.indexOf('明晚') >= 0) return getOffsetDate(1);
+    if(txt.indexOf('今天') >= 0 || txt.indexOf('今晚') >= 0 || txt.indexOf('今早') >= 0 || txt.indexOf('下午') >= 0 || txt.indexOf('上午') >= 0 || txt.indexOf('晚上') >= 0 || txt.indexOf('中午') >= 0){
+      return getOffsetDate(0);
+    }
+
+    return '';
+  }
+
   // Pattern 5: Full Semantic Confirmation Fallback (Multi-turn Safety Net)
   if(!actionObj && cleanText){
     var uText = (userPromptText || '').toLowerCase();
     var aText = cleanText.toLowerCase();
-    var dates = getWeekDates();
-
-    function extractDate(txt){
-      if(!txt) return '';
-      var isoM = /\b(\d{4}-\d{2}-\d{2})\b/.exec(txt);
-      if(isoM) return isoM[1];
-      
-      // Match M月D日 (e.g., 9月5日)
-      var mdM = /(\d{1,2})月(\d{1,2})日/.exec(txt);
-      if(mdM){
-        var mNum = parseInt(mdM[1], 10);
-        var dNum = parseInt(mdM[2], 10);
-        for(var k = 0; k < dates.length; k++){
-          if(dates[k].month === mNum && dates[k].num === dNum) return dates[k].date;
-        }
-      }
-      
-      // Match weekday names (周一 ~ 周日, 星期一 ~ 星期日)
-      var lastMatchedDate = '';
-      var maxPos = -1;
-      for(var j = 0; j < dates.length; j++){
-        var d = dates[j];
-        var pos1 = txt.lastIndexOf(d.weekday);
-        var pos2 = txt.lastIndexOf(d.weekday.replace('周','星期'));
-        var p = Math.max(pos1, pos2);
-        if(p > maxPos){
-          maxPos = p;
-          lastMatchedDate = d.date;
-        }
-      }
-      if(lastMatchedDate) return lastMatchedDate;
-
-      // Match relative day keywords (今天, 明天, 后天, 大后天, 昨晚, 今晚, 下午, 早上)
-      var todayObj = new Date();
-      function getOffsetDate(offset){
-        var dt = new Date(todayObj.getTime() + offset * 86400000);
-        return dt.getFullYear() + '-' + ((dt.getMonth()+1)<10?'0':'') + (dt.getMonth()+1) + '-' + (dt.getDate()<10?'0':'') + dt.getDate();
-      }
-      if(txt.indexOf('大后天') >= 0) return getOffsetDate(3);
-      if(txt.indexOf('后天') >= 0) return getOffsetDate(2);
-      if(txt.indexOf('明天') >= 0 || txt.indexOf('明早') >= 0 || txt.indexOf('明晚') >= 0) return getOffsetDate(1);
-      if(txt.indexOf('今天') >= 0 || txt.indexOf('今晚') >= 0 || txt.indexOf('今早') >= 0 || txt.indexOf('下午') >= 0 || txt.indexOf('上午') >= 0 || txt.indexOf('晚上') >= 0 || txt.indexOf('中午') >= 0){
-        return getOffsetDate(0);
-      }
-
-      return '';
-    }
 
     function extractQuotedTitle(txt){
       if(!txt) return '';
