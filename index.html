@@ -200,6 +200,180 @@ input,select,textarea{font-family:inherit}
   border-color: #2563eb !important;
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
 }
+
+/* ===== 小纸条 Gallery & Capsule Tabs ===== */
+.journal-nav-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.journal-tab-pill {
+  padding: 0.45rem 1.35rem;
+  border-radius: 9999px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: #e2e8f0;
+  color: #475569;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  user-select: none;
+  font-family: inherit;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+.journal-tab-pill:hover {
+  background: #cbd5e1;
+  color: #1e293b;
+  transform: translateY(-1px);
+}
+.journal-tab-pill.active {
+  background: #475569;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(71, 85, 105, 0.28);
+}
+.journal-tab-pill .pill-count {
+  font-size: 0.72rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.08);
+  font-weight: 700;
+}
+.journal-tab-pill.active .pill-count {
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+
+/* Gallery Grid */
+.journal-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+}
+
+/* Sticky Note Cards */
+.sticky-note-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1.15rem;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 220px;
+  max-height: 340px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+.sticky-note-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.1), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
+}
+
+/* Sticky Note Style Variants */
+.sticky-note-card.note-memo {
+  background: #fffdf5;
+  border-color: #fef08a;
+  box-shadow: 0 3px 10px rgba(234, 179, 8, 0.06), 0 1px 2px rgba(234, 179, 8, 0.04);
+}
+.sticky-note-card.note-memo:hover {
+  border-color: #fde047;
+  box-shadow: 0 12px 28px -4px rgba(234, 179, 8, 0.18), 0 4px 10px -2px rgba(234, 179, 8, 0.08);
+}
+
+.sticky-note-card.note-review {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+}
+.sticky-note-card.note-review:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 12px 28px -4px rgba(59, 130, 246, 0.12), 0 4px 10px -2px rgba(59, 130, 246, 0.04);
+}
+
+/* Note Top Header */
+.sticky-note-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  flex-shrink: 0;
+}
+.sticky-note-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.sticky-note-time {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+.sticky-note-del {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  opacity: 0.4;
+}
+.sticky-note-card:hover .sticky-note-del {
+  opacity: 1;
+}
+.sticky-note-del:hover {
+  color: #ef4444;
+  background: #fef2f2;
+}
+
+/* Note Content Area */
+.sticky-note-body {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 2px;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: #334155;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.sticky-note-body::-webkit-scrollbar {
+  width: 4px;
+}
+.sticky-note-body::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.12);
+  border-radius: 4px;
+}
+
+/* Review Prompt & Mascot Excerpt */
+.sticky-review-prompt {
+  font-size: 0.78rem;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  margin-bottom: 0.6rem;
+  border-left: 2.5px solid #94a3b8;
+}
+.sticky-review-reply {
+  font-size: 0.84rem;
+  color: #1e293b;
+  line-height: 1.55;
+}
+
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#ffffff}
 
 /* Header & View Tabs (Feishu / macOS Segmented Control style) */
@@ -1676,23 +1850,15 @@ input,select,textarea{font-family:inherit}
     </div>
 
     
-    <!-- Journal View -->
-    <div class="journal-wrap" id="journalView" style="display: none; flex: 1; flex-direction: column; overflow-y: auto; padding: 1.5rem; background: #f8fafc;">
-      <div style="max-width: 860px; margin: 0 auto; width: 100%;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; background: #ffffff; padding: 1rem 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
-          <div>
-            <h2 style="font-size: 1.15rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
-              <span>📝 小纸条</span>
-            </h2>
-            <p style="font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;">收纳你的灵感便签、闪念备忘与周度复盘记忆</p>
-          </div>
-          <div style="display: flex; gap: 0.4rem;" id="journalFilterWrap">
-            <!-- Filter tags injected by JS -->
-          </div>
+    <!-- Journal View (小纸条) -->
+    <div class="journal-wrap" id="journalView" style="display: none; flex: 1; flex-direction: column; overflow-y: auto; padding: 1.5rem 2rem; background: #f8fafc;">
+      <div style="max-width: 1400px; margin: 0 auto; width: 100%;">
+        <div class="journal-nav-bar" id="journalFilterWrap">
+          <!-- Capsule Tab pills injected by JS -->
         </div>
 
-        <div id="journalList" style="display: flex; flex-direction: column; gap: 1rem;">
-          <!-- Journal Cards injected by JS -->
+        <div id="journalList" class="journal-gallery">
+          <!-- Sticky Note Cards injected by JS -->
         </div>
       </div>
     </div>
@@ -6849,6 +7015,16 @@ function archiveReviewToJournal(userText, aiReply, tag, btnElem){
   });
 }
 
+function isItemInCurrentWeek(j){
+  if(j.weekId && j.weekId === currentWeekId()) return true;
+  if(j.timestamp){
+    var itemDate = formatLocalDate(new Date(j.timestamp));
+    var curDates = weekDates().map(function(d){ return d.date; });
+    return curDates.indexOf(itemDate) >= 0;
+  }
+  return false;
+}
+
 // ============================================================
 //  RENDER JOURNAL / MEMORY VIEW (3rd TAB)
 // ============================================================
@@ -6858,67 +7034,51 @@ function renderJournalView(){
   if(!container || !filterWrap) return;
   
   var allJournals = getJournals();
+  if(!activeJournalFilter || ['all', 'this_week', 'memo', 'review'].indexOf(activeJournalFilter) < 0){
+    activeJournalFilter = 'all';
+  }
 
-  // Render Filters
+  var countAll = allJournals.length;
+  var countThisWeek = allJournals.filter(function(j){ return isItemInCurrentWeek(j); }).length;
+  var countMemo = allJournals.filter(function(j){ return j.type === 'memo' || (!j.aiResponse && (!j.tags || j.tags.includes('备忘便签'))); }).length;
+  var countReview = allJournals.filter(function(j){ return j.type === 'review' || j.aiResponse; }).length;
+
+  // Render 4 Main Capsule Tabs (as requested: 全部, 本周小纸条, 备忘小纸条, 周度复盘)
   filterWrap.innerHTML = '';
-  var allTag = document.createElement('button');
-  allTag.className = 'btn' + (activeJournalFilter==='all'?' btn-primary':'');
-  allTag.style.fontSize = '0.75rem';
-  allTag.style.padding = '0.25rem 0.6rem';
-  allTag.textContent = '全部小纸条 (' + allJournals.length + ')';
-  allTag.onclick = function(){ activeJournalFilter = 'all'; renderJournalView(); };
-  filterWrap.appendChild(allTag);
+  var tabsData = [
+    { key: 'all', label: '全部', count: countAll },
+    { key: 'this_week', label: '本周小纸条', count: countThisWeek },
+    { key: 'memo', label: '备忘小纸条', count: countMemo },
+    { key: 'review', label: '周度复盘', count: countReview }
+  ];
 
-  var memoCount = allJournals.filter(function(j){ return j.type === 'memo' || (!j.aiResponse && (!j.tags || j.tags.includes('备忘便签'))); }).length;
-  if(memoCount > 0){
-    var memoBtn = document.createElement('button');
-    memoBtn.className = 'btn' + (activeJournalFilter==='memo'?' btn-primary':'');
-    memoBtn.style.fontSize = '0.75rem';
-    memoBtn.style.padding = '0.25rem 0.6rem';
-    memoBtn.textContent = '📝 备忘便签 (' + memoCount + ')';
-    memoBtn.onclick = function(){ activeJournalFilter = 'memo'; renderJournalView(); };
-    filterWrap.appendChild(memoBtn);
-  }
-
-  var reviewCount = allJournals.filter(function(j){ return j.type === 'review' || j.aiResponse; }).length;
-  if(reviewCount > 0){
-    var revBtn = document.createElement('button');
-    revBtn.className = 'btn' + (activeJournalFilter==='review'?' btn-primary':'');
-    revBtn.style.fontSize = '0.75rem';
-    revBtn.style.padding = '0.25rem 0.6rem';
-    revBtn.textContent = '📖 周度复盘 (' + reviewCount + ')';
-    revBtn.onclick = function(){ activeJournalFilter = 'review'; renderJournalView(); };
-    filterWrap.appendChild(revBtn);
-  }
-  
-  sortedProjects().forEach(function(p){
-    var pCount = allJournals.filter(function(j){ return j.projectId === p.id; }).length;
-    if(pCount > 0){
-      var btn = document.createElement('button');
-      btn.className = 'btn' + (activeJournalFilter===p.id?' btn-primary':'');
-      btn.style.fontSize = '0.75rem';
-      btn.style.padding = '0.25rem 0.6rem';
-      btn.innerHTML = '<span style="width:6px;height:6px;border-radius:50%;background:'+p.color+';display:inline-block;margin-right:4px;"></span>' + p.name + ' (' + pCount + ')';
-      btn.onclick = function(){ activeJournalFilter = p.id; renderJournalView(); };
-      filterWrap.appendChild(btn);
-    }
+  tabsData.forEach(function(t){
+    var pill = document.createElement('button');
+    pill.className = 'journal-tab-pill' + (activeJournalFilter === t.key ? ' active' : '');
+    pill.innerHTML = '<span>' + t.label + '</span><span class="pill-count">' + t.count + '</span>';
+    pill.onclick = function(){
+      activeJournalFilter = t.key;
+      renderJournalView();
+    };
+    filterWrap.appendChild(pill);
   });
-  
+
   // Filter Journals
   var journals = allJournals.filter(function(j){
     if(activeJournalFilter === 'all') return true;
+    if(activeJournalFilter === 'this_week') return isItemInCurrentWeek(j);
     if(activeJournalFilter === 'memo') return j.type === 'memo' || (!j.aiResponse && (!j.tags || j.tags.includes('备忘便签')));
     if(activeJournalFilter === 'review') return j.type === 'review' || j.aiResponse;
-    return j.projectId === activeJournalFilter;
+    return true;
   });
   
   container.innerHTML = '';
   
   if(journals.length === 0){
     container.innerHTML = `
-      <div style="text-align:center;padding:3.5rem 1rem;color:#94a3b8;font-size:0.88rem;background:#fff;border-radius:12px;border:1px solid #e2e8f0;">
-        <div style="font-size:2.2rem;margin-bottom:0.6rem;">📝</div>
-        <div style="font-weight:600;color:#475569;margin-bottom:0.3rem;">暂无小纸条</div>
+      <div style="grid-column: 1 / -1; text-align:center; padding:4rem 1rem; color:#94a3b8; font-size:0.88rem; background:#ffffff; border-radius:14px; border:1px solid #e2e8f0; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
+        <div style="font-size:2.4rem; margin-bottom:0.6rem;">📝</div>
+        <div style="font-weight:600; color:#475569; margin-bottom:0.35rem; font-size:0.95rem;">暂无小纸条</div>
         <div>在左侧备忘录点击<b>【📥 存入小纸条】</b>，或在右下角 <b>🐱 伴跑助手</b> 复盘后一键存入！</div>
       </div>
     `;
@@ -6929,67 +7089,53 @@ function renderJournalView(){
     var isMemo = (j.type === 'memo') || (!j.aiResponse && (!j.tags || j.tags.includes('备忘便签')));
     var card = document.createElement('div');
     card.dataset.journalId = j.id;
-    card.style.background = '#ffffff';
-    card.style.borderRadius = '12px';
-    card.style.border = isMemo ? '1px solid #fde047' : '1px solid #e2e8f0';
-    card.style.padding = '1.25rem';
-    card.style.boxShadow = isMemo ? '0 2px 8px rgba(234,179,8,0.06)' : '0 1px 3px rgba(0,0,0,0.02)';
-    card.style.display = 'flex';
-    card.style.flexDirection = 'column';
-    card.style.gap = '0.8rem';
-    card.style.transition = 'all 0.2s ease';
+    card.className = 'sticky-note-card ' + (isMemo ? 'note-memo' : 'note-review');
     
-    // Header (Time + Tag + Delete)
+    // Header (Tag + Time + Delete)
     var head = document.createElement('div');
-    head.style.display = 'flex';
-    head.style.alignItems = 'center';
-    head.style.justifyContent = 'space-between';
-    
-    var timeSpan = document.createElement('span');
-    timeSpan.style.fontSize = '0.72rem';
-    timeSpan.style.color = '#94a3b8';
-    timeSpan.style.fontWeight = '500';
-    var dt = new Date(j.timestamp);
-    timeSpan.textContent = dt.getFullYear() + '-' + (dt.getMonth()+1) + '-' + dt.getDate() + ' ' + (dt.getHours()<10?'0':'')+dt.getHours() + ':' + (dt.getMinutes()<10?'0':'')+dt.getMinutes();
+    head.className = 'sticky-note-head';
     
     var tagSpan = document.createElement('span');
-    tagSpan.style.fontSize = '0.72rem';
-    tagSpan.style.padding = '0.18rem 0.55rem';
-    tagSpan.style.borderRadius = '12px';
-    tagSpan.style.fontWeight = '600';
+    tagSpan.className = 'sticky-note-tag';
     
     if (isMemo) {
       tagSpan.style.background = '#fef3c7';
       tagSpan.style.color = '#92400e';
-      tagSpan.textContent = '📝 备忘便签';
+      tagSpan.innerHTML = '📝 备忘';
     } else if (j.projectId && projById(j.projectId)){
       var p = projById(j.projectId);
-      tagSpan.style.background = hexToRgba(p.color, 0.15);
+      tagSpan.style.background = hexToRgba(p.color, 0.16);
       tagSpan.style.color = '#1e293b';
       tagSpan.textContent = '@' + p.name;
     } else {
       tagSpan.style.background = '#eff6ff';
       tagSpan.style.color = '#1d4ed8';
-      tagSpan.textContent = j.tags && j.tags[0] ? j.tags[0] : '周度复盘';
+      tagSpan.innerHTML = '📖 复盘';
     }
+    
+    var timeSpan = document.createElement('span');
+    timeSpan.className = 'sticky-note-time';
+    var dt = new Date(j.timestamp);
+    var monthStr = (dt.getMonth() + 1);
+    var dateStr = dt.getDate();
+    var hourStr = (dt.getHours() < 10 ? '0' : '') + dt.getHours();
+    var minStr = (dt.getMinutes() < 10 ? '0' : '') + dt.getMinutes();
+    timeSpan.textContent = monthStr + '/' + dateStr + ' ' + hourStr + ':' + minStr;
     
     var leftWrap = document.createElement('div');
     leftWrap.style.display = 'flex';
     leftWrap.style.alignItems = 'center';
-    leftWrap.style.gap = '0.5rem';
+    leftWrap.style.gap = '0.45rem';
     leftWrap.appendChild(tagSpan);
     leftWrap.appendChild(timeSpan);
     
     var delBtn = document.createElement('button');
-    delBtn.style.background = 'none';
-    delBtn.style.border = 'none';
-    delBtn.style.color = '#94a3b8';
-    delBtn.style.cursor = 'pointer';
-    delBtn.style.fontSize = '0.8rem';
+    delBtn.className = 'sticky-note-del';
     delBtn.title = '删除此条小纸条';
     delBtn.textContent = '🗑';
-    delBtn.onclick = function(){
-      showConfirm('删除记录', '确定删除这条小纸条吗？', function(yes){
+    delBtn.onclick = function(e){
+      e.stopPropagation();
+      showConfirm('删除确认', '确定删除这条小纸条吗？', function(yes){
         if(yes){
           data.journals = data.journals.filter(function(item){ return item.id !== j.id; });
           save(data);
@@ -7002,63 +7148,33 @@ function renderJournalView(){
     head.appendChild(delBtn);
     card.appendChild(head);
     
+    // Body Content
+    var bodyDiv = document.createElement('div');
+    bodyDiv.className = 'sticky-note-body';
+    
     if (isMemo) {
-      // Memo Content
-      var memoBody = document.createElement('div');
-      memoBody.style.background = '#fefce8';
-      memoBody.style.border = '1px solid #fef08a';
-      memoBody.style.borderRadius = '8px';
-      memoBody.style.padding = '0.85rem 1rem';
-      memoBody.style.fontSize = '0.86rem';
-      memoBody.style.color = '#713f12';
-      memoBody.style.lineHeight = '1.6';
-      memoBody.style.whiteSpace = 'pre-wrap';
-      memoBody.style.wordBreak = 'break-word';
-      memoBody.textContent = j.content || j.userContent || '';
-      card.appendChild(memoBody);
+      bodyDiv.textContent = j.content || j.userContent || '';
     } else {
-      // User Quote
       if (j.userContent) {
-        var userBubble = document.createElement('div');
-        userBubble.style.background = '#f8fafc';
-        userBubble.style.borderLeft = '3px solid #cbd5e1';
-        userBubble.style.padding = '0.65rem 0.85rem';
-        userBubble.style.borderRadius = '0 8px 8px 0';
-        userBubble.style.fontSize = '0.84rem';
-        userBubble.style.color = '#334155';
-        userBubble.style.lineHeight = '1.5';
-        userBubble.textContent = j.userContent;
-        card.appendChild(userBubble);
+        var userPrompt = document.createElement('div');
+        userPrompt.className = 'sticky-review-prompt';
+        userPrompt.textContent = j.userContent;
+        bodyDiv.appendChild(userPrompt);
       }
-      
-      // AI Response Card
       if (j.aiResponse) {
-        var aiBox = document.createElement('div');
-        aiBox.style.background = 'linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%)';
-        aiBox.style.border = '1px solid #dbeafe';
-        aiBox.style.borderRadius = '8px';
-        aiBox.style.padding = '0.85rem 1rem';
-        aiBox.style.display = 'flex';
-        aiBox.style.gap = '0.75rem';
-        
-        var icon = document.createElement('div');
-        icon.style.fontSize = '1.2rem';
-        icon.textContent = '🐱';
-        
-        var textDiv = document.createElement('div');
-        textDiv.style.flex = '1';
-        textDiv.style.fontSize = '0.84rem';
-        textDiv.style.color = '#1e293b';
-        textDiv.style.lineHeight = '1.6';
-        textDiv.style.whiteSpace = 'pre-wrap';
-        textDiv.textContent = j.aiResponse;
-        
-        aiBox.appendChild(icon);
-        aiBox.appendChild(textDiv);
-        card.appendChild(aiBox);
+        var aiReplyDiv = document.createElement('div');
+        aiReplyDiv.className = 'sticky-review-reply';
+        aiReplyDiv.innerHTML = '<span style="font-size:1.05rem; margin-right:4px;">🐱</span>' + j.aiResponse
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+          .replace(/\n/g, '<br/>');
+        bodyDiv.appendChild(aiReplyDiv);
       }
     }
     
+    card.appendChild(bodyDiv);
     container.appendChild(card);
   });
 }
