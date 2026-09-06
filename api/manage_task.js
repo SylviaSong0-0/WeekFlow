@@ -28,12 +28,36 @@ export default function handler(req, res) {
 
   console.log(`[BFF Task] User: ${userId} | Action: ${act} | Title: ${title} | Date: ${date} | Proj: ${projectName}`);
 
+  // 1.0 BATCH CREATE TASKS
+  if (Array.isArray(body.tasks) && body.tasks.length > 0) {
+    const created = [];
+    body.tasks.forEach(t => {
+      const newTask = {
+        id: 't_' + Math.random().toString(36).substring(2, 7),
+        title: t.title || t.name || '新任务',
+        date: t.date || date || '2026-09-06',
+        projectName: t.projectName || t.project || projectName || '工作',
+        startTime: t.startTime || '',
+        endTime: t.endTime || '',
+        status: t.status || 'todo'
+      };
+      userData.tasks.push(newTask);
+      created.push(newTask);
+    });
+    setUserStore(userId, userData);
+    return res.status(200).json({
+      success: true,
+      message: `已为用户 ${userId} 批量创建 ${created.length} 张卡片`,
+      actionResult: { action: 'batch_create_tasks', count: created.length, tasks: created }
+    });
+  }
+
   // 1. CREATE TASK
   if (act === 'create_task' || act === 'create' || act === 'add') {
     const newTask = {
       id: 't_' + Math.random().toString(36).substring(2, 7),
       title: title,
-      date: date || '2026-09-04',
+      date: date || '2026-09-06',
       projectName: projectName,
       startTime: startTime,
       endTime: endTime,
