@@ -5567,7 +5567,6 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
       }
       
       // Match weekday names (周一 ~ 周日, 星期一 ~ 星期日)
-      // Check in reverse order or match based on appearance in text to respect final correction
       var lastMatchedDate = '';
       var maxPos = -1;
       for(var j = 0; j < dates.length; j++){
@@ -5581,6 +5580,20 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
         }
       }
       if(lastMatchedDate) return lastMatchedDate;
+
+      // Match relative day keywords (今天, 明天, 后天, 大后天, 昨晚, 今晚, 下午, 早上)
+      var todayObj = new Date();
+      function getOffsetDate(offset){
+        var dt = new Date(todayObj.getTime() + offset * 86400000);
+        return dt.getFullYear() + '-' + ((dt.getMonth()+1)<10?'0':'') + (dt.getMonth()+1) + '-' + (dt.getDate()<10?'0':'') + dt.getDate();
+      }
+      if(txt.indexOf('大后天') >= 0) return getOffsetDate(3);
+      if(txt.indexOf('后天') >= 0) return getOffsetDate(2);
+      if(txt.indexOf('明天') >= 0 || txt.indexOf('明早') >= 0 || txt.indexOf('明晚') >= 0) return getOffsetDate(1);
+      if(txt.indexOf('今天') >= 0 || txt.indexOf('今晚') >= 0 || txt.indexOf('今早') >= 0 || txt.indexOf('下午') >= 0 || txt.indexOf('上午') >= 0 || txt.indexOf('晚上') >= 0 || txt.indexOf('中午') >= 0){
+        return getOffsetDate(0);
+      }
+
       return '';
     }
 
