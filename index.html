@@ -5248,8 +5248,9 @@ async function callAIServer(promptObj, onChunk, signal){
     var baseUrl = (cfg.difyEndpoint || 'https://api.dify.ai/v1').replace(/\/+$/, '');
     var endpoint = baseUrl + '/chat-messages';
     
-    // Streamlined query: pass pure user text since all contexts are structured in inputs
-    var enrichedQuery = promptObj.user;
+    // Concise base anchor to prevent DeepSeek reasoning loops while keeping tokens minimal
+    var todayInfo = (promptObj.difyInputs && promptObj.difyInputs.today_info) ? promptObj.difyInputs.today_info : '';
+    var enrichedQuery = (todayInfo ? '【当前系统时间: ' + todayInfo + '】\n' : '') + promptObj.user;
     
     function getWeekFlowUserId(){
       var uid = localStorage.getItem('weekflow_user_id');
