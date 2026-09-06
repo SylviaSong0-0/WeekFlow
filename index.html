@@ -5248,9 +5248,14 @@ async function callAIServer(promptObj, onChunk, signal){
     var baseUrl = (cfg.difyEndpoint || 'https://api.dify.ai/v1').replace(/\/+$/, '');
     var endpoint = baseUrl + '/chat-messages';
     
-    // Concise base anchor to prevent DeepSeek reasoning loops while keeping tokens minimal
     var todayInfo = (promptObj.difyInputs && promptObj.difyInputs.today_info) ? promptObj.difyInputs.today_info : '';
-    var enrichedQuery = (todayInfo ? '【当前系统时间: ' + todayInfo + '】\n' : '') + promptObj.user;
+    var projsCtx = (promptObj.difyInputs && promptObj.difyInputs.projects_context) ? promptObj.difyInputs.projects_context : '';
+    var tasksCtx = (promptObj.difyInputs && promptObj.difyInputs.tasks_context) ? promptObj.difyInputs.tasks_context : '';
+
+    var enrichedQuery = '【系统实时时间上下文】: ' + todayInfo + '\n' +
+                        '【用户现有全部项目列表】:\n' + projsCtx + '\n' +
+                        '【本周任务全景进度】:\n' + tasksCtx + '\n\n' +
+                        '用户指令: ' + promptObj.user;
     
     function getWeekFlowUserId(){
       var uid = localStorage.getItem('weekflow_user_id');
