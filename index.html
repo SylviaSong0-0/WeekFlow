@@ -5799,13 +5799,18 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
       }
     }
 
-    // 2. Quote + Project pattern: e.g. "「写手帐」我放进了【景躁兔老师】，「做瑜伽」...归入【运动】"
-    var quoteProjRegex = /[「『“"']([^」』”"'\n]{2,25})[」』”"']\s*(?:我)?(?:放进了|放进|归入|放入|归到|放到|则放进)\s*【([^】]+)】/g;
-    while((m = quoteProjRegex.exec(text)) !== null){
-      var tTitle = cleanTaskTitle(m[1]);
+    // 2. Quote + Project pattern (Supports multiple quotes like 「改简历」和「做瑜伽」放在【找工作】)
+    var multiQuoteProjRegex = /((?:[「『“"'][^」』”"'\n]{2,25}[」』”"']\s*(?:和|与|及|、|\s+)?)+)\s*(?:我)?(?:放进了|放进|归入|放入|归到|放到|则放进|放在)\s*【([^】]+)】/g;
+    while((m = multiQuoteProjRegex.exec(text)) !== null){
+      var quoteBlock = m[1];
       var tProj = m[2].replace(/项目/g, '').replace(/[\*【】]/g, '').trim();
-      if(!tasks.some(function(x){ return x.title === tTitle; })){
-        tasks.push({ action: 'create_task', title: tTitle, projectName: tProj, date: defaultDate });
+      var singleQM;
+      var qRegex = /[「『“"']([^」』”"'\n]{2,25})[」』”"']/g;
+      while((singleQM = qRegex.exec(quoteBlock)) !== null){
+        var tTitle = cleanTaskTitle(singleQM[1]);
+        if(tTitle && !tasks.some(function(x){ return x.title === tTitle; })){
+          tasks.push({ action: 'create_task', title: tTitle, projectName: tProj, date: defaultDate });
+        }
       }
     }
 
@@ -5814,9 +5819,39 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
     while((m = parenRegex.exec(text)) !== null){
       var pTitle = cleanTaskTitle(m[1]);
       var pProj = m[2].replace(/项目/g, '').replace(/[\*【】]/g, '').trim();
-      if(pTitle && pProj && pTitle.length <= 25 && pProj.length <= 20 && pTitle !== '今天' && pTitle !== '本周' && pTitle !== '三件事' && pTitle !== '事项'){
+      if(pTitle && pProj && pTitle.length <= 25 && pProj.length <= 20 && pTitle !== '今天' && pTitle !== '本周' && pTitle !== '三件事' && pTitle !== '三项任务' && pTitle !== '事项'){
         if(!tasks.some(function(x){ return x.title === pTitle; })){
           tasks.push({ action: 'create_task', title: pTitle, projectName: pProj, date: defaultDate });
+        }
+      }
+    }
+
+    // 4. Fallback from User Prompt Comma/Pause Enumeration (e.g. 用户说 "我要改简历、买菜、做瑜伽")
+    if(tasks.length <= 1 && userPromptText){
+      var rawSplits = userPromptText.replace(/^(?:今天|明天|后天|我要|帮我|安排|计划|做)+/g, '').split(/[、，,\n]|以及|还有|和/);
+      if(rawSplits.length >= 2){
+        var splitTasks = [];
+        var activeProjs = sortedProjects();
+        for(var si = 0; si < rawSplits.length; si++){
+          var st = cleanTaskTitle(rawSplits[si]);
+          if(st && st.length >= 2 && st.length <= 20 && st !== '今天' && st !== '本周' && st !== '任务'){
+            // Auto match project affinity
+            var bestP = '其他';
+            for(var pi = 0; pi < activeProjs.length; pi++){
+              var ap = activeProjs[pi];
+              if(st.indexOf(ap.name) >= 0 || (ap.name === '找工作' && (st.indexOf('简历') >= 0 || st.indexOf('面试') >= 0)) ||
+                 ((ap.name === '运动' || ap.name === '动一动') && (st.indexOf('瑜伽') >= 0 || st.indexOf('健身') >= 0 || st.indexOf('跑') >= 0))){
+                bestP = ap.name;
+                break;
+              }
+            }
+            if(!splitTasks.some(function(x){ return x.title === st; })){
+              splitTasks.push({ action: 'create_task', title: st, projectName: bestP, date: defaultDate });
+            }
+          }
+        }
+        if(splitTasks.length >= 2 && splitTasks.length > tasks.length){
+          tasks = splitTasks;
         }
       }
     }
