@@ -6034,8 +6034,8 @@ function executeAIAction(actionObj){
         var np = normStr(p.name);
         return np && (np.indexOf(cleanPName) >= 0 || cleanPName.indexOf(np) >= 0);
       });
-      // Auto-create new project column if named project doesn't exist yet
-      if(!targetProj && pName.trim() && pName.trim() !== '项目' && pName.trim() !== 'default'){
+      // Auto-create named project column if explicitly requested and doesn't exist
+      if(!targetProj && pName.trim() && pName.trim() !== '项目' && pName.trim() !== 'default' && pName.trim() !== '未分类'){
         var activeProjs = sortedProjects();
         var newProjId = 'p' + uid();
         var newColor = PALETTE[activeProjs.length % PALETTE.length];
@@ -6056,11 +6056,26 @@ function executeAIAction(actionObj){
       .replace(/[`「」『』“”"']/g, '')
       .trim();
 
-    // Pure Dynamic Project Resolver (Driven 100% by LLM Context)
+    // Fallback Requirement: If no project matched, auto-create/use 【未分类】 project at first column (gray #94a3b8)
     if(!targetProj){
-      var activeProjs = sortedProjects();
-      // Try to match 【其他】 or 【生活】 or fallback safely to general bucket, never hardcode domain keywords
-      targetProj = activeProjs.find(function(p){ return p.name === '其他' || p.name === '生活' || p.name === '默认'; }) || activeProjs[activeProjs.length - 1] || activeProjs[0];
+      var existingUnclassified = sortedProjects().find(function(p){ return p.name === '未分类'; });
+      if(existingUnclassified){
+        targetProj = existingUnclassified;
+      } else {
+        var unclassProjId = 'p' + uid();
+        // Shift existing projects order by 1 so 【未分类】 becomes the first column
+        data.projects.forEach(function(p){ if(p.weekId === wid) p.order = (p.order || 1) + 1; });
+        var unclassProj = {
+          id: unclassProjId,
+          name: '未分类',
+          color: '#94a3b8', // 优雅中性灰色
+          order: 1, // 放在第一列
+          weekId: wid,
+          context: {}
+        };
+        data.projects.unshift(unclassProj);
+        targetProj = unclassProj;
+      }
     }
     var startTime = t.startTime || t.start_time || t.start || '';
     var endTime = t.endTime || t.end_time || t.end || '';
