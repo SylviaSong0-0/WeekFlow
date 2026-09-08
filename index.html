@@ -452,6 +452,7 @@ input,select,textarea{font-family:inherit}
   font-size: 0.84rem;
   color: #1e293b;
   line-height: 1.55;
+  white-space: normal;
 }
 
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#ffffff}
@@ -2451,7 +2452,7 @@ input,select,textarea{font-family:inherit}
 
 <!-- ===== Journal Review Detail Modal ===== -->
 <div class="modal-bg" id="journalReviewModalBg" onclick="if(event.target===this)closeJournalReviewModal()">
-  <div class="modal notion-modal" style="width: 580px; max-height: 88vh;">
+  <div class="modal notion-modal" style="width: 640px; max-width: 94vw; max-height: 88vh;">
     <div class="notion-modal-header">
       <span class="notion-top-tag" id="jrmTopTag">💬 周度复盘详情</span>
       <button class="modal-close" onclick="closeJournalReviewModal()">&times;</button>
@@ -4590,12 +4591,23 @@ function openJournalReviewModal(journalId){
   if(j.aiResponse && j.aiResponse.trim()){
     if(aiSection) aiSection.style.display = 'block';
     if(aiContent) {
-      aiContent.innerHTML = j.aiResponse
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-        .replace(/\n/g, '<br/>');
+      aiContent.innerHTML = formatAIChatContent(j.aiResponse, 'ai');
+      var isStructured = aiContent.querySelector('.wf-review-container');
+      if(isStructured){
+        aiContent.style.background = 'transparent';
+        aiContent.style.border = 'none';
+        aiContent.style.padding = '0';
+        aiContent.style.color = 'inherit';
+        aiContent.style.whiteSpace = 'normal';
+      } else {
+        aiContent.style.background = '#fdf2f8';
+        aiContent.style.border = '1px solid #fbcfe8';
+        aiContent.style.borderRadius = '8px';
+        aiContent.style.padding = '0.75rem 0.9rem';
+        aiContent.style.fontSize = '0.86rem';
+        aiContent.style.color = '#831843';
+        aiContent.style.whiteSpace = 'pre-wrap';
+      }
     }
   } else {
     if(aiSection) aiSection.style.display = 'none';
@@ -8834,12 +8846,7 @@ function renderJournalView(){
       if (j.aiResponse) {
         var aiReplyDiv = document.createElement('div');
         aiReplyDiv.className = 'sticky-review-reply';
-        aiReplyDiv.innerHTML = '<span style="font-size:1.05rem; margin-right:4px;">🐱</span>' + j.aiResponse
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-          .replace(/\n/g, '<br/>');
+        aiReplyDiv.innerHTML = formatAIChatContent(j.aiResponse, 'ai');
         bodyDiv.appendChild(aiReplyDiv);
       }
     }
