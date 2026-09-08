@@ -1605,6 +1605,137 @@ input,select,textarea{font-family:inherit}
   background: #dcfce7;
 }
 
+/* ReAct Thought & Tool Execution Trace */
+.ai-react-trace {
+  margin-bottom: 0.6rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 0.76rem;
+  transition: all 0.2s ease;
+}
+.ai-react-trace.expanded {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+.ai-react-trace-header {
+  padding: 0.4rem 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  user-select: none;
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+.ai-react-trace-header:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+.ai-react-trace-title {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.76rem;
+}
+.ai-react-trace-badge {
+  font-size: 0.68rem;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-weight: 600;
+}
+.ai-react-trace-arrow {
+  font-size: 0.65rem;
+  color: #94a3b8;
+  transition: transform 0.2s ease;
+}
+.ai-react-trace.expanded .ai-react-trace-arrow {
+  transform: rotate(180deg);
+}
+.ai-react-trace-body {
+  display: none;
+  padding: 0.55rem 0.75rem;
+  border-top: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+.ai-react-trace.expanded .ai-react-trace-body {
+  display: block;
+}
+.ai-react-step-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  position: relative;
+  padding-left: 0.15rem;
+}
+.ai-react-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  position: relative;
+}
+.ai-react-step-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.ai-react-step-content {
+  flex: 1;
+  min-width: 0;
+}
+.ai-react-step-title {
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.76rem;
+}
+.ai-react-step-desc {
+  color: #64748b;
+  line-height: 1.4;
+  word-break: break-word;
+  font-size: 0.73rem;
+}
+.ai-react-step-desc code {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 1px 4px;
+  border-radius: 3px;
+  color: #0f172a;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.7rem;
+}
+.ai-react-raw-thinking {
+  margin-top: 0.5rem;
+  padding: 0.45rem 0.6rem;
+  background: #f8fafc;
+  border-left: 2px solid #818cf8;
+  border-radius: 0 4px 4px 0;
+  font-size: 0.72rem;
+  color: #475569;
+  line-height: 1.5;
+  max-height: 160px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 /* AI Thinking Capsule & Breathing Status Animation */
 .ai-msg-bubble.ai-msg-streaming {
   background: transparent !important;
@@ -5841,7 +5972,7 @@ function initAIChatView(){
   }
   
   history.forEach(function(msg){
-    renderChatMessageElement(msg.role, msg.content, msg.actionResult, msg.isReview, msg.originalUserText);
+    renderChatMessageElement(msg.role, msg.content, msg.actionResult, msg.isReview, msg.originalUserText, msg.reactTrace);
   });
   body.scrollTop = body.scrollHeight;
 }
@@ -6280,6 +6411,12 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
   var replyText = (typeof rawReplyObj === 'object' && rawReplyObj !== null) ? (rawReplyObj.text || '') : (rawReplyObj || '');
   var toolCalls = (typeof rawReplyObj === 'object' && rawReplyObj !== null && Array.isArray(rawReplyObj.toolCalls)) ? rawReplyObj.toolCalls : [];
   
+  var rawThinking = '';
+  var thinkMatch = /<think>([\s\S]*?)<\/think>/i.exec(replyText);
+  if(thinkMatch && thinkMatch[1]){
+    rawThinking = thinkMatch[1].trim();
+  }
+
   var cleanText = stripThinkingTags(replyText);
   var actionResult = null;
   var actionObj = null;
@@ -6668,7 +6805,91 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
   cleanText = cleanText.replace(/\{\s*"action"\s*:[\s\S]*?\}/gi, '').trim();
   cleanText = cleanText.replace(/<!--[\s\S]*?-->/gi, '').trim();
 
-  return { cleanText: cleanText, actionResult: actionResult };
+  // Build Structured ReAct Trace Object
+  var reactSteps = [];
+  var promptStr = userPromptText || '';
+  
+  // Step 1: Intent Recognition
+  var intentTitle = '意图解析 (Intent Recognition)';
+  var intentDesc = '理解用户自然语言输入并提取目标意图';
+  if(actionObj){
+    var actType = actionObj.action || (actionObj.actions ? 'batch_actions' : 'unknown');
+    if(actType === 'create_task' || actType === 'batch_create_tasks' || actType === 'batch_actions'){
+      intentDesc = '识别到【日程规划与卡片创建】意图';
+    } else if(actType === 'update_task'){
+      intentDesc = '识别到【任务状态与属性更新】意图';
+    } else if(actType === 'delete_task' || actType === 'clear_tasks'){
+      intentDesc = '识别到【日程清理与卡片删除】意图';
+    } else if(actType === 'create_project' || actType === 'update_project'){
+      intentDesc = '识别到【看板项目空间管理】意图';
+    } else {
+      intentDesc = '识别到【系统控制与状态更新】意图';
+    }
+  } else if(promptStr.indexOf('复盘') >= 0 || cleanText.indexOf('高光') >= 0 || cleanText.indexOf('精力去向') >= 0){
+    intentDesc = '识别到【认知行为去负罪感周度复盘】意图';
+  } else if(promptStr.indexOf('@') >= 0){
+    intentDesc = '识别到【特定项目上下文关联问答】意图';
+  } else {
+    intentDesc = '识别到【敏捷伴跑与共情倾诉】意图';
+  }
+  reactSteps.push({
+    icon: '🔍',
+    title: intentTitle,
+    desc: intentDesc
+  });
+
+  // Step 2: Tool Perception & Execution
+  var toolTitle = '环境感知与工具调用 (Tool Execution)';
+  var toolDesc = '已感知当前周 (' + currentWeekId() + ') 看板状态，活跃项目: ' + sortedProjects().length + ' 个，任务数: ' + (data.tasks ? data.tasks.length : 0);
+  if(actionObj){
+    if(actionObj.action === 'create_task'){
+      var tInfo = actionObj.task || actionObj;
+      toolDesc = '调用 <code>manage_task.create</code> 构造任务：【' + (tInfo.projectName || '未分类') + '】 ' + (tInfo.title || '新日程') + (tInfo.date ? ' (' + tInfo.date + ')' : '');
+    } else if(actionObj.action === 'update_task'){
+      toolDesc = '调用 <code>manage_task.update</code> 匹配目标任务：关键词「' + (actionObj.match || actionObj.title || '') + '」';
+    } else if(actionObj.action === 'delete_task'){
+      toolDesc = '调用 <code>manage_task.delete</code> 锁定待移除日程卡片';
+    } else if(actionObj.action === 'clear_tasks'){
+      toolDesc = '调用 <code>manage_board.clear_week</code> 扫描本周全部任务卡';
+    } else if(actionObj.action === 'create_project' || actionObj.action === 'update_project'){
+      toolDesc = '调用 <code>manage_project</code> 处理看板列定义与配色主题';
+    } else if(actionObj.actions && Array.isArray(actionObj.actions)){
+      toolDesc = '调用 <code>manage_tasks.batch_execute</code> 批量执行 ' + actionObj.actions.length + ' 项原子指令';
+    }
+  }
+  reactSteps.push({
+    icon: '🛠️',
+    title: toolTitle,
+    desc: toolDesc
+  });
+
+  // Step 3: Action Execution (if action executed)
+  if(actionResult){
+    reactSteps.push({
+      icon: '⚡',
+      title: '状态变更 (Action Execution)',
+      desc: actionResult.header + ' ➔ ' + (actionResult.details ? actionResult.details.replace(/<[^>]+>/g, '') : '')
+    });
+  }
+
+  // Step 4: Verification & Summary
+  var verifyTitle = '结果校验与总结 (Verification & Summary)';
+  var verifyDesc = actionResult
+    ? '完成状态原子写入，并生成防误触撤销快照 (Action Undo Registry: ' + (actionResult.actionId || 'OK') + ')'
+    : '完成思维链逻辑推理，生成去负罪感温暖伴跑反馈 🐾';
+  reactSteps.push({
+    icon: '🎯',
+    title: verifyTitle,
+    desc: verifyDesc
+  });
+
+  var reactTrace = {
+    badge: reactSteps.length + ' 步链路',
+    rawThinking: rawThinking,
+    steps: reactSteps
+  };
+
+  return { cleanText: cleanText, actionResult: actionResult, reactTrace: reactTrace };
 }
 
 function executeAIAction(actionObj){
@@ -7236,6 +7457,19 @@ async function sendFloatingAIChat(){
       if(phaseTimer) clearTimeout(phaseTimer);
       bubbleElem.classList.remove('ai-msg-streaming');
       if(capsuleElem && capsuleElem.parentNode) capsuleElem.remove();
+
+      // Render ReAct Trace in live streaming bubble
+      if(parsed.reactTrace && parsed.reactTrace.steps && parsed.reactTrace.steps.length > 0){
+        var traceElem = createReActTraceElement(parsed.reactTrace);
+        if(traceElem){
+          if(textWrapElem){
+            bubbleElem.insertBefore(traceElem, textWrapElem);
+          } else {
+            bubbleElem.insertBefore(traceElem, bubbleElem.firstChild);
+          }
+        }
+      }
+
       var finalFormatted = cleanReply
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
@@ -7247,7 +7481,10 @@ async function sendFloatingAIChat(){
         textWrapElem.style.display = 'block';
         textWrapElem.innerHTML = finalFormatted;
       } else {
-        bubbleElem.innerHTML = finalFormatted;
+        var contentDiv = document.createElement('div');
+        contentDiv.className = 'ai-msg-content-text';
+        contentDiv.innerHTML = finalFormatted;
+        bubbleElem.appendChild(contentDiv);
       }
       
       // Append Action Result Card
@@ -7288,6 +7525,7 @@ async function sendFloatingAIChat(){
       actionResult: parsed.actionResult,
       isReview: isReview,
       originalUserText: text,
+      reactTrace: parsed.reactTrace,
       timestamp: isoNow()
     };
     getAIChatHistory().push(aiMsgItem);
@@ -7369,7 +7607,67 @@ function createLiveStreamingAIMessage(onCancel){
   return { id: id, row: row, bubble: bubble, capsule: capsule, textWrap: textWrap, timerInterval: timerInterval };
 }
 
-function renderChatMessageElement(role, content, actionResult, isReview, originalUserText){
+function toggleReActTrace(headerElem){
+  var traceCard = headerElem.closest('.ai-react-trace');
+  if(traceCard){
+    traceCard.classList.toggle('expanded');
+  }
+}
+
+function createReActTraceElement(trace){
+  if(!trace || !trace.steps || trace.steps.length === 0) return null;
+  var wrap = document.createElement('div');
+  wrap.className = 'ai-react-trace';
+  
+  var header = document.createElement('div');
+  header.className = 'ai-react-trace-header';
+  header.onclick = function(){ toggleReActTrace(this); };
+  
+  header.innerHTML = `
+    <span style="font-size: 0.82rem;">💭</span>
+    <span class="ai-react-trace-title">思考与决策链路 (ReAct Trace)</span>
+    <span class="ai-react-trace-badge">${trace.badge || (trace.steps.length + ' 步链路')}</span>
+    <span class="ai-react-trace-arrow">▼</span>
+  `;
+  
+  var body = document.createElement('div');
+  body.className = 'ai-react-trace-body';
+  
+  var list = document.createElement('div');
+  list.className = 'ai-react-step-list';
+  
+  trace.steps.forEach(function(s){
+    var item = document.createElement('div');
+    item.className = 'ai-react-step-item';
+    item.innerHTML = `
+      <div class="ai-react-step-icon">${s.icon || '•'}</div>
+      <div class="ai-react-step-content">
+        <div class="ai-react-step-title">${s.title}</div>
+        <div class="ai-react-step-desc">${s.desc}</div>
+      </div>
+    `;
+    list.appendChild(item);
+  });
+  
+  body.appendChild(list);
+
+  if(trace.rawThinking && trace.rawThinking.trim()){
+    var thinkBox = document.createElement('div');
+    thinkBox.className = 'ai-react-raw-thinking';
+    var cleanRaw = trace.rawThinking.trim()
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    thinkBox.innerHTML = '<div style="font-size:0.68rem;font-weight:700;color:#6366f1;margin-bottom:3px;">🧠 模型原始思考 (Thought Reasoning):</div>' + cleanRaw;
+    body.appendChild(thinkBox);
+  }
+  
+  wrap.appendChild(header);
+  wrap.appendChild(body);
+  return wrap;
+}
+
+function renderChatMessageElement(role, content, actionResult, isReview, originalUserText, reactTrace){
   var body = document.getElementById('aiChatBody');
   if(!body) return;
   
@@ -7382,16 +7680,23 @@ function renderChatMessageElement(role, content, actionResult, isReview, origina
   
   var bubble = document.createElement('div');
   bubble.className = 'ai-msg-bubble';
+
+  // Render ReAct Trace if available
+  if(role === 'ai' && reactTrace && reactTrace.steps && reactTrace.steps.length > 0){
+    var traceElem = createReActTraceElement(reactTrace);
+    if(traceElem) bubble.appendChild(traceElem);
+  }
   
-  // Formatted text
+  var contentDiv = document.createElement('div');
+  contentDiv.className = 'ai-msg-content-text';
   var formatted = content
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
     .replace(/\n/g, '<br/>');
-    
-  bubble.innerHTML = formatted;
+  contentDiv.innerHTML = formatted;
+  bubble.appendChild(contentDiv);
   
   // Action Result Card
   if(actionResult){
