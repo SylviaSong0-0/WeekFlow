@@ -1829,6 +1829,184 @@ input,select,textarea{font-family:inherit}
   color: #1e293b;
 }
 
+/* ============================================================
+   WEEKFLOW REVIEW CARD CHUNKS (一周总结专属模块化卡片排版)
+   ============================================================ */
+.wf-review-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.wf-review-banner {
+  background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%);
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.8rem;
+  color: #1e293b;
+  line-height: 1.55;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+.wf-review-banner-title {
+  font-weight: 700;
+  color: #1e40af;
+  margin-bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+}
+.wf-review-banner-body {
+  color: #334155;
+}
+
+.wf-review-block {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.wf-review-block-header {
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wf-review-timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.wf-review-day-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  padding: 0.35rem 0.55rem;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #f1f5f9;
+}
+
+.wf-review-day-badge {
+  flex-shrink: 0;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.72rem;
+  background: #e2e8f0;
+  color: #334155;
+}
+.wf-review-day-item.active .wf-review-day-badge {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+.wf-review-day-item.rest {
+  background: #fafafa;
+  opacity: 0.85;
+}
+.wf-review-day-item.rest .wf-review-day-badge {
+  background: #f1f5f9;
+  color: #94a3b8;
+}
+
+.wf-review-rest-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #f1f5f9;
+  color: #64748b;
+  padding: 0.1rem 0.45rem;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.wf-review-day-content {
+  flex: 1;
+  color: #334155;
+}
+
+.wf-review-project-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.wf-review-project-card {
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  background: #fafafa;
+  border: 1px solid #f1f5f9;
+  border-left: 3px solid #3b82f6;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.wf-review-project-title {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.wf-review-project-body {
+  color: #475569;
+}
+
+.wf-review-insight-card {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.78rem;
+  color: #78350f;
+  line-height: 1.5;
+}
+
+.wf-review-insight-title {
+  font-weight: 700;
+  color: #92400e;
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+}
+
+.wf-review-insight-footer {
+  margin-top: 0.45rem;
+  padding-top: 0.4rem;
+  border-top: 1px dashed #fcd34d;
+  color: #b45309;
+  font-style: italic;
+}
+
+.wf-proj-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.05rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  margin: 0 2px;
+  vertical-align: middle;
+}
+
 .ai-archive-btn {
   margin-top: 0.45rem;
   display: inline-flex;
@@ -7924,12 +8102,7 @@ async function sendFloatingAIChat(){
         }
       }
 
-      var finalFormatted = cleanReply
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-        .replace(/\n/g, '<br/>');
+      var finalFormatted = formatAIChatContent(cleanReply, 'ai');
         
       if(textWrapElem){
         textWrapElem.style.display = 'block';
@@ -8121,6 +8294,211 @@ function createReActTraceElement(trace){
   return wrap;
 }
 
+function getProjectColorByName(name){
+  if(!name) return '#3b82f6';
+  var cleanName = name.replace(/[\*【】\[\]]/g, '').trim();
+  var projs = (data && data.projects) ? data.projects : [];
+  for(var i = 0; i < projs.length; i++){
+    if(projs[i].name === cleanName && projs[i].color){
+      return projs[i].color;
+    }
+  }
+  if(cleanName === 'WeekFlow') return '#3b82f6';
+  if(cleanName.indexOf('求职') >= 0 || cleanName.indexOf('简历') >= 0) return '#8b5cf6';
+  if(cleanName.indexOf('生活') >= 0 || cleanName.indexOf('健康') >= 0) return '#10b981';
+  return '#3b82f6';
+}
+
+function escapeHtml(str){
+  if(!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function renderInlineMarkdown(str){
+  if(!str) return '';
+  return escapeHtml(str)
+    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+    .replace(/\*(.*?)\*/g, '<i>$1</i>')
+    .replace(/`([^`]+)`/g, '<code style="background:#f1f5f9;padding:1px 4px;border-radius:3px;font-size:0.75rem;color:#e11d48;">$1</code>')
+    .replace(/【([^】]+)】/g, function(match, p1){
+      var c = getProjectColorByName(p1);
+      return '<span class="wf-proj-pill" style="background:#f8fafc;color:' + c + ';border:1px solid #e2e8f0;font-weight:700;">【' + p1 + '】</span>';
+    });
+}
+
+function formatAIChatContent(rawContent, role){
+  if(!rawContent) return '';
+  if(role === 'user'){
+    return escapeHtml(rawContent).replace(/\n/g, '<br/>');
+  }
+
+  var s = String(rawContent).trim();
+
+  // Check if this message is a structured review / 一周总结
+  var isStructuredReview = (s.indexOf('本周时间脉络') >= 0 || s.indexOf('分项目演进分析') >= 0 || s.indexOf('时间脉络') >= 0);
+
+  if(!isStructuredReview){
+    var fmt = escapeHtml(s)
+      .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+      .replace(/\*(.*?)\*/g, '<i>$1</i>')
+      .replace(/`([^`]+)`/g, '<code style="background:#f1f5f9;padding:1px 4px;border-radius:3px;font-size:0.75rem;">$1</code>')
+      .replace(/【([^】]+)】/g, function(match, p1){
+        var c = getProjectColorByName(p1);
+        return '<span class="wf-proj-pill" style="background:#f8fafc;color:' + c + ';border:1px solid #e2e8f0;font-weight:700;">【' + p1 + '】</span>';
+      })
+      .replace(/\n/g, '<br/>');
+    return fmt;
+  }
+
+  // Parse structured review sections into modern distinct card blocks
+  var lines = s.split('\n');
+  var headerIntro = [];
+  var timelineLines = [];
+  var projectLines = [];
+  var insightLines = [];
+  var currentSection = 'intro';
+
+  for(var i = 0; i < lines.length; i++){
+    var rawLine = lines[i].trim();
+    if(!rawLine) continue;
+
+    if(rawLine.indexOf('本周时间脉络') >= 0 || rawLine.indexOf('时间脉络') >= 0){
+      currentSection = 'timeline';
+      continue;
+    } else if(rawLine.indexOf('分项目演进') >= 0 || rawLine.indexOf('分项目进展') >= 0 || rawLine.indexOf('分项目分析') >= 0){
+      currentSection = 'project';
+      continue;
+    } else if(rawLine.indexOf('能量模式洞察') >= 0 || rawLine.indexOf('能量洞察') >= 0 || rawLine.indexOf('伴跑寄语') >= 0){
+      currentSection = 'insight';
+      continue;
+    }
+
+    if(currentSection === 'intro'){
+      headerIntro.push(rawLine);
+    } else if(currentSection === 'timeline'){
+      timelineLines.push(rawLine);
+    } else if(currentSection === 'project'){
+      projectLines.push(rawLine);
+    } else if(currentSection === 'insight'){
+      insightLines.push(rawLine);
+    }
+  }
+
+  var html = '<div class="wf-review-container">';
+
+  // 1. Banner Card (Header + Intro Stats)
+  if(headerIntro.length > 0){
+    var introTitle = '';
+    var introBodyArr = [];
+    headerIntro.forEach(function(l){
+      if(l.indexOf('一周总结') >= 0 || l.indexOf('喵呜') >= 0 || l.startsWith('#')){
+        introTitle = l.replace(/^#+\s*/, '');
+      } else {
+        introBodyArr.push(l);
+      }
+    });
+
+    html += '<div class="wf-review-banner">';
+    if(introTitle){
+      html += '<div class="wf-review-banner-title"><span>📊</span> ' + escapeHtml(introTitle) + '</div>';
+    }
+    if(introBodyArr.length > 0){
+      html += '<div class="wf-review-banner-body">' + renderInlineMarkdown(introBodyArr.join('\n')).replace(/\n/g, '<br/>') + '</div>';
+    }
+    html += '</div>';
+  }
+
+  // 2. Timeline Card Block (📅 本周时间脉络)
+  if(timelineLines.length > 0){
+    html += '<div class="wf-review-block">';
+    html += '<div class="wf-review-block-header"><span style="color:#2563eb;">📅</span> 本周时间脉络</div>';
+    html += '<div class="wf-review-timeline-list">';
+
+    timelineLines.forEach(function(l){
+      var cleanL = l.replace(/^[-*•\s]+/, '').trim();
+      var mDay = /^(周[一二三四五六日天]|星期[一二三四五六日天])\s*[:：]\s*(.*)$/.exec(cleanL);
+      if(mDay){
+        var dayName = mDay[1];
+        var dayContent = mDay[2].trim();
+        var isRest = dayContent.indexOf('休息') >= 0;
+
+        html += '<div class="wf-review-day-item ' + (isRest ? 'rest' : 'active') + '">';
+        html += '<div class="wf-review-day-badge">' + escapeHtml(dayName) + '</div>';
+        html += '<div class="wf-review-day-content">';
+        if(isRest){
+          html += '<span class="wf-review-rest-pill">☕ 休息蓄能</span>';
+        } else {
+          html += renderInlineMarkdown(dayContent);
+        }
+        html += '</div>';
+        html += '</div>';
+      } else {
+        html += '<div class="wf-review-day-item active"><div class="wf-review-day-content">' + renderInlineMarkdown(cleanL) + '</div></div>';
+      }
+    });
+
+    html += '</div></div>';
+  }
+
+  // 3. Project Evolution Card Block (📁 分项目演进分析)
+  if(projectLines.length > 0){
+    html += '<div class="wf-review-block">';
+    html += '<div class="wf-review-block-header"><span style="color:#8b5cf6;">📁</span> 分项目演进分析</div>';
+    html += '<div class="wf-review-project-list">';
+
+    projectLines.forEach(function(l){
+      var cleanL = l.replace(/^[-*•\s]+/, '').trim();
+      var mProj = /^【([^】]+)】\s*[:：]\s*(.*)$/.exec(cleanL) || /^\[([^\]]+)\]\s*[:：]\s*(.*)$/.exec(cleanL);
+      if(mProj){
+        var pName = mProj[1];
+        var pContent = mProj[2].trim();
+        var pColor = getProjectColorByName(pName);
+
+        html += '<div class="wf-review-project-card" style="border-left-color: ' + pColor + ';">';
+        html += '<div class="wf-review-project-title" style="color: ' + pColor + ';">📌 【' + escapeHtml(pName) + '】</div>';
+        html += '<div class="wf-review-project-body">' + renderInlineMarkdown(pContent) + '</div>';
+        html += '</div>';
+      } else {
+        html += '<div class="wf-review-project-card"><div class="wf-review-project-body">' + renderInlineMarkdown(cleanL) + '</div></div>';
+      }
+    });
+
+    html += '</div></div>';
+  }
+
+  // 4. Energy Insight & Closing Card (🎯 能量模式洞察)
+  if(insightLines.length > 0){
+    html += '<div class="wf-review-insight-card">';
+    html += '<div class="wf-review-insight-title"><span>🎯</span> 能量模式洞察</div>';
+    
+    var mainInsight = [];
+    var footNote = [];
+    insightLines.forEach(function(l){
+      var cleanL = l.replace(/^(?:能量模式洞察|能量洞察)\s*[:：]\s*/i, '').trim();
+      if(cleanL.indexOf('🐾') >= 0 || cleanL.indexOf('下周继续') >= 0 || cleanL.indexOf('猫步') >= 0){
+        footNote.push(cleanL);
+      } else if(cleanL){
+        mainInsight.push(cleanL);
+      }
+    });
+
+    if(mainInsight.length > 0){
+      html += '<div class="wf-review-insight-body">' + renderInlineMarkdown(mainInsight.join('\n')).replace(/\n/g, '<br/>') + '</div>';
+    }
+    if(footNote.length > 0){
+      html += '<div class="wf-review-insight-footer">' + renderInlineMarkdown(footNote.join('\n')).replace(/\n/g, '<br/>') + '</div>';
+    }
+    html += '</div>';
+  }
+
+  html += '</div>';
+  return html;
+}
+
 function renderChatMessageElement(role, content, actionResult, isReview, originalUserText, reactTrace){
   var body = document.getElementById('aiChatBody');
   if(!body) return;
@@ -8143,13 +8521,7 @@ function renderChatMessageElement(role, content, actionResult, isReview, origina
   
   var contentDiv = document.createElement('div');
   contentDiv.className = 'ai-msg-content-text';
-  var formatted = content
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-    .replace(/\n/g, '<br/>');
-  contentDiv.innerHTML = formatted;
+  contentDiv.innerHTML = formatAIChatContent(content, role);
   bubble.appendChild(contentDiv);
   
   // Action Result Card
