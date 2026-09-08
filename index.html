@@ -11,7 +11,7 @@
 <meta property="og:description" content="WeekFlow 是一款优雅的每周任务规划工具，提供任务卡与24小时时间轴双视图。">
 <meta property="og:type" content="website">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='18' rx='2' ry='2'/><line x1='16' y1='2' x2='16' y2='6'/><line x1='8' y1='2' x2='8' y2='6'/><line x1='3' y1='10' x2='21' y2='10'/></svg>">
 <style>
 /* ===== Reset & Base ===== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -1363,15 +1363,41 @@ input,select,textarea{font-family:inherit}
   transform: scale(0.94);
 }
 
+/* Vector Icon Helper */
+.wf-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.wf-icon svg {
+  display: block;
+  width: 1em;
+  height: 1em;
+}
+
+.ai-avatar-btn .ai-avatar-icon,
 .ai-avatar-btn .ai-avatar-emoji {
-  font-size: 1.65rem;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
   transition: transform 0.25s ease;
 }
 
+.ai-avatar-btn:hover .ai-avatar-icon,
 .ai-avatar-btn:hover .ai-avatar-emoji {
   transform: scale(1.1);
+}
+
+.ai-chat-avatar-sm .ai-avatar-icon,
+.ai-msg-avatar .ai-avatar-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2563eb;
 }
 
 .ai-avatar-badge {
@@ -2185,29 +2211,29 @@ input,select,textarea{font-family:inherit}
   <div class="sidebar">
     <div class="sidebar-header">
       <div style="display:flex;align-items:center;gap:0.4rem">
-        <span class="logo">📅</span><span class="logo">WeekFlow</span>
+        <span class="logo" style="display:inline-flex;align-items:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg></span><span class="logo">WeekFlow</span>
       </div>
       <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="收起侧边栏">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
       </button>
     </div>
-    <div class="sidebar-section">📥 临时区</div>
+    <div class="sidebar-section">临时区</div>
     <div class="temp-zone" id="tempZone">
       <div class="temp-input-wrap">
         <input class="temp-input" id="tempInput" placeholder="快速添加，回车确认..." onkeydown="handleTempAdd(event)"/>
       </div>
       <div class="temp-cards" id="tempCards"></div>
     </div>
-    <div class="sidebar-section">📝 备忘便签</div>
+    <div class="sidebar-section">备忘便签</div>
     <div class="memo-zone">
       <div class="memo-resize-handle" id="memoResizeHandle" title="按住上下拖拽调大小 / 点击快速展开收起">⤢</div>
       <textarea class="memo-textarea" id="memoInput" placeholder="随时记录灵感或闪念..." oninput="handleMemoInput(this.value)"></textarea>
       <div class="memo-btn-row">
         <button class="memo-clear-btn" id="memoClearBtn" onclick="clearMemoContent()" title="仅清空当前备忘内容，不存入小纸条">
-          <span>🧹 清空备忘</span>
+          <span>清空备忘</span>
         </button>
         <button class="memo-save-btn" id="memoSaveBtn" onclick="saveMemoToJournal()" title="将当前备忘内容存入小纸条">
-          <span>📥 存入小纸条</span>
+          <span>存入小纸条</span>
         </button>
       </div>
     </div>
@@ -2226,54 +2252,53 @@ input,select,textarea{font-family:inherit}
       <div class="spacer"></div>
       <!-- View Switcher Tab -->
       <div class="view-tabs" style="display: flex; background: #f1f5f9; border-radius: 6px; padding: 2px; gap: 2px;">
-        <button class="view-tab-btn active" id="tabMatrix" onclick="switchView('matrix')" style="border: none; padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 4px; cursor: pointer; transition: all 0.1s; font-family: inherit; font-weight: 500;">📊 任务卡</button>
-        <button class="view-tab-btn" id="tabTimeline" onclick="switchView('timeline')" style="border: none; padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 4px; cursor: pointer; transition: all 0.1s; font-family: inherit; font-weight: 500;">📅 时间轴</button>
-        <button class="view-tab-btn" id="tabJournal" onclick="switchView('journal')" style="border: none; padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 4px; cursor: pointer; transition: all 0.1s; font-family: inherit; font-weight: 500;">📝 小纸条</button>
+        <button class="view-tab-btn active" id="tabMatrix" onclick="switchView('matrix')" style="border: none; padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 4px; cursor: pointer; transition: all 0.1s; font-family: inherit; font-weight: 500; display: inline-flex; align-items: center; gap: 5px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span>任务卡</span></button>
+        <button class="view-tab-btn" id="tabTimeline" onclick="switchView('timeline')" style="border: none; padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 4px; cursor: pointer; transition: all 0.1s; font-family: inherit; font-weight: 500; display: inline-flex; align-items: center; gap: 5px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>时间轴</span></button>
+        <button class="view-tab-btn" id="tabJournal" onclick="switchView('journal')" style="border: none; padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 4px; cursor: pointer; transition: all 0.1s; font-family: inherit; font-weight: 500; display: inline-flex; align-items: center; gap: 5px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>小纸条</span></button>
       </div>
       <div class="spacer"></div>
       <!-- Settings Dropdown -->
       <div class="settings-dropdown-wrap" style="margin-left:0.25rem;">
-        <button class="btn" id="settingsBtn" onclick="toggleSettingsMenu(event)" title="设置">
-          <span>⚙️ 设置</span>
-          <span style="font-size:0.65rem;margin-left:2px">▼</span>
+        <button class="btn" id="settingsBtn" onclick="toggleSettingsMenu(event)" title="设置" style="display:inline-flex;align-items:center;gap:4px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+          <span>设置</span>
+          <span style="font-size:0.65rem;margin-left:1px">▼</span>
         </button>
         <div class="settings-menu" id="settingsMenu">
           <div class="settings-menu-item" onclick="openAIConfigModal(); closeSettingsMenu();">
-            <span>🤖 AI 助手配置</span>
+            <span>AI 助手配置</span>
           </div>
           <div class="settings-menu-item" id="soundToggleBtn" onclick="toggleSound()">
-            <span>🔊 音效: 开</span>
+            <span>音效: 开</span>
           </div>
           <div class="settings-menu-item" onclick="seedDemoTestData(); closeSettingsMenu();">
-            <span>🧪 注入精选测试日程</span>
+            <span>注入精选测试日程</span>
           </div>
           <div style="height:1px;background:#e2e8f0;margin:4px 0;"></div>
           <div class="settings-menu-item danger" onclick="clearThisWeek(); closeSettingsMenu();">
-            <span>🗑 清空本周</span>
+            <span>清空本周</span>
           </div>
           <div class="settings-menu-item danger" onclick="resetAllData(); closeSettingsMenu();">
-            <span>⚙️ 清空全部</span>
+            <span>清空全部</span>
           </div>
         </div>
       </div>
 
       <!-- Export Dropdown (very right) -->
       <div class="export-dropdown-wrap" style="margin-left:0.25rem;">
-        <button class="btn btn-primary export-btn" id="exportBtn" onclick="toggleExportMenu(event)">
-          <span>📄 导出</span>
-          <span style="font-size:0.65rem;margin-left:2px">▼</span>
+        <button class="btn btn-primary export-btn" id="exportBtn" onclick="toggleExportMenu(event)" style="display:inline-flex;align-items:center;gap:4px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>导出</span>
+          <span style="font-size:0.65rem;margin-left:1px">▼</span>
         </button>
         <div class="export-menu" id="exportMenu">
           <div class="export-menu-item" onclick="exportPDF('all'); closeExportMenu();">
-            <span class="export-icon">📄</span>
             <span>导出全部 PDF</span>
           </div>
           <div class="export-menu-item" onclick="exportPDF('week'); closeExportMenu();">
-            <span class="export-icon">📄</span>
             <span>导出本周 PDF</span>
           </div>
           <div class="export-menu-item" onclick="exportJPG(); closeExportMenu();">
-            <span class="export-icon">🖼</span>
             <span>导出 JPG 图片</span>
           </div>
         </div>
@@ -2343,7 +2368,7 @@ input,select,textarea{font-family:inherit}
     <div class="notion-props">
       <div class="notion-prop-row">
         <div class="notion-prop-label">
-          <span class="notion-prop-icon">📁</span>
+          <span class="notion-prop-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
           <span>所属项目</span>
         </div>
         <div class="notion-prop-val">
@@ -2353,7 +2378,7 @@ input,select,textarea{font-family:inherit}
 
       <div class="notion-prop-row">
         <div class="notion-prop-label">
-          <span class="notion-prop-icon">🏷️</span>
+          <span class="notion-prop-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span>
           <span>标签</span>
         </div>
         <div class="notion-prop-val">
@@ -2363,7 +2388,7 @@ input,select,textarea{font-family:inherit}
 
       <div class="notion-prop-row">
         <div class="notion-prop-label">
-          <span class="notion-prop-icon">⏰</span>
+          <span class="notion-prop-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
           <span>时间段</span>
         </div>
         <div class="notion-prop-val" style="display: flex; align-items: center; gap: 0.5rem;">
@@ -2386,13 +2411,13 @@ input,select,textarea{font-family:inherit}
     <div class="notion-modal-footer">
       <div style="display: flex; align-items: center; gap: 0.25rem;">
         <button class="notion-btn-del" id="tmDelete" onclick="deleteCurrentTask()" title="删除此任务">
-          <span>🗑️</span><span>删除</span>
+          <span>删除</span>
         </button>
         <button class="notion-btn-copy" id="tmCopy" onclick="copyCurrentTask()" title="复制此任务">
-          <span>📋</span><span>复制</span>
+          <span>复制</span>
         </button>
         <button class="notion-btn-bookmark" id="tmBookmark" onclick="bookmarkCurrentModalTask()" title="存入小纸条">
-          <span>📌</span><span>存入小纸条</span>
+          <span>存入小纸条</span>
         </button>
       </div>
       <div class="notion-footer-right">
@@ -2408,7 +2433,7 @@ input,select,textarea{font-family:inherit}
   <div class="modal notion-modal" style="width: 400px; padding: 1.5rem 1.75rem;">
     <div class="notion-modal-header">
       <span class="notion-top-tag">新增项目列</span>
-      <button class="modal-close" onclick="closeProjectModal()">&times;</button>
+      <button class="notion-close" onclick="closeProjectModal()">&times;</button>
     </div>
     <div class="notion-title-wrap" style="margin-bottom: 1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem;">
       <input id="pmNameInput" class="notion-title-input" placeholder="项目名称..." maxlength="40" style="font-size: 1.25rem; font-weight: 600;" onkeydown="handlePmKey(event)"/>
@@ -2439,7 +2464,7 @@ input,select,textarea{font-family:inherit}
 <div class="modal-bg" id="journalMemoModalBg" onclick="if(event.target===this)closeJournalMemoModal()">
   <div class="modal notion-modal" style="width: 520px;">
     <div class="notion-modal-header">
-      <span class="notion-top-tag" id="jmmTopTag">📝 备忘小纸条</span>
+      <span class="notion-top-tag" id="jmmTopTag">备忘小纸条</span>
       <button class="modal-close" onclick="closeJournalMemoModal()">&times;</button>
     </div>
 
@@ -2447,18 +2472,18 @@ input,select,textarea{font-family:inherit}
     <div class="notion-props" style="margin-bottom: 0.5rem;">
       <div class="notion-prop-row">
         <div class="notion-prop-label">
-          <span class="notion-prop-icon">📅</span>
+          <span class="notion-prop-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
           <span>记录时间</span>
         </div>
         <div class="notion-prop-val" id="jmmTimeVal" style="font-size: 0.83rem; color: #475569; font-weight: 500;"></div>
       </div>
       <div class="notion-prop-row">
         <div class="notion-prop-label">
-          <span class="notion-prop-icon">🏷️</span>
+          <span class="notion-prop-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span>
           <span>类型标签</span>
         </div>
         <div class="notion-prop-val">
-          <span style="background: #fef3c7; color: #b45309; padding: 2px 8px; border-radius: 4px; font-size: 0.76rem; font-weight: 600;">📝 备忘录</span>
+          <span style="background: #fef3c7; color: #b45309; padding: 2px 8px; border-radius: 4px; font-size: 0.76rem; font-weight: 600;">备忘录</span>
         </div>
       </div>
     </div>
@@ -2474,10 +2499,10 @@ input,select,textarea{font-family:inherit}
     <div class="notion-modal-footer">
       <div style="display: flex; align-items: center; gap: 0.25rem;">
         <button class="notion-btn-del" onclick="deleteCurrentJournalMemo()" title="删除此小纸条">
-          <span>🗑️</span><span>删除</span>
+          <span>删除</span>
         </button>
         <button class="notion-btn-copy" onclick="copyCurrentJournalMemo()" title="复制备忘内容">
-          <span>📋</span><span>复制</span>
+          <span>复制</span>
         </button>
       </div>
       <div class="notion-footer-right">
@@ -2492,7 +2517,7 @@ input,select,textarea{font-family:inherit}
 <div class="modal-bg" id="journalReviewModalBg" onclick="if(event.target===this)closeJournalReviewModal()">
   <div class="modal notion-modal" style="width: 640px; max-width: 94vw; max-height: 88vh;">
     <div class="notion-modal-header">
-      <span class="notion-top-tag" id="jrmTopTag">💬 周度复盘详情</span>
+      <span class="notion-top-tag" id="jrmTopTag">周度复盘详情</span>
       <button class="modal-close" onclick="closeJournalReviewModal()">&times;</button>
     </div>
 
@@ -2500,14 +2525,14 @@ input,select,textarea{font-family:inherit}
     <div class="notion-props" style="margin-bottom: 0.5rem;">
       <div class="notion-prop-row">
         <div class="notion-prop-label">
-          <span class="notion-prop-icon">📅</span>
+          <span class="notion-prop-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
           <span>复盘时间</span>
         </div>
         <div class="notion-prop-val" id="jrmTimeVal" style="font-size: 0.83rem; color: #475569; font-weight: 500;"></div>
       </div>
       <div class="notion-prop-row">
         <div class="notion-prop-label">
-          <span class="notion-prop-icon">🗓️</span>
+          <span class="notion-prop-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
           <span>对应周期</span>
         </div>
         <div class="notion-prop-val" id="jrmWeekVal" style="font-size: 0.83rem; color: #475569; font-weight: 500;"></div>
@@ -2519,7 +2544,7 @@ input,select,textarea{font-family:inherit}
     <!-- User Reflection Section -->
     <div style="margin-bottom: 1.1rem;">
       <div style="font-size: 0.82rem; font-weight: 600; color: #475569; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 5px;">
-        <span>💭</span><span>我的周度复盘 / 心得记录</span>
+        <span>我的周度复盘 / 心得记录</span>
       </div>
       <textarea id="jrmUserInput" class="notion-textarea" placeholder="我的复盘内容..." style="min-height: 90px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.65rem 0.8rem; font-size: 0.88rem; line-height: 1.6;"></textarea>
     </div>
@@ -2527,7 +2552,7 @@ input,select,textarea{font-family:inherit}
     <!-- AI Mascot Reply Section -->
     <div id="jrmAIReplySection" style="margin-bottom: 1.25rem;">
       <div style="font-size: 0.82rem; font-weight: 600; color: #475569; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 5px;">
-        <span>🐱</span><span>小咪的心灵回信</span>
+        <span>小咪的心灵回信</span>
       </div>
       <div id="jrmAIReplyContent" style="background: #fdf2f8; border: 1px solid #fbcfe8; border-radius: 8px; padding: 0.75rem 0.9rem; font-size: 0.86rem; color: #831843; line-height: 1.6; white-space: pre-wrap; word-break: break-word;"></div>
     </div>
@@ -2536,10 +2561,10 @@ input,select,textarea{font-family:inherit}
     <div class="notion-modal-footer">
       <div style="display: flex; align-items: center; gap: 0.25rem;">
         <button class="notion-btn-del" onclick="deleteCurrentJournalReview()" title="删除此复盘小纸条">
-          <span>🗑️</span><span>删除</span>
+          <span>删除</span>
         </button>
         <button class="notion-btn-copy" onclick="copyCurrentJournalReview()" title="复制复盘与回信">
-          <span>📋</span><span>复制</span>
+          <span>复制</span>
         </button>
       </div>
       <div class="notion-footer-right">
@@ -2555,6 +2580,46 @@ input,select,textarea{font-family:inherit}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
+// ============================================================
+//  VECTOR ICON SYSTEM (Lucide / Linear Style - Zero Emoji)
+// ============================================================
+var WF_ICONS = {
+  grid: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
+  calendar: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+  note: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+  clock: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  sliders: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>',
+  download: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+  file: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>',
+  image: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
+  trash: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+  copy: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+  bookmark: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>',
+  pencil: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>',
+  plus: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+  rotate: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>',
+  folder: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>',
+  tag: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>',
+  user: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+  sparkles: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>',
+  message: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+  chart: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+  volume: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>',
+  database: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>',
+  inbox: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>',
+  target: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+  undo: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>',
+  book: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+  catMonogram: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V8l4 3 4-4 4 4 4-3v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="8.5" cy="13.5" r="0.75" fill="currentColor"/><circle cx="15.5" cy="13.5" r="0.75" fill="currentColor"/></svg>',
+  logoFlow: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>'
+};
+
+function getWFIcon(name, extraClass){
+  var svg = WF_ICONS[name] || '';
+  if(!svg) return '';
+  return '<span class="wf-icon' + (extraClass ? ' ' + extraClass : '') + '">' + svg + '</span>';
+}
+
 // ============================================================
 //  SIDEBAR TOGGLE
 // ============================================================
@@ -2671,14 +2736,14 @@ var DEFAULT_SYSTEM_PROMPT = `你是一只温柔、贴心、懂行为心理学与
 你的目标是陪伴用户成长、缓解拖延与焦虑，并在用户需要时直接帮用户操作 WeekFlow 日程与项目。
 
 【你的核心能力与交互规范】：
-1. 💬 陪伴与聊天：当用户倾诉疲惫、焦虑或分享琐事时，给予真诚的共情与温柔鼓励，绝无爹味说教。
-2. 📊 【一周总结】技能（核心）：
+1. 陪伴与聊天：当用户倾诉疲惫、焦虑或分享琐事时，给予真诚的共情与温柔鼓励，绝无爹味说教。
+2. 【一周总结】技能（核心）：
    当用户请求总结/复盘（如输入“一周总结”、“周复盘”、“周报”、“/review”等）时：
-   - ⚠️ 绝对严禁附带任何创建或修改任务的 JSON Action 代码块！
-   - ⚠️ 绝对不要统计虚假的拖延时间！
+   - 严禁附带任何创建或修改任务的 JSON Action 代码块！
+   - 不要统计虚假的拖延时间！
    - 必须严格基于系统注入的真实数据，按以下标准结构输出清晰、利落、温暖有力的报告：
 
-   喵呜~ 让我为你做一次【一周总结】📊
+   让我为你做一次【一周总结】
 
    本周你在 M 个项目中创建/推进了 N 张卡片，其中【XX】项目最多，创建了 X 张卡片，...。【YY】项目本周没有创建卡片，没关系下周继续加油。。
 
@@ -2698,7 +2763,7 @@ var DEFAULT_SYSTEM_PROMPT = `你是一只温柔、贴心、懂行为心理学与
 
    能量模式洞察：（根据用户本周真实推进节奏与重点，给出 1-2 句真诚、接地气的敏锐洞察，并附一句温暖有灵气的寄语。严禁使用固定套话，杜绝千篇一律）
 
-3. ⚡ 自然语言操控卡片与项目：
+3. 自然语言操控卡片与项目：
    仅当用户明确表达了“帮我加个任务”、“修改任务”、“删除任务”、“新建项目”等卡片管理意图时，才在回答末尾附带一个且仅一个严格合法的 JSON Action 代码块：
    - 创建任务：
    \`\`\`json
@@ -3580,14 +3645,14 @@ function showTaskCtxMenu(x, y, task){
   menu.classList.add('show');
   
   // Add "编辑" item
-  var editItem = mkCtxItem('✏️ 编辑任务', function(){
+  var editItem = mkCtxItem('编辑任务', function(){
     hideCtxMenu();
     openTaskModal(task.id);
   });
   menu.appendChild(editItem);
 
   // Add "存入小纸条" item
-  var bookmarkItem = mkCtxItem('📌 存入小纸条', function(){
+  var bookmarkItem = mkCtxItem('存入小纸条', function(){
     hideCtxMenu();
     saveTaskToJournal(task);
   });
@@ -3596,7 +3661,7 @@ function showTaskCtxMenu(x, y, task){
   menu.appendChild(mkCtxSep());
 
   // Add "复制" item
-  var dupItem = mkCtxItem('📋 复制任务', function(){
+  var dupItem = mkCtxItem('复制任务', function(){
     hideCtxMenu();
     duplicateTask(task.id);
   });
@@ -3605,7 +3670,7 @@ function showTaskCtxMenu(x, y, task){
   menu.appendChild(mkCtxSep());
   
   // Add "删除" item
-  var delItem = mkCtxItem('🗑️ 删除任务', function(){
+  var delItem = mkCtxItem('删除任务', function(){
     hideCtxMenu();
     showConfirm('删除确认', '确定要删除任务「'+task.title+'」吗？', function(confirmed){
       if(confirmed){
@@ -3683,14 +3748,14 @@ function showCtxMenu(x, y, proj, thEl){
   menu.appendChild(label);
 
   // Edit name
-  var editItem = mkCtxItem('✏️ 编辑名称', function(){
+  var editItem = mkCtxItem('编辑名称', function(){
     hideCtxMenu();
     startEditHeader(thEl, proj);
   });
   menu.appendChild(editItem);
 
   // Edit Project Background / Context
-  var bgItem = mkCtxItem('💡 项目背景与目标', function(){
+  var bgItem = mkCtxItem('项目背景与目标', function(){
     hideCtxMenu();
     openProjContextModal(proj);
   });
@@ -3721,7 +3786,7 @@ function showCtxMenu(x, y, proj, thEl){
   menu.appendChild(mkCtxSep());
 
   // Add new project (insert after current column)
-  menu.appendChild(mkCtxItem('➕ 在右侧新增一列', function(){
+  menu.appendChild(mkCtxItem('在右侧新增一列', function(){
     hideCtxMenu();
     quickAddProject(proj.order);
   }));
@@ -3730,7 +3795,7 @@ function showCtxMenu(x, y, proj, thEl){
 
   // Delete
   if(sortedProjects().length > 1){
-    var delItem = mkCtxItem('🗑️ 删除此列', function(){
+    var delItem = mkCtxItem('删除此列', function(){
       hideCtxMenu();
       showConfirm('删除确认', '确定要删除项目「'+proj.name+'」及其下属的所有任务吗？', function(confirmed){
         if(confirmed){
@@ -4011,11 +4076,14 @@ function makeCard(task){
     timeRow.style.fontSize = '0.68rem';
     timeRow.style.color = '#64748b';
     timeRow.style.fontWeight = '500';
-    var emojiSpan = document.createElement('span');
-    emojiSpan.textContent = '⏰';
+    var clockIcon = document.createElement('span');
+    clockIcon.className = 'wf-icon';
+    clockIcon.style.opacity = '0.75';
+    clockIcon.style.marginRight = '2px';
+    clockIcon.innerHTML = WF_ICONS.clock;
     var timeSpan = document.createElement('span');
     timeSpan.textContent = task.startTime + ' - ' + task.endTime;
-    timeRow.appendChild(emojiSpan);
+    timeRow.appendChild(clockIcon);
     timeRow.appendChild(timeSpan);
     card.appendChild(timeRow);
   }
@@ -4383,7 +4451,7 @@ function clearMemoContent(){
   var el = document.getElementById('memoInput');
   var val = (el ? el.value : (data.memo || '')).trim();
   if(!val){
-    showWeekFlowToast('备忘便签已经是空的啦 ✨');
+    showWeekFlowToast('备忘便签已经是空的啦');
     return;
   }
   showConfirm('清空备忘', '确定清空当前备忘便签的内容吗？（此操作仅清空输入框，不存入小纸条）', function(yes){
@@ -4391,7 +4459,7 @@ function clearMemoContent(){
       data.memo = '';
       if(el) el.value = '';
       save(data);
-      showWeekFlowToast('备忘便签已清空 🧹');
+      showWeekFlowToast('备忘便签已清空');
     }
   });
 }
@@ -4455,7 +4523,7 @@ function saveMemoToJournal(){
   var el = document.getElementById('memoInput');
   var val = (el ? el.value : (data.memo || '')).trim();
   if(!val){
-    showWeekFlowToast('备忘录还没有内容哦~ 📝');
+    showWeekFlowToast('备忘录还没有内容哦');
     return;
   }
   
@@ -4475,7 +4543,7 @@ function saveMemoToJournal(){
   save(data);
   playSound('chime');
 
-  showToastWithAction('已存入小纸条 📝', '查看', function(){
+  showToastWithAction('已存入小纸条', '查看', function(){
     switchView('journal');
     highlightJournalCard(newItemId);
   });
@@ -4553,7 +4621,7 @@ function saveTaskToJournal(task){
   save(data);
   playSound('chime');
 
-  showToastWithAction('已存入小纸条 📌', '查看', function(){
+  showToastWithAction('已存入小纸条', '查看', function(){
     switchView('journal');
     highlightJournalCard(newItemId);
   });
@@ -4595,7 +4663,7 @@ function saveCurrentJournalMemo(){
     j.userContent = val;
     save(data);
     renderJournalView();
-    showWeekFlowToast('备忘小纸条已保存 ✨');
+    showWeekFlowToast('备忘小纸条已保存');
   }
   closeJournalMemoModal();
 }
@@ -4608,7 +4676,7 @@ function deleteCurrentJournalMemo(){
       save(data);
       closeJournalMemoModal();
       renderJournalView();
-      showWeekFlowToast('已删除小纸条 🗑️');
+      showWeekFlowToast('已删除小纸条');
     }
   });
 }
@@ -4618,10 +4686,10 @@ function copyCurrentJournalMemo(){
   var text = inputEl ? inputEl.value : '';
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(text).then(function(){
-      showWeekFlowToast('备忘内容已复制 📋');
+      showWeekFlowToast('备忘内容已复制');
     });
   } else {
-    showWeekFlowToast('备忘内容已复制 📋');
+    showWeekFlowToast('备忘内容已复制');
   }
 }
 
@@ -4687,7 +4755,7 @@ function saveCurrentJournalReview(){
     j.userContent = val;
     save(data);
     renderJournalView();
-    showWeekFlowToast('复盘小纸条已保存 ✨');
+    showWeekFlowToast('复盘小纸条已保存');
   }
   closeJournalReviewModal();
 }
@@ -4700,7 +4768,7 @@ function deleteCurrentJournalReview(){
       save(data);
       closeJournalReviewModal();
       renderJournalView();
-      showWeekFlowToast('已删除小纸条 🗑️');
+      showWeekFlowToast('已删除小纸条');
     }
   });
 }
@@ -4713,10 +4781,10 @@ function copyCurrentJournalReview(){
   var fullText = '【周度复盘】\n' + userText + (j && j.aiResponse ? '\n\n【小咪回信】\n' + j.aiResponse : '');
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(fullText).then(function(){
-      showWeekFlowToast('复盘内容已复制 📋');
+      showWeekFlowToast('复盘内容已复制');
     });
   } else {
-    showWeekFlowToast('复盘内容已复制 📋');
+    showWeekFlowToast('复盘内容已复制');
   }
 }
 
@@ -5952,7 +6020,7 @@ if ('serviceWorker' in navigator) {
         <label id="apiKeyLabel" style="display:block;font-size:0.78rem;font-weight:600;color:#475569;margin-bottom:0.3rem;">API Key 密钥</label>
         <div style="position:relative;">
           <input type="password" id="aiApiKeyInput" placeholder="app-..." style="width:100%;padding:0.45rem 2.2rem 0.45rem 0.6rem;border:1px solid #cbd5e1;border-radius:6px;font-size:0.85rem;outline:none;" />
-          <button type="button" onclick="toggleApiKeyVisibility()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#64748b;font-size:0.8rem;">👁️</button>
+          <button type="button" onclick="toggleApiKeyVisibility()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#64748b;font-size:0.8rem;display:flex;align-items:center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
         <div style="font-size:0.7rem;color:#94a3b8;margin-top:3px;">你的 API Key 仅加密保存在本地浏览器中，绝不上传第三方服务器。</div>
       </div>
@@ -5974,7 +6042,7 @@ if ('serviceWorker' in navigator) {
     
     <div style="display:flex;justify-content:end;gap:0.5rem;margin-top:1.25rem;">
       <button onclick="closeAIConfigModal()" style="padding:0.45rem 1rem;border:1px solid #cbd5e1;background:#fff;border-radius:6px;font-size:0.82rem;cursor:pointer;">取消</button>
-      <button onclick="saveAIConfig()" style="padding:0.45rem 1.2rem;border:none;background:#2563eb;color:#fff;border-radius:6px;font-size:0.82rem;font-weight:500;cursor:pointer;">💾 保存 AI 配置</button>
+      <button onclick="saveAIConfig()" style="padding:0.45rem 1.2rem;border:none;background:#2563eb;color:#fff;border-radius:6px;font-size:0.82rem;font-weight:500;cursor:pointer;">保存 AI 配置</button>
     </div>
   </div>
 </div>
@@ -6014,26 +6082,26 @@ if ('serviceWorker' in navigator) {
   <!-- Hover Quick Action Pills -->
   <div class="ai-quick-pills" id="aiQuickPills">
     <button class="ai-pill-btn" onclick="openFloatingAIChatWithPrompt('请根据我本周的任务进度和各个项目背景，为我做一次温暖、深度的周度复盘总结，并给出下周的1-2个微调建议。')">
-      <span>📊</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       <span>周度复盘</span>
     </button>
     <button class="ai-pill-btn" onclick="openFloatingAIChatWithPrompt('分析一下我本周的时间与任务节奏，给我一句真诚暖心的鼓励与状态点评')">
-      <span>✨</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
       <span>暖心鼓励</span>
     </button>
     <button class="ai-pill-btn" onclick="openFloatingAIChat()">
-      <span>💬</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       <span>陪伴聊聊</span>
     </button>
     <button class="ai-pill-btn" onclick="openAIConfigModal()">
-      <span>⚙️</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
       <span>AI配置</span>
     </button>
   </div>
 
   <!-- Avatar Trigger Button -->
   <button class="ai-avatar-btn" id="aiAvatarBtn" onclick="toggleFloatingAIChat()" title="WeekFlow AI 伴跑助手">
-    <span class="ai-avatar-emoji" id="aiAvatarEmoji">🐱</span>
+    <span class="ai-avatar-icon" id="aiAvatarEmoji"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V8l4 3 4-4 4 4 4-3v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="8.5" cy="13.5" r="0.75" fill="currentColor"/><circle cx="15.5" cy="13.5" r="0.75" fill="currentColor"/></svg></span>
     <span class="ai-avatar-badge" id="aiAvatarBadge"></span>
   </button>
 </div>
@@ -6042,33 +6110,33 @@ if ('serviceWorker' in navigator) {
 <div class="ai-chat-modal" id="aiChatModal" style="display:none;">
   <div class="ai-chat-header">
     <div class="ai-chat-header-info">
-      <div class="ai-chat-avatar-sm" id="aiHeaderAvatar">🐱</div>
+      <div class="ai-chat-avatar-sm" id="aiHeaderAvatar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V8l4 3 4-4 4 4 4-3v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="8.5" cy="13.5" r="0.75" fill="currentColor"/><circle cx="15.5" cy="13.5" r="0.75" fill="currentColor"/></svg></div>
       <div>
         <div class="ai-chat-title">WeekFlow 伴跑助手</div>
         <div class="ai-chat-subtitle">聊天 · 复盘 · 一句话操作卡片</div>
       </div>
     </div>
     <div class="ai-chat-header-actions">
-      <button class="ai-icon-btn" onclick="clearAIChatHistory()" title="清空当前对话">🧹</button>
-      <button class="ai-icon-btn" onclick="openAIConfigModal()" title="AI 配置">⚙️</button>
+      <button class="ai-icon-btn" onclick="clearAIChatHistory()" title="清空当前对话"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>
+      <button class="ai-icon-btn" onclick="openAIConfigModal()" title="AI 配置"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></button>
       <button class="ai-icon-btn close" onclick="closeFloatingAIChat()" title="关闭">✕</button>
     </div>
   </div>
 
   <!-- Quick Prompts Chips -->
   <div class="ai-chat-chips">
-    <button class="ai-chip" style="background: #eff6ff; color: #1d4ed8; font-weight: 600; border-color: #bfdbfe;" onclick="triggerWeeklyReviewSkill()">📊 一周总结</button>
-    <button class="ai-chip" style="background: #fdf2f8; color: #db2777; font-weight: 600; border-color: #fbcfe8;" onclick="seedDemoTestData()">🧪 注入测试日程</button>
-    <button class="ai-chip" onclick="quickSendAI('分析一下我本周的时间与任务节奏，给我一句真诚暖心的鼓励与状态点评')">✨ 暖心鼓励</button>
-    <button class="ai-chip" onclick="quickSendAI('周三下午2点到4点在【求职与简历】项目下安排一次面试准备')">➕ 创建任务</button>
+    <button class="ai-chip" style="background: #eff6ff; color: #1d4ed8; font-weight: 600; border-color: #bfdbfe;" onclick="triggerWeeklyReviewSkill()">一周总结</button>
+    <button class="ai-chip" style="background: #fdf2f8; color: #db2777; font-weight: 600; border-color: #fbcfe8;" onclick="seedDemoTestData()">注入测试日程</button>
+    <button class="ai-chip" onclick="quickSendAI('分析一下我本周的时间与任务节奏，给我一句真诚暖心的鼓励与状态点评')">暖心鼓励</button>
+    <button class="ai-chip" onclick="quickSendAI('周三下午2点到4点在【求职与简历】项目下安排一次面试准备')">创建任务</button>
   </div>
 
   <!-- Chat Messages Container -->
   <div class="ai-chat-body" id="aiChatBody">
     <div class="ai-msg-row ai">
-      <div class="ai-msg-avatar">🐱</div>
+      <div class="ai-msg-avatar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V8l4 3 4-4 4 4 4-3v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="8.5" cy="13.5" r="0.75" fill="currentColor"/><circle cx="15.5" cy="13.5" r="0.75" fill="currentColor"/></svg></div>
       <div class="ai-msg-bubble">
-        喵呜~ 我是你的 WeekFlow 专属伴跑助手🐾！<br/>
+        喵呜~ 我是你的 WeekFlow 专属伴跑助手！<br/>
         • 随时找我倾诉心事、聊天或做周度复盘。<br/>
         • 输入 <b>@项目名</b> 可直接关联对应项目的背景与目标。<br/>
         • 也可以直接对我说：<i>“周四下午3点加个开会”</i> 或 <i>“新建一个叫[小红书]的项目”</i>，我可以直接帮你操作卡片哦！
@@ -6228,9 +6296,9 @@ function initAIChatView(){
   if(history.length === 0){
     body.innerHTML = `
       <div class="ai-msg-row ai">
-        <div class="ai-msg-avatar">🐱</div>
+        <div class="ai-msg-avatar">${getWFIcon('catMonogram')}</div>
         <div class="ai-msg-bubble">
-          喵呜~ 我是你的 WeekFlow 专属伴跑助手🐾！<br/>
+          你好！我是你的 WeekFlow 伴跑助手。<br/>
           • 随时找我倾诉心事、聊天或做周度复盘。<br/>
           • 输入 <b>@项目名</b> 可直接关联对应项目的背景与目标。<br/>
           • 也可以直接对我说：<i>“帮我新建一个叫【小红书】的项目”</i> 或 <i>“周四下午3点加个开会”</i>，我可以直接帮你操作卡片哦！
@@ -6287,9 +6355,9 @@ function clearAIChatHistory(){
   if(body){
     body.innerHTML = `
       <div class="ai-msg-row ai">
-        <div class="ai-msg-avatar">🐱</div>
+        <div class="ai-msg-avatar">${getWFIcon('catMonogram')}</div>
         <div class="ai-msg-bubble">
-          已清空对话记录！随时告诉我你的想法，或者让我帮你管理本周日程喵~🐾
+          已清空对话记录！随时告诉我你的想法，或者让我帮你管理本周日程。
         </div>
       </div>
     `;
@@ -6512,12 +6580,12 @@ function getWeeklyReviewData(){
     } else if(p.thisWeekTasks.length > 0){
       var lastWeekSummary = p.lastWeekTasks.length > 0
         ? ('从上周的「' + p.lastWeekTasks.map(function(t){ return t.title; }).join('、') + '」稳步演进，')
-        : '（🌱 本周新开辟主线）';
+        : '（本周新开辟主线）';
       return '- 【' + p.projectName + '】：本周你共推进了 ' + p.thisWeekTasks.length + ' 个任务，包含 ' + taskTitles + '，' + lastWeekSummary + '为生活蓄能。';
     } else {
       var lastWeekSummary = p.lastWeekTasks.length > 0
         ? ('（上周推进了：' + p.lastWeekTasks.map(function(t){ return t.title; }).join('、') + '）')
-        : '（🌱 本周新开辟主线）';
+        : '（本周新开辟主线）';
       return '- 【' + p.projectName + '】：本周暂无新增排期任务。' + lastWeekSummary;
     }
   });
@@ -6585,7 +6653,7 @@ function buildAIContext(userText, projectId){
   if(isReviewPrompt){
     effectiveUserText = `请严格按照以下固定格式结构，为我生成本周的【一周总结】（禁止附带任何 JSON Action 代码块，严禁擅自修改结构）：
 
-喵呜~ 让我为你做一次【一周总结】📊
+让我为你做一次【一周总结】
 
 ${reviewData.introStatsText}
 
@@ -6595,7 +6663,7 @@ ${reviewData.timelineText}
 分项目演进分析：
 ${reviewData.projectEvolutionText}
 
-能量模式洞察：（请结合本周上述真实项目的推进重心与节奏，用真诚敏锐、不落俗套的语言写1-2句专属洞察，严禁使用固定套话，并在末尾附一句有灵气的温暖寄语 🐾）`;
+能量模式洞察：（请结合本周上述真实项目的推进重心与节奏，用真诚敏锐、不落俗套的语言写1-2句专属洞察，严禁使用固定套话，并在末尾附一句有灵气的温暖寄语）`;
   }
 
   var fullSys = sysPrompt
@@ -7252,7 +7320,7 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
     actionResult = executeAIAction(actionObj);
     console.log('[WeekFlow AI Debug] Execution Result:', actionResult);
     if(matchBlock) cleanText = cleanText.replace(matchBlock, '').trim();
-    if(cleanText.indexOf('500') >= 0 || cleanText.indexOf('错误') >= 0) cleanText = '喵呜~ 已经为你安排好啦！卡片已实时同步到你的周看板中 🐾';
+    if(cleanText.indexOf('500') >= 0 || cleanText.indexOf('错误') >= 0) cleanText = '已经为你安排好啦！卡片已实时同步到你的周看板中。';
   }
 
   // Always strip any remaining JSON action code blocks, machine markdown, or HTML comments
@@ -7289,7 +7357,7 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
     intentDesc = '识别到【敏捷伴跑与共情倾诉】意图';
   }
   reactSteps.push({
-    icon: '🔍',
+    icon: getWFIcon('target'),
     title: intentTitle,
     desc: intentDesc
   });
@@ -7317,7 +7385,7 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
     toolDesc = '调用 <code>get_weekly_review_data()</code> 聚合本周 7 天时间脉络与 ' + rData.projectData.length + ' 个跨周项目演进数据';
   }
   reactSteps.push({
-    icon: '🛠️',
+    icon: getWFIcon('sliders'),
     title: toolTitle,
     desc: toolDesc
   });
@@ -7325,7 +7393,7 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
   // Step 3: Action Execution (if action executed)
   if(actionResult){
     reactSteps.push({
-      icon: '⚡',
+      icon: getWFIcon('sparkles'),
       title: '状态变更 (Action Execution)',
       desc: actionResult.header + ' ➔ ' + (actionResult.details ? actionResult.details.replace(/<[^>]+>/g, '') : '')
     });
@@ -7336,10 +7404,10 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
   var verifyDesc = actionResult
     ? '完成状态原子写入，并生成防误触撤销快照 (Action Undo Registry: ' + (actionResult.actionId || 'OK') + ')'
     : (isReviewIntent
-        ? '完成【一周总结】结构化报告生成，已就绪一键存入「小纸条」记忆库 📥'
-        : '完成思维链逻辑推理，生成去负罪感温暖伴跑反馈 🐾');
+        ? '完成【一周总结】结构化报告生成，已就绪一键存入「小纸条」记忆库'
+        : '完成思维链逻辑推理，生成去负罪感温暖伴跑反馈');
   reactSteps.push({
-    icon: '🎯',
+    icon: getWFIcon('grid'),
     title: verifyTitle,
     desc: verifyDesc
   });
@@ -7369,7 +7437,7 @@ function executeAIAction(actionObj){
     return {
       actionId: actId,
       type: 'composite_actions',
-      header: '✨ 已批量完成 ' + results.length + ' 项日程调度',
+      header: '已批量完成 ' + results.length + ' 项日程调度',
       details: results.map(function(r){ return r.details; }).join('<br/>')
     };
   }
@@ -7466,7 +7534,7 @@ function executeAIAction(actionObj){
     return {
       actionId: actId,
       type: 'create_project',
-      header: '📁 已新建项目列',
+      header: '已新建项目列',
       details: '已成功新建项目【' + newProj.name + '】，并加入本周看板！'
     };
   }
@@ -7507,7 +7575,7 @@ function executeAIAction(actionObj){
       return {
         actionId: actId,
         type: 'update_project',
-        header: '🎨 已更新项目列属性',
+        header: '已更新项目列属性',
         details: '项目【' + oldName + '】 ➔ ' + changes.join('，')
       };
     }
@@ -7611,7 +7679,7 @@ function executeAIAction(actionObj){
     return {
       actionId: actId,
       type: 'create_task',
-      header: '✅ 已为你新建任务卡片',
+      header: '已为你新建任务卡片',
       details: '【' + (targetProj ? targetProj.name : '项目') + '】 ' + (newTask.date ? newTask.date + ' ' : '未排期 ') + (timeInfo ? timeInfo + ' ' : '') + newTask.title
     };
   }
@@ -7657,8 +7725,8 @@ function executeAIAction(actionObj){
       return {
         actionId: actId,
         type: 'update_task',
-        header: '✨ 已更新任务卡片',
-        details: '任务「' + oldCopy.title + '」' + (updates.title ? ' ➔ 已重命名为「' + updates.title + '」' : (updates.status === 'done' ? ' ➔ 标记为已完成 🎉' : ' ➔ 属性已更新'))
+        header: '已更新任务卡片',
+        details: '任务「' + oldCopy.title + '」' + (updates.title ? ' ➔ 已重命名为「' + updates.title + '」' : (updates.status === 'done' ? ' ➔ 标记为已完成' : ' ➔ 属性已更新'))
       };
     }
   }
@@ -7691,8 +7759,8 @@ function executeAIAction(actionObj){
     return {
       actionId: actId,
       type: 'clear_tasks',
-      header: '🧹 已清空本周看板',
-      details: '已将本周的 ' + clearedCount + ' 张卡片全部清空，为你腾出崭新的精力空间 🌱'
+      header: '已清空本周看板',
+      details: '已将本周的 ' + clearedCount + ' 张卡片全部清空，为你腾出崭新的精力空间'
     };
   }
   
@@ -7736,7 +7804,7 @@ function executeAIAction(actionObj){
         return {
           actionId: actId,
           type: 'delete_task',
-          header: '🗑 已删除指定日期的任务卡片',
+          header: '已删除指定日期的任务卡片',
           details: '已从 ' + targetDate + ' 中移除全部 ' + deletedTasks.length + ' 张任务卡片！'
         };
       }
@@ -7764,7 +7832,7 @@ function executeAIAction(actionObj){
       return {
         actionId: actId,
         type: 'delete_task',
-        header: '🗑 已删除任务卡片',
+        header: '已删除任务卡片',
         details: '已从日程中移除：「' + deletedTask.title + '」'
       };
     }
@@ -8007,7 +8075,7 @@ function seedDemoTestData(){
   save(data);
   refreshAll();
 
-  showAlert('🎉 测试日程注入成功', '已为<b>本周 (' + curWid + ')</b> 及<b>上周 (' + prevWid + ')</b> 成功注入完整的项目日程与跨周对比基线！<br/><br/>• 点击顶部 <b>◀ 上一周</b> 可直接在看板上查看看板上周的 4 张卡片；<br/>• 点击聊天窗口的<b>【📊 周度深度复盘】</b>即可体验跨周脉络联动复盘！');
+  showAlert('测试日程注入成功', '已为<b>本周 (' + curWid + ')</b> 及<b>上周 (' + prevWid + ')</b> 成功注入完整的项目日程与跨周对比基线！<br/><br/>• 点击顶部 <b>◀ 上一周</b> 可直接在看板上查看看板上周的 4 张卡片；<br/>• 点击聊天窗口的<b>【周度深度复盘】</b>即可体验跨周脉络联动复盘！');
   openFloatingAIChat();
 }
 
@@ -8062,7 +8130,7 @@ async function sendFloatingAIChat(){
   selectedFloatingMentionProjId = null;
   
   sendBtn.disabled = true;
-  sendBtn.innerHTML = '<span style="font-size:0.75rem;">⏳</span>';
+  sendBtn.innerHTML = getWFIcon('clock');
   
   var abortController = new AbortController();
   var isAborted = false;
@@ -8078,7 +8146,7 @@ async function sendFloatingAIChat(){
     } catch(e){}
     if(streamObj && streamObj.bubble){
       streamObj.bubble.classList.remove('ai-msg-streaming');
-      streamObj.bubble.innerHTML = '<span style="color:#94a3b8;font-size:0.8rem;font-style:italic;">已取消本次回复 🐾</span>';
+      streamObj.bubble.innerHTML = '<span style="color:#94a3b8;font-size:0.8rem;font-style:italic;">已取消本次回复</span>';
     }
     sendBtn.disabled = false;
     sendBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
@@ -8098,7 +8166,7 @@ async function sendFloatingAIChat(){
     if(!firstChunkReceived && capsuleElem){
       var txtSpan = capsuleElem.querySelector('.ai-capsule-text');
       if(txtSpan){
-        txtSpan.textContent = '📋 小咪正在规划任务...';
+        txtSpan.textContent = '小咪正在规划任务...';
       }
     }
   }, 2500);
@@ -8112,7 +8180,7 @@ async function sendFloatingAIChat(){
       if(eventType === 'tool_call'){
         if(capsuleElem){
           var txtSpan = capsuleElem.querySelector('.ai-capsule-text');
-          if(txtSpan) txtSpan.textContent = '📋 小咪正在规划任务...';
+          if(txtSpan) txtSpan.textContent = '小咪正在规划任务...';
         }
       } else if(eventType === 'thought'){
         // Keep active or update
@@ -8145,7 +8213,7 @@ async function sendFloatingAIChat(){
     if(isAborted) return;
     
     var parsed = parseAndExecuteAIAction(rawReply, text);
-    var cleanReply = parsed.cleanText || (parsed.actionResult ? '喵呜~ 已经为你处理好啦！🐾' : '喵呜~ 收到！');
+    var cleanReply = parsed.cleanText || (parsed.actionResult ? '已经为你处理好啦！' : '收到！');
     var isReview = (text.indexOf('复盘') >= 0 || text.indexOf('周报') >= 0 || text.indexOf('/review') >= 0 || cleanReply.indexOf('全景概览') >= 0 || cleanReply.indexOf('每日轨迹') >= 0 || cleanReply.indexOf('分项目进展') >= 0 || cleanReply.indexOf('周度深度复盘') >= 0);
     
     // Finalize live streaming bubble
@@ -8186,7 +8254,7 @@ async function sendFloatingAIChat(){
         card.innerHTML = `
           <div class="ai-action-header">${parsed.actionResult.header}</div>
           <div class="ai-action-details">${parsed.actionResult.details}</div>
-          <button class="ai-undo-btn" onclick="undoAIAction('${parsed.actionResult.actionId}', this)">↩️ 撤销本次操作</button>
+          <button class="ai-undo-btn" onclick="undoAIAction('${parsed.actionResult.actionId}', this)">${getWFIcon('undo')} 撤销本次操作</button>
         `;
         bubbleElem.appendChild(card);
       }
@@ -8200,7 +8268,7 @@ async function sendFloatingAIChat(){
         
         var archiveBtn = document.createElement('button');
         archiveBtn.className = 'ai-archive-btn';
-        archiveBtn.innerHTML = '<span>📥 一键存入「小纸条」</span>';
+        archiveBtn.innerHTML = '<span>' + getWFIcon('inbox') + ' 一键存入「小纸条」</span>';
         archiveBtn.onclick = function(){
           archiveReviewToJournal(text || '周度深度复盘', cleanReply, '周度复盘', archiveBtn);
         };
@@ -8231,13 +8299,13 @@ async function sendFloatingAIChat(){
     if(isAborted || (e && (e.name === 'AbortError' || e.message === 'The user aborted a request.'))){
       if(bubbleElem){
         bubbleElem.classList.remove('ai-msg-streaming');
-        bubbleElem.innerHTML = '<span style="color:#94a3b8;font-size:0.8rem;font-style:italic;">已取消本次回复 🐾</span>';
+        bubbleElem.innerHTML = '<span style="color:#94a3b8;font-size:0.8rem;font-style:italic;">已取消本次回复</span>';
       }
       return;
     }
     if(bubbleElem){
       bubbleElem.classList.remove('ai-msg-streaming');
-      bubbleElem.innerHTML = '😿 哎呀，遇到了点小状况：' + e.message + '<br/><br/><span style="font-size:0.75rem;color:#94a3b8;">请检查设置中的 API Key 或网络状况。</span>';
+      bubbleElem.innerHTML = '遇到处理异常：' + e.message + '<br/><br/><span style="font-size:0.75rem;color:#94a3b8;">请检查设置中的 API Key 或网络状况。</span>';
     }
   } finally {
     if(timerInterval) clearInterval(timerInterval);
@@ -8258,14 +8326,14 @@ function createLiveStreamingAIMessage(onCancel){
   
   var avatar = document.createElement('div');
   avatar.className = 'ai-msg-avatar';
-  avatar.textContent = '🐱';
+  avatar.innerHTML = getWFIcon('catMonogram');
   
   var bubble = document.createElement('div');
   bubble.className = 'ai-msg-bubble ai-msg-streaming';
   
   var capsule = document.createElement('div');
   capsule.className = 'ai-thinking-capsule';
-  capsule.innerHTML = '<span class="ai-pulse-dot"></span><span class="ai-capsule-text">💭 小咪正在思考...</span><span class="ai-capsule-timer">1s</span><button class="ai-capsule-cancel-btn" title="取消本次回复">✕ 取消</button>';
+  capsule.innerHTML = '<span class="ai-pulse-dot"></span><span class="ai-capsule-text">小咪正在思考...</span><span class="ai-capsule-timer">1s</span><button class="ai-capsule-cancel-btn" title="取消本次回复">✕ 取消</button>';
   
   var cancelBtn = capsule.querySelector('.ai-capsule-cancel-btn');
   if(cancelBtn && onCancel){
@@ -8316,7 +8384,7 @@ function createReActTraceElement(trace){
   header.onclick = function(){ toggleReActTrace(this); };
   
   header.innerHTML = `
-    <span style="font-size: 0.82rem;">💭</span>
+    <span style="display:inline-flex;align-items:center;">${getWFIcon('sparkles')}</span>
     <span class="ai-react-trace-title">思考与决策链路 (ReAct Trace)</span>
     <span class="ai-react-trace-badge">${trace.badge || (trace.steps.length + ' 步链路')}</span>
     <span class="ai-react-trace-arrow">▼</span>
@@ -8350,7 +8418,7 @@ function createReActTraceElement(trace){
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
-    thinkBox.innerHTML = '<div style="font-size:0.68rem;font-weight:700;color:#6366f1;margin-bottom:3px;">🧠 模型原始思考 (Thought Reasoning):</div>' + cleanRaw;
+    thinkBox.innerHTML = '<div style="font-size:0.68rem;font-weight:700;color:#6366f1;margin-bottom:3px;display:flex;align-items:center;gap:4px;">' + getWFIcon('sliders') + ' 模型原始思考 (Thought Reasoning):</div>' + cleanRaw;
     body.appendChild(thinkBox);
   }
   
@@ -8469,7 +8537,7 @@ function formatAIChatContent(rawContent, role){
 
     html += '<div class="wf-review-banner">';
     if(introTitle){
-      html += '<div class="wf-review-banner-title"><span>📊</span> ' + escapeHtml(introTitle) + '</div>';
+      html += '<div class="wf-review-banner-title">' + getWFIcon('chart') + ' ' + escapeHtml(introTitle) + '</div>';
     }
     if(introBodyArr.length > 0){
       html += '<div class="wf-review-banner-body">' + renderInlineMarkdown(introBodyArr.join('\n')).replace(/\n/g, '<br/>') + '</div>';
@@ -8477,10 +8545,10 @@ function formatAIChatContent(rawContent, role){
     html += '</div>';
   }
 
-  // 2. Timeline Card Block (📅 本周时间脉络)
+  // 2. Timeline Card Block (本周时间脉络)
   if(timelineLines.length > 0){
     html += '<div class="wf-review-block">';
-    html += '<div class="wf-review-block-header"><span style="color:#2563eb;">📅</span> 本周时间脉络</div>';
+    html += '<div class="wf-review-block-header"><span style="color:#2563eb;display:inline-flex;align-items:center;">' + getWFIcon('calendar') + '</span> 本周时间脉络</div>';
     html += '<div class="wf-review-timeline-list">';
 
     timelineLines.forEach(function(l){
@@ -8495,7 +8563,7 @@ function formatAIChatContent(rawContent, role){
         html += '<div class="wf-review-day-badge">' + escapeHtml(dayName) + '</div>';
         html += '<div class="wf-review-day-content">';
         if(isRest){
-          html += '<span class="wf-review-rest-pill">☕ 休息蓄能</span>';
+          html += '<span class="wf-review-rest-pill">休息蓄能</span>';
         } else {
           html += renderInlineMarkdown(dayContent);
         }
@@ -8512,7 +8580,7 @@ function formatAIChatContent(rawContent, role){
   // 3. Project Evolution Card Block (📁 分项目演进分析)
   if(projectLines.length > 0){
     html += '<div class="wf-review-block">';
-    html += '<div class="wf-review-block-header"><span style="color:#8b5cf6;">📁</span> 分项目演进分析</div>';
+    html += '<div class="wf-review-block-header"><span style="color:#8b5cf6;display:inline-flex;align-items:center;">' + getWFIcon('folder') + '</span> 分项目演进分析</div>';
     html += '<div class="wf-review-project-list">';
 
     projectLines.forEach(function(l){
@@ -8524,7 +8592,7 @@ function formatAIChatContent(rawContent, role){
         var pColor = getProjectColorByName(pName);
 
         html += '<div class="wf-review-project-card" style="border-left-color: ' + pColor + ';">';
-        html += '<div class="wf-review-project-title" style="color: ' + pColor + ';">📌 【' + escapeHtml(pName) + '】</div>';
+        html += '<div class="wf-review-project-title" style="color: ' + pColor + ';display:flex;align-items:center;gap:4px;">' + getWFIcon('bookmark') + ' 【' + escapeHtml(pName) + '】</div>';
         html += '<div class="wf-review-project-body">' + renderInlineMarkdown(pContent) + '</div>';
         html += '</div>';
       } else {
@@ -8538,13 +8606,13 @@ function formatAIChatContent(rawContent, role){
   // 4. Energy Insight & Closing Card (🎯 能量模式洞察)
   if(insightLines.length > 0){
     html += '<div class="wf-review-insight-card">';
-    html += '<div class="wf-review-insight-title"><span>🎯</span> 能量模式洞察</div>';
+    html += '<div class="wf-review-insight-title"><span style="display:inline-flex;align-items:center;">' + getWFIcon('target') + '</span> 能量模式洞察</div>';
     
     var mainInsight = [];
     var footNote = [];
     insightLines.forEach(function(l){
       var cleanL = l.replace(/^(?:能量模式洞察|能量洞察)\s*[:：]\s*/i, '').trim();
-      if(cleanL.indexOf('🐾') >= 0 || cleanL.indexOf('下周继续') >= 0 || cleanL.indexOf('猫步') >= 0){
+      if(cleanL.indexOf('下周继续') >= 0 || cleanL.indexOf('猫步') >= 0){
         footNote.push(cleanL);
       } else if(cleanL){
         mainInsight.push(cleanL);
@@ -8573,7 +8641,7 @@ function renderChatMessageElement(role, content, actionResult, isReview, origina
   
   var avatar = document.createElement('div');
   avatar.className = 'ai-msg-avatar';
-  avatar.textContent = (role === 'user') ? '👤' : '🐱';
+  avatar.innerHTML = (role === 'user') ? getWFIcon('user') : getWFIcon('catMonogram');
   
   var bubble = document.createElement('div');
   bubble.className = 'ai-msg-bubble';
@@ -8596,7 +8664,7 @@ function renderChatMessageElement(role, content, actionResult, isReview, origina
     card.innerHTML = `
       <div class="ai-action-header">${actionResult.header}</div>
       <div class="ai-action-details">${actionResult.details}</div>
-      <button class="ai-undo-btn" onclick="undoAIAction('${actionResult.actionId}', this)">↩️ 撤销本次操作</button>
+      <button class="ai-undo-btn" onclick="undoAIAction('${actionResult.actionId}', this)">${getWFIcon('undo')} 撤销本次操作</button>
     `;
     bubble.appendChild(card);
   }
@@ -8610,7 +8678,7 @@ function renderChatMessageElement(role, content, actionResult, isReview, origina
     
     var archiveBtn = document.createElement('button');
     archiveBtn.className = 'ai-archive-btn';
-    archiveBtn.innerHTML = '<span>📥 一键存入「小纸条」</span>';
+    archiveBtn.innerHTML = '<span>' + getWFIcon('inbox') + ' 一键存入「小纸条」</span>';
     archiveBtn.onclick = function(){
       archiveReviewToJournal(originalUserText || '周度深度复盘', content, '周度复盘', archiveBtn);
     };
@@ -8634,9 +8702,9 @@ function appendTypingIndicator(){
   row.className = 'ai-msg-row ai';
   row.id = id;
   row.innerHTML = `
-    <div class="ai-msg-avatar">🐱</div>
+    <div class="ai-msg-avatar">${getWFIcon('catMonogram')}</div>
     <div class="ai-msg-bubble" style="color:#64748b;font-style:italic;">
-      正在思考并组织回答...🐾
+      正在思考并组织回答...
     </div>
   `;
   body.appendChild(row);
@@ -8672,7 +8740,7 @@ function archiveReviewToJournal(userText, aiReply, tag, btnElem){
   }
   
   playSound('chime');
-  showToastWithAction('已存入小纸条 📝', '查看', function(){
+  showToastWithAction('已存入小纸条', '查看', function(){
     switchView('journal');
     highlightJournalCard(newItemId);
   });
@@ -8748,9 +8816,9 @@ function renderJournalView(){
   if(journals.length === 0){
     container.innerHTML = `
       <div style="grid-column: 1 / -1; text-align:center; padding:4rem 1rem; color:#94a3b8; font-size:0.88rem; background:#ffffff; border-radius:14px; border:1px solid #e2e8f0; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
-        <div style="font-size:2.4rem; margin-bottom:0.6rem;">📝</div>
+        <div style="font-size:2.2rem; margin-bottom:0.6rem; display:flex; justify-content:center;">${getWFIcon('note')}</div>
         <div style="font-weight:600; color:#475569; margin-bottom:0.35rem; font-size:0.95rem;">暂无小纸条</div>
-        <div>可以在任务卡右键点击<b>【📌 存入小纸条】</b>、在左侧备忘录点击<b>【📥 存入小纸条】</b>，或在右下角 <b>🐱 伴跑助手</b> 复盘后一键存入！</div>
+        <div>可以在任务卡右键点击<b>【存入小纸条】</b>、在左侧备忘录点击<b>【存入小纸条】</b>，或在右下角伴跑助手复盘后一键存入！</div>
       </div>
     `;
     return;
@@ -8781,12 +8849,12 @@ function renderJournalView(){
       } else {
         tagSpan.style.background = '#e0f2fe';
         tagSpan.style.color = '#0369a1';
-        tagSpan.innerHTML = '📌 任务';
+        tagSpan.innerHTML = getWFIcon('bookmark') + ' 任务';
       }
     } else if (isMemo) {
       tagSpan.style.background = '#fef3c7';
       tagSpan.style.color = '#92400e';
-      tagSpan.innerHTML = '📝 备忘';
+      tagSpan.innerHTML = getWFIcon('note') + ' 备忘';
     } else {
       if (j.projectId && projById(j.projectId)){
         var p = projById(j.projectId);
@@ -8796,7 +8864,7 @@ function renderJournalView(){
       } else {
         tagSpan.style.background = '#eff6ff';
         tagSpan.style.color = '#1d4ed8';
-        tagSpan.innerHTML = '📖 复盘';
+        tagSpan.innerHTML = getWFIcon('book') + ' 复盘';
       }
     }
     
@@ -8819,7 +8887,7 @@ function renderJournalView(){
     var delBtn = document.createElement('button');
     delBtn.className = 'sticky-note-del';
     delBtn.title = '删除此条小纸条';
-    delBtn.textContent = '🗑';
+    delBtn.innerHTML = getWFIcon('trash');
     delBtn.onclick = function(e){
       e.stopPropagation();
       showConfirm('删除确认', '确定删除这条小纸条吗？', function(yes){
@@ -8863,19 +8931,19 @@ function renderJournalView(){
       if (effectiveSub) {
         var subSpan = document.createElement('span');
         subSpan.className = 'sticky-task-pill';
-        subSpan.textContent = '🏷️ ' + effectiveSub;
+        subSpan.innerHTML = getWFIcon('tag') + ' ' + escapeHtml(effectiveSub);
         metaWrap.appendChild(subSpan);
       }
       if (effectiveDate) {
         var dateSpan = document.createElement('span');
         dateSpan.className = 'sticky-task-pill';
-        dateSpan.textContent = '📅 ' + (effectiveDate.length >= 10 ? effectiveDate.substring(5) : effectiveDate);
+        dateSpan.innerHTML = getWFIcon('calendar') + ' ' + (effectiveDate.length >= 10 ? effectiveDate.substring(5) : effectiveDate);
         metaWrap.appendChild(dateSpan);
       }
       if (effectiveStartTime) {
         var timePill = document.createElement('span');
         timePill.className = 'sticky-task-pill';
-        timePill.textContent = '⏰ ' + effectiveStartTime + (effectiveEndTime ? '-' + effectiveEndTime : '');
+        timePill.innerHTML = getWFIcon('clock') + ' ' + effectiveStartTime + (effectiveEndTime ? '-' + effectiveEndTime : '');
         metaWrap.appendChild(timePill);
       }
       if (metaWrap.children.length > 0) {
@@ -8885,7 +8953,7 @@ function renderJournalView(){
       if (effectiveDesc && effectiveDesc.trim()) {
         var descDiv = document.createElement('div');
         descDiv.className = 'sticky-task-desc';
-        descDiv.innerHTML = '<div style="font-size:0.75rem; font-weight:600; color:#64748b; margin-bottom:0.3rem; display:flex; align-items:center; gap:4px;"><span>📝</span> 任务详情</div>' +
+        descDiv.innerHTML = '<div style="font-size:0.75rem; font-weight:600; color:#64748b; margin-bottom:0.3rem; display:flex; align-items:center; gap:4px;">' + getWFIcon('note') + ' 任务详情</div>' +
           effectiveDesc.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br/>');
         bodyDiv.appendChild(descDiv);
       }
