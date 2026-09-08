@@ -2657,8 +2657,7 @@ var DEFAULT_SYSTEM_PROMPT = `你是一只温柔、贴心、懂行为心理学与
    - 【项目名 1】：本周你共完成了 N 个任务，分别是 xxx、xxx、xxx，从上周...走向本周...（结合跨周演进深度点评）
    - 【项目名 2】：本周你共完成了 N 个任务，分别是 xxx、xxx...
 
-   能量模式洞察：你展现了优秀的并行处理能力，在技术产品与职业发展间找到了平衡节奏 🎯
-   下周继续保持这种轻盈的切换，让每个项目都像猫步一样优雅从容 🐾
+   能量模式洞察：（根据用户本周真实推进节奏与重点，给出 1-2 句真诚、接地气的敏锐洞察，并附一句温暖有灵气的寄语。严禁使用固定套话，杜绝千篇一律）
 
 3. ⚡ 自然语言操控卡片与项目：
    仅当用户明确表达了“帮我加个任务”、“修改任务”、“删除任务”、“新建项目”等卡片管理意图时，才在回答末尾附带一个且仅一个严格合法的 JSON Action 代码块：
@@ -2720,7 +2719,7 @@ function getAIConfig(){
       systemPrompt: DEFAULT_SYSTEM_PROMPT
     };
   }
-  if(!data.aiConfig.systemPrompt || data.aiConfig.systemPrompt.indexOf('一周总结') === -1) {
+  if(!data.aiConfig.systemPrompt || data.aiConfig.systemPrompt.indexOf('一周总结') === -1 || data.aiConfig.systemPrompt.indexOf('猫步一样优雅从容') >= 0) {
     data.aiConfig.systemPrompt = DEFAULT_SYSTEM_PROMPT;
   }
   return data.aiConfig;
@@ -6529,8 +6528,7 @@ ${reviewData.timelineText}
 分项目演进分析：
 ${reviewData.projectEvolutionText}
 
-能量模式洞察：你展现了优秀的并行处理能力，在技术产品与职业发展间找到了平衡节奏 🎯
-下周继续保持这种轻盈的切换，让每个项目都像猫步一样优雅从容 🐾`;
+能量模式洞察：（请结合本周上述真实项目的推进重心与节奏，用真诚敏锐、不落俗套的语言写1-2句专属洞察，严禁使用固定套话，并在末尾附一句有灵气的温暖寄语 🐾）`;
   }
 
   var fullSys = sysPrompt
