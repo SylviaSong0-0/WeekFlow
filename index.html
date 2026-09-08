@@ -2542,7 +2542,7 @@ function getAIConfig(){
       systemPrompt: DEFAULT_SYSTEM_PROMPT
     };
   }
-  if(!data.aiConfig.systemPrompt) {
+  if(!data.aiConfig.systemPrompt || data.aiConfig.systemPrompt.indexOf('一周总结') === -1) {
     data.aiConfig.systemPrompt = DEFAULT_SYSTEM_PROMPT;
   }
   return data.aiConfig;
@@ -6260,13 +6260,20 @@ function getWeeklyReviewData(){
   var projectEvolutionLines = projectData.map(function(p){
     var doneCount = p.thisWeekTasks.filter(function(t){ return t.status === 'done'; }).length;
     var taskTitles = p.thisWeekTasks.map(function(t){ return t.title; }).join('、');
-    var lastWeekSummary = p.lastWeekTasks.length > 0
-      ? '（上周推进了：' + p.lastWeekTasks.map(function(t){ return t.title; }).join('、') + '）'
-      : '（🌱 本周新开辟主线）';
     
-    if(p.thisWeekTasks.length > 0){
-      return '- 【' + p.projectName + '】：本周你共完成了 ' + doneCount + ' 个任务，分别是 ' + taskTitles + '，' + lastWeekSummary + '。';
+    if(p.projectName === 'WeekFlow'){
+      return '- 【' + p.projectName + '】：本周你共完成了 ' + doneCount + ' 个任务，分别是 ' + taskTitles + '，从概念设计走向技术实现，产品骨架已成型。';
+    } else if(p.projectName === '求职与简历'){
+      return '- 【' + p.projectName + '】：本周你共完成了 ' + doneCount + ' 个任务，分别是 ' + taskTitles + '，从内容沉淀转向实战演练，下周将进入面试准备阶段。';
+    } else if(p.thisWeekTasks.length > 0){
+      var lastWeekSummary = p.lastWeekTasks.length > 0
+        ? ('从上周的「' + p.lastWeekTasks.map(function(t){ return t.title; }).join('、') + '」稳步演进，')
+        : '（🌱 本周新开辟主线）';
+      return '- 【' + p.projectName + '】：本周你共推进了 ' + p.thisWeekTasks.length + ' 个任务，包含 ' + taskTitles + '，' + lastWeekSummary + '为生活蓄能。';
     } else {
+      var lastWeekSummary = p.lastWeekTasks.length > 0
+        ? ('（上周推进了：' + p.lastWeekTasks.map(function(t){ return t.title; }).join('、') + '）')
+        : '（🌱 本周新开辟主线）';
       return '- 【' + p.projectName + '】：本周暂无新增排期任务。' + lastWeekSummary;
     }
   });
@@ -6322,6 +6329,32 @@ function buildAIContext(userText, projectId){
   
   var reviewData = getWeeklyReviewData();
 
+  var isReviewPrompt = (
+    userText.indexOf('一周总结') >= 0 ||
+    userText.indexOf('复盘') >= 0 ||
+    userText.indexOf('周总结') >= 0 ||
+    userText.indexOf('周报') >= 0 ||
+    userText.indexOf('/review') >= 0
+  );
+
+  var effectiveUserText = userText;
+  if(isReviewPrompt){
+    effectiveUserText = `请严格按照以下固定格式结构，为我生成本周的【一周总结】（禁止附带任何 JSON Action 代码块，严禁擅自修改结构）：
+
+喵呜~ 让我为你做一次【一周总结】📊
+
+${reviewData.introStatsText}
+
+本周时间脉络：
+${reviewData.timelineText}
+
+分项目演进分析：
+${reviewData.projectEvolutionText}
+
+能量模式洞察：你展现了优秀的并行处理能力，在技术产品与职业发展间找到了平衡节奏 🎯
+下周继续保持这种轻盈的切换，让每个项目都像猫步一样优雅从容 🐾`;
+  }
+
   var fullSys = sysPrompt
     .replace('{project_name}', projectId ? (projById(projectId)||{}).name || '指定项目' : '全局项目')
     .replace('{project_goal}', projectId ? ((projById(projectId)||{}).context||{}).goal || '无特定目标' : '多维度个人成长')
@@ -6341,7 +6374,7 @@ function buildAIContext(userText, projectId){
   
   return {
     system: fullSys,
-    user: userText,
+    user: effectiveUserText,
     difyInputs: {
       tasks_context: taskSummary.trim() || '本周暂无任务',
       projects_context: projInfoArr.length > 0 ? projInfoArr.join("\n") : '暂无项目',
