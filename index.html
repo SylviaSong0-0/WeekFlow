@@ -2027,6 +2027,9 @@ input,select,textarea{font-family:inherit}
           <div class="settings-menu-item" id="soundToggleBtn" onclick="toggleSound()">
             <span>🔊 音效: 开</span>
           </div>
+          <div class="settings-menu-item" onclick="seedDemoTestData(); closeSettingsMenu();">
+            <span>🧪 注入精选测试日程</span>
+          </div>
           <div style="height:1px;background:#e2e8f0;margin:4px 0;"></div>
           <div class="settings-menu-item danger" onclick="clearThisWeek(); closeSettingsMenu();">
             <span>🗑 清空本周</span>
@@ -5816,9 +5819,9 @@ if ('serviceWorker' in navigator) {
   <!-- Quick Prompts Chips -->
   <div class="ai-chat-chips">
     <button class="ai-chip" style="background: #eff6ff; color: #1d4ed8; font-weight: 600; border-color: #bfdbfe;" onclick="triggerWeeklyReviewSkill()">📊 周度深度复盘</button>
+    <button class="ai-chip" style="background: #fdf2f8; color: #db2777; font-weight: 600; border-color: #fbcfe8;" onclick="seedDemoTestData()">🧪 注入测试日程</button>
     <button class="ai-chip" onclick="quickSendAI('分析一下我本周的时间与任务节奏，给我一句真诚暖心的鼓励与状态点评')">✨ 暖心鼓励</button>
-    <button class="ai-chip" onclick="quickSendAI('周三下午2点到4点在【找工作】项目下安排一次面试准备')">➕ 创建任务</button>
-    <button class="ai-chip" onclick="quickSendAI('帮我新建一个叫【小红书运营】的项目')">📁 新建项目</button>
+    <button class="ai-chip" onclick="quickSendAI('周三下午2点到4点在【求职与简历】项目下安排一次面试准备')">➕ 创建任务</button>
   </div>
 
   <!-- Chat Messages Container -->
@@ -7428,6 +7431,197 @@ function undoAIAction(actId, btnElem){
     }
     showAlert('已撤销', '本次 AI 操作已成功回滚！');
   }
+}
+
+function seedDemoTestData(){
+  var curWid = currentWeekId();
+  var prevWid = getPreviousWeekId(curWid);
+  var dates = getWeekDates();
+
+  // 1. Setup Projects for this week and previous week
+  var wfProjId = 'p_demo_wf';
+  var jobProjId = 'p_demo_job';
+  var lifeProjId = 'p_demo_life';
+
+  // Remove existing demo projects or reset projects for curWid & prevWid
+  data.projects = data.projects.filter(function(p){
+    return p.weekId !== curWid && p.weekId !== prevWid;
+  });
+
+  var curProjects = [
+    { id: wfProjId, name: 'WeekFlow', color: '#3b82f6', order: 0, weekId: curWid },
+    { id: jobProjId, name: '求职与简历', color: '#8b5cf6', order: 1, weekId: curWid },
+    { id: lifeProjId, name: '生活日常', color: '#10b981', order: 2, weekId: curWid }
+  ];
+  var prevProjects = [
+    { id: wfProjId, name: 'WeekFlow', color: '#3b82f6', order: 0, weekId: prevWid },
+    { id: jobProjId, name: '求职与简历', color: '#8b5cf6', order: 1, weekId: prevWid }
+  ];
+
+  data.projects.push.apply(data.projects, curProjects);
+  data.projects.push.apply(data.projects, prevProjects);
+
+  // 2. Clear tasks in curWid and prevWid
+  var curDateStrs = dates.map(function(d){ return d.date; });
+  data.tasks = data.tasks.filter(function(t){
+    var isCur = (t.weekId === curWid) || (t.date && curDateStrs.indexOf(t.date) >= 0);
+    var isPrev = (t.weekId === prevWid);
+    return !isCur && !isPrev;
+  });
+
+  // 3. Inject Previous Week Tasks (Baseline for cross-week comparison)
+  var prevTasks = [
+    {
+      id: 't_prev_1',
+      title: '设计周看板三栏交互原型与高保真视觉规范',
+      projectId: wfProjId,
+      date: '',
+      startTime: '',
+      endTime: '',
+      status: 'done',
+      weekId: prevWid,
+      order: 0
+    },
+    {
+      id: 't_prev_2',
+      title: '搭建 LocalStorage 本地离线持久化与数据导出模块',
+      projectId: wfProjId,
+      date: '',
+      startTime: '',
+      endTime: '',
+      status: 'done',
+      weekId: prevWid,
+      order: 1
+    },
+    {
+      id: 't_prev_3',
+      title: '梳理近 3 年核心项目成果与代表性系统架构案例',
+      projectId: jobProjId,
+      date: '',
+      startTime: '',
+      endTime: '',
+      status: 'done',
+      weekId: prevWid,
+      order: 0
+    }
+  ];
+
+  // 4. Inject Current Week Tasks (Monday - Friday, Sat-Sun empty for rest)
+  var curTasks = [
+    // 周一 (Mon) - WeekFlow 推进
+    {
+      id: 't_cur_1',
+      title: '完成 ReAct 思考与工具感知链路架构设计',
+      projectId: wfProjId,
+      date: dates[0].date,
+      startTime: '09:30',
+      endTime: '12:00',
+      status: 'done',
+      weekId: curWid,
+      order: 0
+    },
+    {
+      id: 't_cur_2',
+      title: '实现 AI 执行痕迹折叠面板与四阶段感知动画',
+      projectId: wfProjId,
+      date: dates[0].date,
+      startTime: '14:00',
+      endTime: '17:30',
+      status: 'done',
+      weekId: curWid,
+      order: 1
+    },
+    // 周二 (Tue) - 求职与简历
+    {
+      id: 't_cur_3',
+      title: '完成中英文双语简历 V2.0 重塑与量化亮点提炼',
+      projectId: jobProjId,
+      date: dates[1].date,
+      startTime: '10:00',
+      endTime: '12:00',
+      status: 'done',
+      weekId: curWid,
+      order: 0
+    },
+    {
+      id: 't_cur_4',
+      title: '模拟两轮大厂系统设计与核心行为面试 (Mock Interview)',
+      projectId: jobProjId,
+      date: dates[1].date,
+      startTime: '14:30',
+      endTime: '16:30',
+      status: 'done',
+      weekId: curWid,
+      order: 1
+    },
+    // 周三 (Wed) - WeekFlow + 生活日常
+    {
+      id: 't_cur_5',
+      title: '开发周度深度复盘 Skill 与跨周数据联动引擎',
+      projectId: wfProjId,
+      date: dates[2].date,
+      startTime: '10:00',
+      endTime: '12:30',
+      status: 'done',
+      weekId: curWid,
+      order: 0
+    },
+    {
+      id: 't_cur_6',
+      title: '晚间 5 公里户外慢跑与体能拉伸恢复',
+      projectId: lifeProjId,
+      date: dates[2].date,
+      startTime: '19:00',
+      endTime: '20:30',
+      status: 'done',
+      weekId: curWid,
+      order: 1
+    },
+    // 周四 (Thu) - WeekFlow + 求职
+    {
+      id: 't_cur_7',
+      title: '全面测试跨周项目演进对比与空状态防御逻辑',
+      projectId: wfProjId,
+      date: dates[3].date,
+      startTime: '10:00',
+      endTime: '11:30',
+      status: 'done',
+      weekId: curWid,
+      order: 0
+    },
+    {
+      id: 't_cur_8',
+      title: '向 3 家心仪一线团队投递简历并完成内推跟进',
+      projectId: jobProjId,
+      date: dates[3].date,
+      startTime: '15:00',
+      endTime: '16:30',
+      status: 'done',
+      weekId: curWid,
+      order: 1
+    },
+    // 周五 (Fri) - 生活日常 (待办)
+    {
+      id: 't_cur_9',
+      title: '采购周末精选料理食材并做深度工作台收纳',
+      projectId: lifeProjId,
+      date: dates[4].date,
+      startTime: '18:00',
+      endTime: '19:30',
+      status: 'todo',
+      weekId: curWid,
+      order: 0
+    }
+  ];
+
+  data.tasks.push.apply(data.tasks, prevTasks);
+  data.tasks.push.apply(data.tasks, curTasks);
+
+  save(data);
+  render();
+
+  showAlert('🎉 测试日程注入成功', '已为当前周 (' + curWid + ') 及上周 (' + prevWid + ') 注入包含 WeekFlow、求职与简历、生活日常 等 3 个维度的跨周对比测试任务！<br/><br/>👉 点击聊天窗口的<b>【📊 周度深度复盘】</b>或输入 <code>/review</code> 即可立即测试！');
+  openFloatingAIChat();
 }
 
 function triggerWeeklyReviewSkill(){
