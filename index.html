@@ -102,14 +102,46 @@ input,select,textarea{font-family:inherit}
 .memo-textarea::placeholder{
   color:#ca8a04;opacity:0.6;
 }
-.memo-save-btn{
+.memo-btn-row{
   margin-top:0.35rem;
-  width:100%;
+  display:flex;
+  gap:0.35rem;
+}
+.memo-clear-btn{
+  flex: 1;
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:0.35rem;
-  padding:0.35rem 0.6rem;
+  gap:0.25rem;
+  padding:0.35rem 0.4rem;
+  background:#f1f5f9;
+  border:1px solid #e2e8f0;
+  border-radius:6px;
+  color:#64748b;
+  font-size:0.75rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family:inherit;
+  white-space: nowrap;
+}
+.memo-clear-btn:hover{
+  background:#fee2e2;
+  border-color:#fca5a5;
+  color:#b91c1c;
+  box-shadow:0 1px 3px rgba(239, 68, 68, 0.15);
+  transform:translateY(-1px);
+}
+.memo-clear-btn:active{
+  transform:translateY(0);
+}
+.memo-save-btn{
+  flex: 1.15;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0.25rem;
+  padding:0.35rem 0.45rem;
   background:#fef08a;
   border:1px solid #fde047;
   border-radius:6px;
@@ -120,6 +152,7 @@ input,select,textarea{font-family:inherit}
   transition:all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   font-family:inherit;
   box-shadow:0 1px 2px rgba(234, 179, 8, 0.12);
+  white-space: nowrap;
 }
 .memo-save-btn:hover{
   background:#fde047;
@@ -2169,9 +2202,14 @@ input,select,textarea{font-family:inherit}
     <div class="memo-zone">
       <div class="memo-resize-handle" id="memoResizeHandle" title="按住上下拖拽调大小 / 点击快速展开收起">⤢</div>
       <textarea class="memo-textarea" id="memoInput" placeholder="随时记录灵感或闪念..." oninput="handleMemoInput(this.value)"></textarea>
-      <button class="memo-save-btn" id="memoSaveBtn" onclick="saveMemoToJournal()" title="将当前备忘内容存入小纸条">
-        <span>📥 存入小纸条</span>
-      </button>
+      <div class="memo-btn-row">
+        <button class="memo-clear-btn" id="memoClearBtn" onclick="clearMemoContent()" title="仅清空当前备忘内容，不存入小纸条">
+          <span>🧹 清空备忘</span>
+        </button>
+        <button class="memo-save-btn" id="memoSaveBtn" onclick="saveMemoToJournal()" title="将当前备忘内容存入小纸条">
+          <span>📥 存入小纸条</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -4339,6 +4377,23 @@ function renderMemo(){
 function handleMemoInput(val){
   data.memo = val;
   save(data);
+}
+
+function clearMemoContent(){
+  var el = document.getElementById('memoInput');
+  var val = (el ? el.value : (data.memo || '')).trim();
+  if(!val){
+    showWeekFlowToast('备忘便签已经是空的啦 ✨');
+    return;
+  }
+  showConfirm('清空备忘', '确定清空当前备忘便签的内容吗？（此操作仅清空输入框，不存入小纸条）', function(yes){
+    if(yes){
+      data.memo = '';
+      if(el) el.value = '';
+      save(data);
+      showWeekFlowToast('备忘便签已清空 🧹');
+    }
+  });
 }
 
 function showToastWithAction(message, actionText, onAction){
