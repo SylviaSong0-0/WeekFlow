@@ -2455,40 +2455,35 @@ var DEFAULT_SYSTEM_PROMPT = `你是一只温柔、贴心、懂行为心理学与
 
 【你的核心能力与交互规范】：
 1. 💬 陪伴与聊天：当用户倾诉疲惫、焦虑或分享琐事时，给予真诚的共情与温柔鼓励，绝无爹味说教。
-2. 📊 周度深度复盘技能（核心）：
-   当用户请求复盘（周复盘、周报、总结本周、/review 等）时，绝对不要统计虚假的拖延时间！必须严格基于系统注入的真实数据，按以下三层结构输出清晰、利落、有温度的报告：
+2. 📊 【一周总结】技能（核心）：
+   当用户请求总结/复盘（如输入“一周总结”、“周复盘”、“周报”、“/review”等）时：
+   - ⚠️ 绝对严禁附带任何创建或修改任务的 JSON Action 代码块！
+   - ⚠️ 绝对不要统计虚假的拖延时间！
+   - 必须严格基于系统注入的真实数据，按以下标准结构输出清晰、利落、温暖有力的报告：
 
-   # 📊 【周ID】周度深度复盘报告
+   喵呜~ 让我为你做一次【一周总结】📊
 
-   ## 🌟 一、 本周全景概览
-   （用 80~120 字简练概括本周的整体节奏、核心突破与精力主线，语气温暖且有力量。）
+   本周你在 M 个项目中创建/推进了 N 张卡片，其中【XX】项目最多，创建了 X 张卡片，...。【YY】项目本周没有创建卡片，没关系下周继续加油。。
 
-   ---
+   本周时间脉络：
+   - 周一：【项目名】具体事项（如：【WeekFlow】交互设计）
+   - 周二：【项目名】具体事项（如：【WeekFlow】本地存储）
+   - 周三：【项目名】具体事项（若多个项目如：【WeekFlow】复盘引擎 / 【生活日常】5公里慢跑）
+   - 周四：【项目名】具体事项
+   - 周五：【项目名】具体事项
+   - 周六：【休息】
+   - 周日：【休息】
+   （周一至周日按日列出，无任务的日子直接写：【休息】）
 
-   ## 📅 二、 每日轨迹与节奏脉络
-   - **周一 (MM/DD) · 【主导项目名称】**
-     - 核心推进：列出当天主要完成或推进的任务事项
-   - **周二 (MM/DD) · 【主导项目名称】**
-     - 核心推进：具体推进事项
-   - **周三 (MM/DD) · 【休息】**
-     - 暂无排期任务，休息蓄能
-     ...（周一至周日完整列出，无任务的日子关键词直接写【休息】）
+   分项目演进分析：
+   - 【项目名 1】：本周你共完成了 N 个任务，分别是 xxx、xxx、xxx，从上周...走向本周...（结合跨周演进深度点评）
+   - 【项目名 2】：本周你共完成了 N 个任务，分别是 xxx、xxx...
 
-   ---
+   能量模式洞察：你展现了优秀的并行处理能力，在技术产品与职业发展间找到了平衡节奏 🎯
+   下周继续保持这种轻盈的切换，让每个项目都像猫步一样优雅从容 🐾
 
-   ## 📁 三、 分项目进展与跨周演进
-
-   ### 📌 【项目名 1】
-   - **⏪ 上周脉络**：若上周有推进记录，简述上周基础；若无则写“🌱 本周新开辟主线”
-   - **✨ 本周核心进展**：具体列出本周已完成或关键推进的里程碑
-
-   ### 📌 【项目名 2】
-   - **⏪ 上周脉络**：上周推进事项
-   - **✨ 本周核心进展**：本周核心进展
-
-3. ⚡ 自然语言操控卡片与项目（非常重要！）：
-   当用户表达了“帮我加个任务”、“修改任务”、“删除任务”、“新建项目”等明确操作意图时，你必须在文字回复末尾附带一个且仅一个严格合法的 JSON Action 代码块，格式如下：
-
+3. ⚡ 自然语言操控卡片与项目：
+   仅当用户明确表达了“帮我加个任务”、“修改任务”、“删除任务”、“新建项目”等卡片管理意图时，才在回答末尾附带一个且仅一个严格合法的 JSON Action 代码块：
    - 创建任务：
    \`\`\`json
    {
@@ -5818,7 +5813,7 @@ if ('serviceWorker' in navigator) {
 
   <!-- Quick Prompts Chips -->
   <div class="ai-chat-chips">
-    <button class="ai-chip" style="background: #eff6ff; color: #1d4ed8; font-weight: 600; border-color: #bfdbfe;" onclick="triggerWeeklyReviewSkill()">📊 周度深度复盘</button>
+    <button class="ai-chip" style="background: #eff6ff; color: #1d4ed8; font-weight: 600; border-color: #bfdbfe;" onclick="triggerWeeklyReviewSkill()">📊 一周总结</button>
     <button class="ai-chip" style="background: #fdf2f8; color: #db2777; font-weight: 600; border-color: #fbcfe8;" onclick="seedDemoTestData()">🧪 注入测试日程</button>
     <button class="ai-chip" onclick="quickSendAI('分析一下我本周的时间与任务节奏，给我一句真诚暖心的鼓励与状态点评')">✨ 暖心鼓励</button>
     <button class="ai-chip" onclick="quickSendAI('周三下午2点到4点在【求职与简历】项目下安排一次面试准备')">➕ 创建任务</button>
@@ -6167,12 +6162,14 @@ function getWeeklyReviewData(){
   }
 
   // 1. Group this week's tasks by day (周一 ~ 周日)
+  var timelineLines = [];
   var dailyTimeline = {};
   dates.forEach(function(d){
     var dayLabel = d.date.substring(5) + ' (' + d.weekday + ')';
     var dayTasks = data.tasks.filter(function(t){
       return t.date === d.date && (t.weekId === curWid || !t.weekId);
     });
+    
     dailyTimeline[dayLabel] = dayTasks.map(function(t){
       var p = projById(t.projectId);
       return {
@@ -6181,6 +6178,23 @@ function getWeeklyReviewData(){
         status: t.status === 'done' ? '已完成' : '待办'
       };
     });
+
+    if(dayTasks.length === 0){
+      timelineLines.push('- ' + d.weekday + '：【休息】');
+    } else {
+      var projMap = {};
+      dayTasks.forEach(function(t){
+        var p = projById(t.projectId);
+        var pName = p ? p.name : '未分类';
+        if(!projMap[pName]) projMap[pName] = [];
+        projMap[pName].push(t.title);
+      });
+      var parts = [];
+      Object.keys(projMap).forEach(function(pName){
+        parts.push('【' + pName + '】' + projMap[pName].join('、'));
+      });
+      timelineLines.push('- ' + d.weekday + '：' + parts.join(' / '));
+    }
   });
 
   // 2. Group tasks by project (comparing this week vs last week by Project Name)
@@ -6190,7 +6204,6 @@ function getWeeklyReviewData(){
   var allProjNamesMap = {};
   curProjs.forEach(function(p){ if(p.name) allProjNamesMap[p.name] = true; });
   prevProjs.forEach(function(p){ if(p.name) allProjNamesMap[p.name] = true; });
-  // Also collect any project names from all existing projects
   data.projects.forEach(function(p){ if(p.name) allProjNamesMap[p.name] = true; });
   var allProjNames = Object.keys(allProjNamesMap);
 
@@ -6222,11 +6235,50 @@ function getWeeklyReviewData(){
     return p.thisWeekTasks.length > 0 || p.lastWeekTasks.length > 0;
   });
 
+  // 3. Compute Overview Statistics (M, N, X, YY)
+  var activeProjsCount = projectData.filter(function(p){ return p.thisWeekTasks.length > 0; }).length;
+  var totalThisWeekTasksCount = 0;
+  var maxTasksProj = null;
+  var zeroTaskProjs = [];
+
+  projectData.forEach(function(p){
+    var count = p.thisWeekTasks.length;
+    totalThisWeekTasksCount += count;
+    if(count > 0){
+      if(!maxTasksProj || count > maxTasksProj.count){
+        maxTasksProj = { name: p.projectName, count: count };
+      }
+    } else {
+      zeroTaskProjs.push(p.projectName);
+    }
+  });
+
+  var introStatsText = '本周你在 ' + activeProjsCount + ' 个项目中创建/推进了 ' + totalThisWeekTasksCount + ' 张卡片' +
+    (maxTasksProj ? ('，其中【' + maxTasksProj.name + '】项目最多，推进了 ' + maxTasksProj.count + ' 张卡片') : '') +
+    (zeroTaskProjs.length > 0 ? ('。【' + zeroTaskProjs.join('、') + '】项目本周没有创建卡片，没关系下周继续加油。') : '。');
+
+  var projectEvolutionLines = projectData.map(function(p){
+    var doneCount = p.thisWeekTasks.filter(function(t){ return t.status === 'done'; }).length;
+    var taskTitles = p.thisWeekTasks.map(function(t){ return t.title; }).join('、');
+    var lastWeekSummary = p.lastWeekTasks.length > 0
+      ? '（上周推进了：' + p.lastWeekTasks.map(function(t){ return t.title; }).join('、') + '）'
+      : '（🌱 本周新开辟主线）';
+    
+    if(p.thisWeekTasks.length > 0){
+      return '- 【' + p.projectName + '】：本周你共完成了 ' + doneCount + ' 个任务，分别是 ' + taskTitles + '，' + lastWeekSummary + '。';
+    } else {
+      return '- 【' + p.projectName + '】：本周暂无新增排期任务。' + lastWeekSummary;
+    }
+  });
+
   return {
     currentWeekId: curWid,
     lastWeekId: prevWid,
     dailyTimeline: dailyTimeline,
-    projectData: projectData
+    timelineText: timelineLines.join('\n'),
+    projectData: projectData,
+    introStatsText: introStatsText,
+    projectEvolutionText: projectEvolutionLines.join('\n')
   };
 }
 
@@ -6270,16 +6322,6 @@ function buildAIContext(userText, projectId){
   
   var reviewData = getWeeklyReviewData();
 
-  var crossWeekProjectText = reviewData.projectData.map(function(p){
-    var prevStr = p.lastWeekTasks.length > 0
-      ? p.lastWeekTasks.map(function(t){ return "  - [" + t.status + "] " + t.title; }).join("\n")
-      : "  - (上周暂无记录，本周为新开辟主线)";
-    var thisStr = p.thisWeekTasks.length > 0
-      ? p.thisWeekTasks.map(function(t){ return "  - [" + t.status + "] " + t.title; }).join("\n")
-      : "  - (本周无任务)";
-    return "📌 项目【" + p.projectName + "】:\n⏪ 上周脉络:\n" + prevStr + "\n✨ 本周进展:\n" + thisStr;
-  }).join("\n\n");
-
   var fullSys = sysPrompt
     .replace('{project_name}', projectId ? (projById(projectId)||{}).name || '指定项目' : '全局项目')
     .replace('{project_goal}', projectId ? ((projById(projectId)||{}).context||{}).goal || '无特定目标' : '多维度个人成长')
@@ -6290,10 +6332,12 @@ function buildAIContext(userText, projectId){
   fullSys += "\n- 当前选中的周跨度: " + weekRangeStr + " (WeekId: " + currentWeekId() + ", 上周WeekId: " + reviewData.lastWeekId + ")";
   fullSys += "\n- 本周每天的具体日期对照: " + dates.map(function(d){ return d.weekday + "=" + d.date; }).join(", ");
   fullSys += "\n\n【用户现有全部项目列表】:\n" + (projInfoArr.length > 0 ? projInfoArr.join("\n") : "暂无项目");
-  fullSys += "\n\n【本周任务全景进度】:\n" + (taskSummary.trim() || '本周暂无任务');
-  fullSys += "\n\n【跨周各项目对比全景】:\n" + (crossWeekProjectText || "暂无跨周项目数据");
-  fullSys += "\n\n【周度深度复盘专用事实数据（按日聚类与跨周对比 JSON）】:\n" + JSON.stringify(reviewData, null, 2);
-  fullSys += "\n\n【重要指令】：当用户希望新建项目、新建卡片、修改或删除卡片时，你必须在回答末尾附带严格合法的 ```json ... ``` Action 代码块！若用户请求复盘，严格基于上述专用事实数据按三段式输出（注意第三部分分项目进展中，必须体现上周脉络与本周进展）！";
+  fullSys += "\n\n【本周任务全景清单】:\n" + (taskSummary.trim() || '本周暂无任务');
+  fullSys += "\n\n【一周总结专用事实数据（系统已严格对齐，请直接参考）】:";
+  fullSys += "\n- 开头概览统计参考: " + reviewData.introStatsText;
+  fullSys += "\n- 本周时间脉络参考:\n" + reviewData.timelineText;
+  fullSys += "\n- 分项目演进分析参考:\n" + reviewData.projectEvolutionText;
+  fullSys += "\n\n【重要指令】：当用户希望进行【一周总结】或复盘时，绝对不要附带任何 JSON Action 代码块！严格基于上述时间脉络与项目分析输出温和有力量的报告！";
   
   return {
     system: fullSys,
@@ -6302,7 +6346,7 @@ function buildAIContext(userText, projectId){
       tasks_context: taskSummary.trim() || '本周暂无任务',
       projects_context: projInfoArr.length > 0 ? projInfoArr.join("\n") : '暂无项目',
       today_info: todayStr + " (" + todayWeekday + "), 当前周: " + weekRangeStr,
-      review_data: crossWeekProjectText
+      review_data: reviewData.introStatsText + "\n\n" + reviewData.timelineText + "\n\n" + reviewData.projectEvolutionText
     }
   };
 }
@@ -6569,363 +6613,362 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
     }
   }
 
-  // Pattern 1: Native Function Calling / Dify Tool Invocations (Highest Priority)
-  var allActions = [];
-  if(toolCalls.length > 0){
-    for(var i = 0; i < toolCalls.length; i++){
-      var tc = toolCalls[i];
-      var inp = tc.input;
-      if(inp){
-        if(!inp.action){
-          if(tc.tool === 'manage_project' || inp.name){
-            inp.action = (inp.newName || inp.color) ? 'update_project' : 'create_project';
-          } else if(inp.status === 'clear' || inp.clearAll || inp.action === 'clear' || tc.tool === 'clear_tasks'){
-            inp.action = 'clear_tasks';
-          } else if(inp.match || inp.oldTitle || inp.updates || inp.newTitle){
-            inp.action = 'update_task';
-          } else {
-            inp.action = 'create_task';
+  var uPrompt = (userPromptText || '').toLowerCase();
+  var isReviewIntent = (
+    uPrompt.indexOf('复盘') >= 0 ||
+    uPrompt.indexOf('总结') >= 0 ||
+    uPrompt.indexOf('周报') >= 0 ||
+    uPrompt.indexOf('/review') >= 0 ||
+    uPrompt.indexOf('一周总结') >= 0 ||
+    cleanText.indexOf('一周总结') >= 0 ||
+    cleanText.indexOf('本周时间脉络') >= 0 ||
+    cleanText.indexOf('分项目演进分析') >= 0
+  );
+
+  if(!isReviewIntent){
+    // Pattern 1: Native Function Calling / Dify Tool Invocations (Highest Priority)
+    var allActions = [];
+    if(toolCalls.length > 0){
+      for(var i = 0; i < toolCalls.length; i++){
+        var tc = toolCalls[i];
+        var inp = tc.input;
+        if(inp){
+          if(!inp.action){
+            if(tc.tool === 'manage_project' || inp.name){
+              inp.action = (inp.newName || inp.color) ? 'update_project' : 'create_project';
+            } else if(inp.status === 'clear' || inp.clearAll || inp.action === 'clear' || tc.tool === 'clear_tasks'){
+              inp.action = 'clear_tasks';
+            } else if(inp.match || inp.oldTitle || inp.updates || inp.newTitle){
+              inp.action = 'update_task';
+            } else {
+              inp.action = 'create_task';
+            }
+          }
+          allActions.push(inp);
+        }
+      }
+      if(allActions.length > 0) actionObj = allActions.length === 1 ? allActions[0] : { actions: allActions };
+    }
+
+    // Pattern 2: Structured Code block ```json ... ``` inside text
+    if(!actionObj){
+      var codeBlockRegex = /```(?:json)?\s*(\{[\s\S]*?\})\s*```/i;
+      var m1 = codeBlockRegex.exec(cleanText);
+      if(m1){
+        var p1 = safeParseJson(m1[1]);
+        if(p1 && p1.action){ actionObj = p1; matchBlock = m1[0]; }
+      }
+    }
+
+    // Pattern 3: Raw inline JSON object with "action"
+    if(!actionObj){
+      var rawJsonRegex = /\{\s*"action"\s*:\s*"[^"]+"[\s\S]*?\}/i;
+      var m2 = rawJsonRegex.exec(cleanText);
+      if(m2){
+        var p2 = safeParseJson(m2[0]);
+        if(p2 && p2.action){ actionObj = p2; matchBlock = m2[0]; }
+      }
+    }
+
+    // Pattern 4: Extract action decisions directly from reasoning/think tags (e.g. DeepSeek-R1)
+    if(!actionObj && replyText.indexOf('<think>') >= 0){
+      var thinkMatch = /<think>([\s\S]*?)<\/think>/i.exec(replyText);
+      if(thinkMatch && thinkMatch[1]){
+        var thinkContent = thinkMatch[1];
+        var mThinkJson = /```(?:json)?\s*(\{[\s\S]*?\})\s*```/i.exec(thinkContent) || /\{\s*"action"\s*:\s*"[^"]+"[\s\S]*?\}/i.exec(thinkContent);
+        if(mThinkJson){
+          var pThink = safeParseJson(mThinkJson[1] || mThinkJson[0]);
+          if(pThink && pThink.action) actionObj = pThink;
+        }
+        if(!actionObj){
+          var mAct = /(?:manage_task|manage_project)\s+with\s+action=["']([^"']+)["'](?:,\s*title=["']([^"']+)["'])?/i.exec(thinkContent);
+          if(!mAct) mAct = /action=["']([^"']+)["'](?:,\s*title=["']([^"']+)["'])?/i.exec(thinkContent);
+          if(mAct){
+            actionObj = { action: mAct[1], title: mAct[2] || '', match: mAct[2] || '' };
           }
         }
-        allActions.push(inp);
       }
     }
-    if(allActions.length > 0) actionObj = allActions.length === 1 ? allActions[0] : { actions: allActions };
-  }
 
-  // Pattern 2: Structured Code block ```json ... ``` inside text
-  if(!actionObj){
-    var codeBlockRegex = /```(?:json)?\s*(\{[\s\S]*?\})\s*```/i;
-    var m1 = codeBlockRegex.exec(cleanText);
-    if(m1){
-      var p1 = safeParseJson(m1[1]);
-      if(p1 && p1.action){ actionObj = p1; matchBlock = m1[0]; }
-    }
-  }
+    var dates = getWeekDates();
+    var todayObj = new Date();
+    var todayStr = todayObj.getFullYear() + '-' + ((todayObj.getMonth()+1)<10?'0':'') + (todayObj.getMonth()+1) + '-' + (todayObj.getDate()<10?'0':'') + todayObj.getDate();
 
-  // Pattern 3: Raw inline JSON object with "action"
-  if(!actionObj){
-    var rawJsonRegex = /\{\s*"action"\s*:\s*"[^"]+"[\s\S]*?\}/i;
-    var m2 = rawJsonRegex.exec(cleanText);
-    if(m2){
-      var p2 = safeParseJson(m2[0]);
-      if(p2 && p2.action){ actionObj = p2; matchBlock = m2[0]; }
-    }
-  }
-
-  // Pattern 4: Extract action decisions directly from reasoning/think tags (e.g. DeepSeek-R1)
-  if(!actionObj && replyText.indexOf('<think>') >= 0){
-    var thinkMatch = /<think>([\s\S]*?)<\/think>/i.exec(replyText);
-    if(thinkMatch && thinkMatch[1]){
-      var thinkContent = thinkMatch[1];
-      var mThinkJson = /```(?:json)?\s*(\{[\s\S]*?\})\s*```/i.exec(thinkContent) || /\{\s*"action"\s*:\s*"[^"]+"[\s\S]*?\}/i.exec(thinkContent);
-      if(mThinkJson){
-        var pThink = safeParseJson(mThinkJson[1] || mThinkJson[0]);
-        if(pThink && pThink.action) actionObj = pThink;
-      }
-      if(!actionObj){
-        var mAct = /(?:manage_task|manage_project)\s+with\s+action=["']([^"']+)["'](?:,\s*title=["']([^"']+)["'])?/i.exec(thinkContent);
-        if(!mAct) mAct = /action=["']([^"']+)["'](?:,\s*title=["']([^"']+)["'])?/i.exec(thinkContent);
-        if(mAct){
-          actionObj = { action: mAct[1], title: mAct[2] || '', match: mAct[2] || '' };
+    function extractDate(txt){
+      if(!txt) return '';
+      var isoM = /\b(\d{4}-\d{2}-\d{2})\b/.exec(txt);
+      if(isoM) return isoM[1];
+      
+      var mdM = /(\d{1,2})月(\d{1,2})日/.exec(txt);
+      if(mdM){
+        var mNum = parseInt(mdM[1], 10);
+        var dNum = parseInt(mdM[2], 10);
+        for(var k = 0; k < dates.length; k++){
+          if(dates[k].month === mNum && dates[k].num === dNum) return dates[k].date;
         }
       }
-    }
-  }
-
-  var dates = getWeekDates();
-  var todayObj = new Date();
-  var todayStr = todayObj.getFullYear() + '-' + ((todayObj.getMonth()+1)<10?'0':'') + (todayObj.getMonth()+1) + '-' + (todayObj.getDate()<10?'0':'') + todayObj.getDate();
-
-  function extractDate(txt){
-    if(!txt) return '';
-    var isoM = /\b(\d{4}-\d{2}-\d{2})\b/.exec(txt);
-    if(isoM) return isoM[1];
-    
-    // Match M月D日 (e.g., 9月5日)
-    var mdM = /(\d{1,2})月(\d{1,2})日/.exec(txt);
-    if(mdM){
-      var mNum = parseInt(mdM[1], 10);
-      var dNum = parseInt(mdM[2], 10);
-      for(var k = 0; k < dates.length; k++){
-        if(dates[k].month === mNum && dates[k].num === dNum) return dates[k].date;
-      }
-    }
-    
-    // Match weekday names (周一 ~ 周日, 星期一 ~ 星期日)
-    var lastMatchedDate = '';
-    var maxPos = -1;
-    for(var j = 0; j < dates.length; j++){
-      var d = dates[j];
-      var pos1 = txt.lastIndexOf(d.weekday);
-      var pos2 = txt.lastIndexOf(d.weekday.replace('周','星期'));
-      var p = Math.max(pos1, pos2);
-      if(p > maxPos){
-        maxPos = p;
-        lastMatchedDate = d.date;
-      }
-    }
-    if(lastMatchedDate) return lastMatchedDate;
-
-    // Match relative day keywords (今天, 明天, 后天, 大后天, 昨晚, 今晚, 下午, 早上)
-    function getOffsetDate(offset){
-      var dt = new Date(todayObj.getTime() + offset * 86400000);
-      return dt.getFullYear() + '-' + ((dt.getMonth()+1)<10?'0':'') + (dt.getMonth()+1) + '-' + (dt.getDate()<10?'0':'') + dt.getDate();
-    }
-    if(txt.indexOf('大后天') >= 0) return getOffsetDate(3);
-    if(txt.indexOf('后天') >= 0) return getOffsetDate(2);
-    if(txt.indexOf('明天') >= 0 || txt.indexOf('明早') >= 0 || txt.indexOf('明晚') >= 0) return getOffsetDate(1);
-    if(txt.indexOf('今天') >= 0 || txt.indexOf('今晚') >= 0 || txt.indexOf('今早') >= 0 || txt.indexOf('下午') >= 0 || txt.indexOf('上午') >= 0 || txt.indexOf('晚上') >= 0 || txt.indexOf('中午') >= 0){
-      return getOffsetDate(0);
-    }
-
-    return '';
-  }
-
-  // Pattern 5: Full Semantic Confirmation Fallback (Multi-turn Safety Net)
-  if(!actionObj && cleanText){
-    var uText = (userPromptText || '').toLowerCase();
-    var aText = cleanText.toLowerCase();
-
-    function extractQuotedTitle(txt){
-      if(!txt) return '';
-      var qm = /「([^」]+)」|『([^』]+)』|“([^”]+)”|'([^']+)'|"([^"]+)"/.exec(txt);
-      return qm ? (qm[1] || qm[2] || qm[3] || qm[4] || qm[5] || '').trim() : '';
-    }
-
-    function extractProjectName(txt){
-      if(!txt) return '';
-      var pm = /【([^】]+)】/.exec(txt);
-      if(pm && pm[1] && pm[1].indexOf('项目') === -1) return pm[1].trim();
-      var activeProjs = sortedProjects();
-      for(var k = 0; k < activeProjs.length; k++){
-        var p = activeProjs[k];
-        if(txt.indexOf(p.name) >= 0) return p.name;
-      }
-      return pm ? pm[1].trim() : '';
-    }
-
-    // Enrich existing actionObj with extracted date & project if missing
-    if(actionObj){
-      if(!actionObj.date || actionObj.date === '未排期'){
-        var foundDate = extractDate(cleanText) || extractDate(userPromptText);
-        if(foundDate) actionObj.date = foundDate;
-      }
-      if(!actionObj.projectName && !actionObj.project){
-        var foundProj = extractProjectName(cleanText) || extractProjectName(userPromptText);
-        if(foundProj) actionObj.projectName = foundProj;
-      }
-    }
-
-    // Case 5.1: Create Task (新建/添加任务)
-    var isCreateIntent = (uText.indexOf('建') >= 0 || uText.indexOf('加') >= 0 || uText.indexOf('排') >= 0 || uText.indexOf('安排') >= 0 || uText.indexOf('写') >= 0 || uText.indexOf('做') >= 0 || uText.indexOf('提醒') >= 0 || uText.indexOf('日程') >= 0 || uText.indexOf('计划') >= 0 || uText.indexOf('去') >= 0 || uText.indexOf('打算') >= 0 || uText.indexOf('准备') >= 0 || uText.indexOf('我要') >= 0) ||
-                         (aText.indexOf('建好') >= 0 || aText.indexOf('已添加') >= 0 || aText.indexOf('已为你新建') >= 0 || aText.indexOf('创建好') >= 0 || aText.indexOf('安排在') >= 0 || aText.indexOf('捧在') >= 0 || aText.indexOf('放在') >= 0 || aText.indexOf('加入本周') >= 0 || aText.indexOf('排上') >= 0 || aText.indexOf('为你排好') >= 0);
-    
-    if(!actionObj && isCreateIntent && uText.indexOf('删') === -1 && uText.indexOf('清空') === -1 && uText.indexOf('移除') === -1){
-      var taskTitle = extractQuotedTitle(cleanText) || extractQuotedTitle(userPromptText);
-      if(!taskTitle){
-        var mTitle = /(?:新建|添加|加一个|建一个|安排|写|做|我要去|要去|打算去|准备去|计划去|我要|我想)\s*(?:一个)?\s*([^\s,，。!！]+?)(?:的任务|的日程|卡片|$)/i.exec(userPromptText);
-        if(mTitle && mTitle[1]) taskTitle = mTitle[1].trim();
-      }
-      var targetDate = extractDate(cleanText) || extractDate(userPromptText) || todayStr;
-      var projName = extractProjectName(cleanText) || extractProjectName(userPromptText);
-      var timeM = /\b(\d{1,2}:\d{2})\b/.exec(cleanText) || /\b(\d{1,2}:\d{2})\b/.exec(userPromptText);
-      if(taskTitle && taskTitle !== '今天' && taskTitle !== '本周' && taskTitle !== '任务'){
-        actionObj = { action: "create_task", title: taskTitle, date: targetDate, projectName: projName, startTime: timeM ? timeM[1] : '' };
-      }
-    }
-
-    // Case 5.2: Delete Task or Delete Single Day Tasks (删除任务 / 清空某天任务)
-    if(!actionObj && (uText.indexOf('删') >= 0 || uText.indexOf('清空') >= 0 || uText.indexOf('移除') >= 0 || uText.indexOf('取消') >= 0) &&
-       (aText.indexOf('清理') >= 0 || aText.indexOf('删') >= 0 || aText.indexOf('移除') >= 0 || aText.indexOf('搞定') >= 0 || aText.indexOf('成功') >= 0 || aText.indexOf('取消') >= 0 || aText.indexOf('清空') >= 0)){
       
-      var isClearEntireWeek = (uText.indexOf('本周') >= 0 || uText.indexOf('整周') >= 0 || uText.indexOf('全部') >= 0 || uText.indexOf('所有') >= 0) && (uText.indexOf('今天') === -1 && uText.indexOf('今日') === -1 && uText.indexOf('周') === uText.lastIndexOf('周'));
+      var lastMatchedDate = '';
+      var maxPos = -1;
+      for(var j = 0; j < dates.length; j++){
+        var d = dates[j];
+        var pos1 = txt.lastIndexOf(d.weekday);
+        var pos2 = txt.lastIndexOf(d.weekday.replace('周','星期'));
+        var p = Math.max(pos1, pos2);
+        if(p > maxPos){
+          maxPos = p;
+          lastMatchedDate = d.date;
+        }
+      }
+      if(lastMatchedDate) return lastMatchedDate;
+
+      function getOffsetDate(offset){
+        var dt = new Date(todayObj.getTime() + offset * 86400000);
+        return dt.getFullYear() + '-' + ((dt.getMonth()+1)<10?'0':'') + (dt.getMonth()+1) + '-' + (dt.getDate()<10?'0':'') + dt.getDate();
+      }
+      if(txt.indexOf('大后天') >= 0) return getOffsetDate(3);
+      if(txt.indexOf('后天') >= 0) return getOffsetDate(2);
+      if(txt.indexOf('明天') >= 0 || txt.indexOf('明早') >= 0 || txt.indexOf('明晚') >= 0) return getOffsetDate(1);
+      if(txt.indexOf('今天') >= 0 || txt.indexOf('今晚') >= 0 || txt.indexOf('今早') >= 0 || txt.indexOf('下午') >= 0 || txt.indexOf('上午') >= 0 || txt.indexOf('晚上') >= 0 || txt.indexOf('中午') >= 0){
+        return getOffsetDate(0);
+      }
+
+      return '';
+    }
+
+    // Pattern 5: Full Semantic Confirmation Fallback
+    if(!actionObj && cleanText){
+      var uText = (userPromptText || '').toLowerCase();
+      var aText = cleanText.toLowerCase();
+
+      function extractQuotedTitle(txt){
+        if(!txt) return '';
+        var qm = /「([^」]+)」|『([^』]+)』|“([^”]+)”|'([^']+)'|"([^"]+)"/.exec(txt);
+        return qm ? (qm[1] || qm[2] || qm[3] || qm[4] || qm[5] || '').trim() : '';
+      }
+
+      function extractProjectName(txt){
+        if(!txt) return '';
+        var pm = /【([^】]+)】/.exec(txt);
+        if(pm && pm[1] && pm[1].indexOf('项目') === -1) return pm[1].trim();
+        var activeProjs = sortedProjects();
+        for(var k = 0; k < activeProjs.length; k++){
+          var p = activeProjs[k];
+          if(txt.indexOf(p.name) >= 0) return p.name;
+        }
+        return pm ? pm[1].trim() : '';
+      }
+
+      if(actionObj){
+        if(!actionObj.date || actionObj.date === '未排期'){
+          var foundDate = extractDate(cleanText) || extractDate(userPromptText);
+          if(foundDate) actionObj.date = foundDate;
+        }
+        if(!actionObj.projectName && !actionObj.project){
+          var foundProj = extractProjectName(cleanText) || extractProjectName(userPromptText);
+          if(foundProj) actionObj.projectName = foundProj;
+        }
+      }
+
+      // Case 5.1: Create Task
+      var isCreateIntent = (uText.indexOf('建') >= 0 || uText.indexOf('加') >= 0 || uText.indexOf('排') >= 0 || uText.indexOf('安排') >= 0 || uText.indexOf('写') >= 0 || uText.indexOf('做') >= 0 || uText.indexOf('提醒') >= 0 || uText.indexOf('日程') >= 0 || uText.indexOf('计划') >= 0 || uText.indexOf('去') >= 0 || uText.indexOf('打算') >= 0 || uText.indexOf('准备') >= 0 || uText.indexOf('我要') >= 0) ||
+                           (aText.indexOf('建好') >= 0 || aText.indexOf('已添加') >= 0 || aText.indexOf('已为你新建') >= 0 || aText.indexOf('创建好') >= 0 || aText.indexOf('安排在') >= 0 || aText.indexOf('捧在') >= 0 || aText.indexOf('放在') >= 0 || aText.indexOf('加入本周') >= 0 || aText.indexOf('排上') >= 0 || aText.indexOf('为你排好') >= 0);
       
-      if(isClearEntireWeek && (uText.indexOf('今天') === -1 && uText.indexOf('周一') === -1 && uText.indexOf('周二') === -1 && uText.indexOf('周三') === -1 && uText.indexOf('周四') === -1 && uText.indexOf('周五') === -1 && uText.indexOf('周六') === -1 && uText.indexOf('周日') === -1)){
+      if(!actionObj && isCreateIntent && uText.indexOf('删') === -1 && uText.indexOf('清空') === -1 && uText.indexOf('移除') === -1){
+        var taskTitle = extractQuotedTitle(cleanText) || extractQuotedTitle(userPromptText);
+        if(!taskTitle){
+          var mTitle = /(?:新建|添加|加一个|建一个|安排|写|做|我要去|要去|打算去|准备去|计划去|我要|我想)\s*(?:一个)?\s*([^\s,，。!！]+?)(?:的任务|的日程|卡片|$)/i.exec(userPromptText);
+          if(mTitle && mTitle[1]) taskTitle = mTitle[1].trim();
+        }
+        var targetDate = extractDate(cleanText) || extractDate(userPromptText) || todayStr;
+        var projName = extractProjectName(cleanText) || extractProjectName(userPromptText);
+        var timeM = /\b(\d{1,2}:\d{2})\b/.exec(cleanText) || /\b(\d{1,2}:\d{2})\b/.exec(userPromptText);
+        if(taskTitle && taskTitle !== '今天' && taskTitle !== '本周' && taskTitle !== '任务'){
+          actionObj = { action: "create_task", title: taskTitle, date: targetDate, projectName: projName, startTime: timeM ? timeM[1] : '' };
+        }
+      }
+
+      // Case 5.2: Delete Task
+      if(!actionObj && (uText.indexOf('删') >= 0 || uText.indexOf('清空') >= 0 || uText.indexOf('移除') >= 0 || uText.indexOf('取消') >= 0) &&
+         (aText.indexOf('清理') >= 0 || aText.indexOf('删') >= 0 || aText.indexOf('移除') >= 0 || aText.indexOf('搞定') >= 0 || aText.indexOf('成功') >= 0 || aText.indexOf('取消') >= 0 || aText.indexOf('清空') >= 0)){
+        
+        var isClearEntireWeek = (uText.indexOf('本周') >= 0 || uText.indexOf('整周') >= 0 || uText.indexOf('全部') >= 0 || uText.indexOf('所有') >= 0) && (uText.indexOf('今天') === -1 && uText.indexOf('今日') === -1 && uText.indexOf('周') === uText.lastIndexOf('周'));
+        
+        if(isClearEntireWeek && (uText.indexOf('今天') === -1 && uText.indexOf('周一') === -1 && uText.indexOf('周二') === -1 && uText.indexOf('周三') === -1 && uText.indexOf('周四') === -1 && uText.indexOf('周五') === -1 && uText.indexOf('周六') === -1 && uText.indexOf('周日') === -1)){
+          actionObj = { action: "clear_tasks" };
+        } else {
+          var delDate = extractDate(userPromptText) || extractDate(cleanText);
+          var delTitle = extractQuotedTitle(cleanText) || extractQuotedTitle(userPromptText);
+          if(delDate && (uText.indexOf('今天') >= 0 || uText.indexOf('任务') >= 0 || uText.indexOf('所有') >= 0 || uText.indexOf('全部') >= 0 || !delTitle)){
+            actionObj = { action: "delete_task", date: delDate };
+          } else if(delTitle){
+            actionObj = { action: "delete_task", match: delTitle, date: delDate };
+          }
+        }
+      }
+
+      // Case 5.3: Clear Entire Week Tasks
+      if(!actionObj && (uText.indexOf('本周') >= 0 || uText.indexOf('整周') >= 0 || uText.indexOf('清空看板') >= 0) && (aText.indexOf('清空') >= 0 || aText.indexOf('清理') >= 0)){
         actionObj = { action: "clear_tasks" };
-      } else {
-        var delDate = extractDate(userPromptText) || extractDate(cleanText);
-        var delTitle = extractQuotedTitle(cleanText) || extractQuotedTitle(userPromptText);
-        if(delDate && (uText.indexOf('今天') >= 0 || uText.indexOf('任务') >= 0 || uText.indexOf('所有') >= 0 || uText.indexOf('全部') >= 0 || !delTitle)){
-          actionObj = { action: "delete_task", date: delDate };
-        } else if(delTitle){
-          actionObj = { action: "delete_task", match: delTitle, date: delDate };
-        }
       }
-    }
 
-    // Case 5.3: Clear Entire Week Tasks (明确清空整周)
-    if(!actionObj && (uText.indexOf('本周') >= 0 || uText.indexOf('整周') >= 0 || uText.indexOf('清空看板') >= 0) && (aText.indexOf('清空') >= 0 || aText.indexOf('清理') >= 0)){
-      actionObj = { action: "clear_tasks" };
-    }
+      // Case 5.4: Update Task
+      var isUpdateIntent = (uText.indexOf('完成') >= 0 || uText.indexOf('做完') >= 0 || uText.indexOf('搞定') >= 0 || uText.indexOf('改名') >= 0 || uText.indexOf('修改') >= 0 || uText.indexOf('重命名') >= 0 || uText.indexOf('推迟') >= 0 || uText.indexOf('挪到') >= 0 || uText.indexOf('改到') >= 0 || uText.indexOf('移动') >= 0) ||
+                           (aText.indexOf('已标记为') >= 0 || aText.indexOf('已完成') >= 0 || aText.indexOf('已重命名') >= 0 || aText.indexOf('已修改') >= 0 || aText.indexOf('已移至') >= 0 || aText.indexOf('已挪到') >= 0);
+      
+      if(!actionObj && isUpdateIntent && uText.indexOf('删') === -1 && uText.indexOf('清空') === -1){
+        var matchTitle = extractQuotedTitle(userPromptText) || extractQuotedTitle(cleanText);
+        if(!matchTitle){
+          var curTasks = data.tasks.filter(function(x){ return x.weekId === currentWeekId(); });
+          for(var m = 0; m < curTasks.length; m++){
+            if(curTasks[m].title && userPromptText.indexOf(curTasks[m].title) >= 0){
+              matchTitle = curTasks[m].title;
+              break;
+            }
+          }
+        }
+        
+        if(matchTitle){
+          var upd = {};
+          if(uText.indexOf('完成') >= 0 || uText.indexOf('做完') >= 0 || aText.indexOf('完成') >= 0){
+            upd.status = (uText.indexOf('未完成') >= 0 || uText.indexOf('取消完成') >= 0) ? 'todo' : 'done';
+          }
+          var newDate = extractDate(userPromptText) || extractDate(cleanText);
+          if(newDate && (uText.indexOf('推迟') >= 0 || uText.indexOf('挪') >= 0 || uText.indexOf('改到') >= 0 || uText.indexOf('改在') >= 0 || uText.indexOf('延期') >= 0 || aText.indexOf('移至') >= 0 || aText.indexOf('改在') >= 0)){
+            upd.date = newDate;
+          }
+          var mRename = /(?:改名为|改成|重命名为)\s*[「『“"']?([^」』”"'\s,，。]+)[」』”"']?/i.exec(userPromptText) || /(?:重命名为|改名为)\s*[「『“"']?([^」』”"'\s,，。]+)[」』”"']?/i.exec(cleanText);
+          if(mRename && mRename[1] && mRename[1] !== matchTitle){
+            upd.title = mRename[1].trim();
+          }
+          var newProj = extractProjectName(userPromptText) || extractProjectName(cleanText);
+          if(newProj && (uText.indexOf('移到') >= 0 || uText.indexOf('归入') >= 0 || uText.indexOf('放在') >= 0)){
+            upd.projectName = newProj;
+          }
 
-    // Case 5.4: Update / Complete / Reschedule Task (修改/标记完成/推迟/改名)
-    var isUpdateIntent = (uText.indexOf('完成') >= 0 || uText.indexOf('做完') >= 0 || uText.indexOf('搞定') >= 0 || uText.indexOf('改名') >= 0 || uText.indexOf('修改') >= 0 || uText.indexOf('重命名') >= 0 || uText.indexOf('推迟') >= 0 || uText.indexOf('挪到') >= 0 || uText.indexOf('改到') >= 0 || uText.indexOf('移动') >= 0) ||
-                         (aText.indexOf('已标记为') >= 0 || aText.indexOf('已完成') >= 0 || aText.indexOf('已重命名') >= 0 || aText.indexOf('已修改') >= 0 || aText.indexOf('已移至') >= 0 || aText.indexOf('已挪到') >= 0);
-    
-    if(!actionObj && isUpdateIntent && uText.indexOf('删') === -1 && uText.indexOf('清空') === -1){
-      var matchTitle = extractQuotedTitle(userPromptText) || extractQuotedTitle(cleanText);
-      if(!matchTitle){
-        var curTasks = data.tasks.filter(function(x){ return x.weekId === currentWeekId(); });
-        for(var m = 0; m < curTasks.length; m++){
-          if(curTasks[m].title && userPromptText.indexOf(curTasks[m].title) >= 0){
-            matchTitle = curTasks[m].title;
-            break;
+          if(Object.keys(upd).length > 0){
+            actionObj = {
+              action: "update_task",
+              match: matchTitle,
+              updates: upd
+            };
           }
         }
       }
-      
-      if(matchTitle){
-        var upd = {};
-        // 1. Status change
-        if(uText.indexOf('完成') >= 0 || uText.indexOf('做完') >= 0 || aText.indexOf('完成') >= 0){
-          upd.status = (uText.indexOf('未完成') >= 0 || uText.indexOf('取消完成') >= 0) ? 'todo' : 'done';
-        }
-        // 2. Date reschedule
-        var newDate = extractDate(userPromptText) || extractDate(cleanText);
-        if(newDate && (uText.indexOf('推迟') >= 0 || uText.indexOf('挪') >= 0 || uText.indexOf('改到') >= 0 || uText.indexOf('改在') >= 0 || uText.indexOf('延期') >= 0 || aText.indexOf('移至') >= 0 || aText.indexOf('改在') >= 0)){
-          upd.date = newDate;
-        }
-        // 3. New Title
-        var mRename = /(?:改名为|改成|重命名为)\s*[「『“"']?([^」』”"'\s,，。]+)[」』”"']?/i.exec(userPromptText) || /(?:重命名为|改名为)\s*[「『“"']?([^」』”"'\s,，。]+)[」』”"']?/i.exec(cleanText);
-        if(mRename && mRename[1] && mRename[1] !== matchTitle){
-          upd.title = mRename[1].trim();
-        }
-        // 4. Project move
-        var newProj = extractProjectName(userPromptText) || extractProjectName(cleanText);
-        if(newProj && (uText.indexOf('移到') >= 0 || uText.indexOf('归入') >= 0 || uText.indexOf('放在') >= 0)){
-          upd.projectName = newProj;
-        }
 
-        if(Object.keys(upd).length > 0){
+      // Case 5.5: Create Project
+      if(!actionObj && (uText.indexOf('项目') >= 0 || uText.indexOf('分类') >= 0) && (uText.indexOf('新建') >= 0 || uText.indexOf('添加') >= 0 || uText.indexOf('新增') >= 0)){
+        var pName = extractProjectName(cleanText) || extractProjectName(userPromptText) || extractQuotedTitle(cleanText) || extractQuotedTitle(userPromptText);
+        if(pName) actionObj = { action: "create_project", name: pName };
+      }
+
+      // Case 5.6: Update Project
+      if(!actionObj && (uText.indexOf('颜色') >= 0 || uText.indexOf('色') >= 0 || uText.indexOf('改项目') >= 0 || aText.indexOf('换成') >= 0 || aText.indexOf('颜色') >= 0)){
+        var projToUpdate = extractProjectName(userPromptText) || extractProjectName(cleanText) || extractQuotedTitle(userPromptText) || extractQuotedTitle(cleanText);
+        if(!projToUpdate){
+          var allP = sortedProjects();
+          for(var pi = 0; pi < allP.length; pi++){
+            if(userPromptText.indexOf(allP[pi].name) >= 0 || cleanText.indexOf(allP[pi].name) >= 0){
+              projToUpdate = allP[pi].name;
+              break;
+            }
+          }
+        }
+        
+        var colorKeywords = [
+          { name: '蓝色', hex: '#06b6d4', keys: ['蓝', '天蓝', '深蓝', 'blue'] },
+          { name: '粉色', hex: '#ec4899', keys: ['粉', '粉红', 'pink'] },
+          { name: '绿色', hex: '#22c55e', keys: ['绿', '薄荷绿', '草绿', 'green'] },
+          { name: '紫色', hex: '#8b5cf6', keys: ['紫', '浅紫', 'purple'] },
+          { name: '橙色', hex: '#f97316', keys: ['橙', '橘', '橘色', 'orange'] },
+          { name: '黄色', hex: '#eab308', keys: ['黄', 'yellow'] },
+          { name: '红色', hex: '#ef4444', keys: ['红', 'red'] },
+          { name: '青色', hex: '#14b8a6', keys: ['青', '青绿', 'cyan'] },
+          { name: '靛蓝', hex: '#6366f1', keys: ['靛蓝', '紫蓝', 'indigo'] }
+        ];
+        
+        var targetHex = '';
+        for(var ci = 0; ci < colorKeywords.length; ci++){
+          var ck = colorKeywords[ci];
+          for(var ki = 0; ki < ck.keys.length; ki++){
+            if(uText.indexOf(ck.keys[ki]) >= 0 || aText.indexOf(ck.keys[ki]) >= 0){
+              targetHex = ck.hex;
+              break;
+            }
+          }
+          if(targetHex) break;
+        }
+        
+        if(projToUpdate && targetHex){
           actionObj = {
-            action: "update_task",
-            match: matchTitle,
-            updates: upd
+            action: "update_project",
+            match: projToUpdate,
+            color: targetHex
           };
         }
       }
     }
 
-    // Case 5.5: Create Project (新建项目)
-    if(!actionObj && (uText.indexOf('项目') >= 0 || uText.indexOf('分类') >= 0) && (uText.indexOf('新建') >= 0 || uText.indexOf('添加') >= 0 || uText.indexOf('新增') >= 0)){
-      var pName = extractProjectName(cleanText) || extractProjectName(userPromptText) || extractQuotedTitle(cleanText) || extractQuotedTitle(userPromptText);
-      if(pName) actionObj = { action: "create_project", name: pName };
+    function cleanTaskTitle(s){
+      if(!s) return '';
+      return String(s)
+        .replace(/\*+/g, '')
+        .replace(/^[📔🧘🛁✨🐾📝🎯0-9一二三四五六七八九十、.\s•-]+/, '')
+        .replace(/[`「」『』“”"']/g, '')
+        .trim();
     }
 
-    // Case 5.6: Update Project Color or Name (修改项目颜色/重命名项目)
-    if(!actionObj && (uText.indexOf('颜色') >= 0 || uText.indexOf('色') >= 0 || uText.indexOf('改项目') >= 0 || aText.indexOf('换成') >= 0 || aText.indexOf('颜色') >= 0)){
-      var projToUpdate = extractProjectName(userPromptText) || extractProjectName(cleanText) || extractQuotedTitle(userPromptText) || extractQuotedTitle(cleanText);
-      if(!projToUpdate){
-        var allP = sortedProjects();
-        for(var pi = 0; pi < allP.length; pi++){
-          if(userPromptText.indexOf(allP[pi].name) >= 0 || cleanText.indexOf(allP[pi].name) >= 0){
-            projToUpdate = allP[pi].name;
-            break;
+    function extractAllMultiTasks(text, defaultDate){
+      if(!text) return [];
+      var tasks = [];
+      
+      var arrowRegex = /(?:[0-9一二三四五六七八九十]+[、.\s]|[-*•📔🧘🛁✨🐾📝🎯\s]*)*[「『“"'\*]*([^「『“"'\s→\-–—:：\n]+?)[」』”"'\*]*\s*(?:→|->|—|-|:|：|\b放进\b|\b归入\b|\b放入\b)\s*(?:放进|归入|放入)?\s*【([^】]+)】/g;
+      var m;
+      while((m = arrowRegex.exec(text)) !== null){
+        var rawTitle = cleanTaskTitle(m[1]);
+        var pName = m[2].replace(/项目/g, '').replace(/[\*【】]/g, '').trim();
+        if(rawTitle && pName && rawTitle !== '项目' && rawTitle.length <= 30){
+          if(!tasks.some(function(x){ return x.title === rawTitle; })){
+            tasks.push({ action: 'create_task', title: rawTitle, projectName: pName, date: defaultDate });
           }
         }
       }
-      
-      // Extract color
-      var colorKeywords = [
-        { name: '蓝色', hex: '#06b6d4', keys: ['蓝', '天蓝', '深蓝', 'blue'] },
-        { name: '粉色', hex: '#ec4899', keys: ['粉', '粉红', 'pink'] },
-        { name: '绿色', hex: '#22c55e', keys: ['绿', '薄荷绿', '草绿', 'green'] },
-        { name: '紫色', hex: '#8b5cf6', keys: ['紫', '浅紫', 'purple'] },
-        { name: '橙色', hex: '#f97316', keys: ['橙', '橘', '橘色', 'orange'] },
-        { name: '黄色', hex: '#eab308', keys: ['黄', 'yellow'] },
-        { name: '红色', hex: '#ef4444', keys: ['红', 'red'] },
-        { name: '青色', hex: '#14b8a6', keys: ['青', '青绿', 'cyan'] },
-        { name: '靛蓝', hex: '#6366f1', keys: ['靛蓝', '紫蓝', 'indigo'] }
-      ];
-      
-      var targetHex = '';
-      for(var ci = 0; ci < colorKeywords.length; ci++){
-        var ck = colorKeywords[ci];
-        for(var ki = 0; ki < ck.keys.length; ki++){
-          if(uText.indexOf(ck.keys[ki]) >= 0 || aText.indexOf(ck.keys[ki]) >= 0){
-            targetHex = ck.hex;
-            break;
+
+      var multiQuoteProjRegex = /((?:[「『“"'][^」』”"'\n]{2,25}[」』”"']\s*(?:和|与|及|、|\s+)?)+)\s*(?:我)?(?:放进了|放进|归入|放入|归到|放到|则放进|放在)\s*【([^】]+)】/g;
+      while((m = multiQuoteProjRegex.exec(text)) !== null){
+        var quoteBlock = m[1];
+        var tProj = m[2].replace(/项目/g, '').replace(/[\*【】]/g, '').trim();
+        var singleQM;
+        var qRegex = /[「『“"']([^」』”"'\n]{2,25})[」』”"']/g;
+        while((singleQM = qRegex.exec(quoteBlock)) !== null){
+          var tTitle = cleanTaskTitle(singleQM[1]);
+          if(tTitle && !tasks.some(function(x){ return x.title === tTitle; })){
+            tasks.push({ action: 'create_task', title: tTitle, projectName: tProj, date: defaultDate });
           }
         }
-        if(targetHex) break;
       }
-      
-      if(projToUpdate && targetHex){
-        actionObj = {
-          action: "update_project",
-          match: projToUpdate,
-          color: targetHex
-        };
-      }
-    }
-  }
 
-  function cleanTaskTitle(s){
-    if(!s) return '';
-    return String(s)
-      .replace(/\*+/g, '')
-      .replace(/^[📔🧘🛁✨🐾📝🎯0-9一二三四五六七八九十、.\s•-]+/, '')
-      .replace(/[`「」『』“”"']/g, '')
-      .trim();
-  }
-
-  function extractAllMultiTasks(text, defaultDate){
-    if(!text) return [];
-    var tasks = [];
-    
-    // 1. Arrow / dash mapping pattern: e.g. "📔 **写手帐** → 放进【景躁兔老师】" or "做瑜伽 → 【运动】" or "1. 给小猫洗澡澡 - 【其他】"
-    var arrowRegex = /(?:[0-9一二三四五六七八九十]+[、.\s]|[-*•📔🧘🛁✨🐾📝🎯\s]*)*[「『“"'\*]*([^「『“"'\s→\-–—:：\n]+?)[」』”"'\*]*\s*(?:→|->|—|-|:|：|\b放进\b|\b归入\b|\b放入\b)\s*(?:放进|归入|放入)?\s*【([^】]+)】/g;
-    var m;
-    while((m = arrowRegex.exec(text)) !== null){
-      var rawTitle = cleanTaskTitle(m[1]);
-      var pName = m[2].replace(/项目/g, '').replace(/[\*【】]/g, '').trim();
-      if(rawTitle && pName && rawTitle !== '项目' && rawTitle.length <= 30){
-        if(!tasks.some(function(x){ return x.title === rawTitle; })){
-          tasks.push({ action: 'create_task', title: rawTitle, projectName: pName, date: defaultDate });
+      var parenRegex = /([^\s:：，,、\(\)（）]+?)\s*[（\(]([^）\)]+?)[）\)]/g;
+      while((m = parenRegex.exec(text)) !== null){
+        var pTitle = cleanTaskTitle(m[1]);
+        var pProj = m[2].replace(/项目/g, '').replace(/[\*【】]/g, '').trim();
+        if(pTitle && pProj && pTitle.length <= 25 && pProj.length <= 20 && pTitle !== '今天' && pTitle !== '本周' && pTitle !== '三件事' && pTitle !== '三项任务' && pTitle !== '事项'){
+          if(!tasks.some(function(x){ return x.title === pTitle; })){
+            tasks.push({ action: 'create_task', title: pTitle, projectName: pProj, date: defaultDate });
+          }
         }
       }
+
+      return tasks;
     }
 
-    // 2. Quote + Project pattern (Supports multiple quotes like 「改简历」和「做瑜伽」放在【找工作】)
-    var multiQuoteProjRegex = /((?:[「『“"'][^」』”"'\n]{2,25}[」』”"']\s*(?:和|与|及|、|\s+)?)+)\s*(?:我)?(?:放进了|放进|归入|放入|归到|放到|则放进|放在)\s*【([^】]+)】/g;
-    while((m = multiQuoteProjRegex.exec(text)) !== null){
-      var quoteBlock = m[1];
-      var tProj = m[2].replace(/项目/g, '').replace(/[\*【】]/g, '').trim();
-      var singleQM;
-      var qRegex = /[「『“"']([^」』”"'\n]{2,25})[」』”"']/g;
-      while((singleQM = qRegex.exec(quoteBlock)) !== null){
-        var tTitle = cleanTaskTitle(singleQM[1]);
-        if(tTitle && !tasks.some(function(x){ return x.title === tTitle; })){
-          tasks.push({ action: 'create_task', title: tTitle, projectName: tProj, date: defaultDate });
-        }
+    var confirmedMultiTasks = extractAllMultiTasks(cleanText, (actionObj && actionObj.date) || extractDate(cleanText) || extractDate(userPromptText) || todayStr);
+    if(confirmedMultiTasks.length > 1){
+      if(!actionObj || !Array.isArray(actionObj.actions) || actionObj.actions.length < confirmedMultiTasks.length){
+        actionObj = { actions: confirmedMultiTasks };
       }
     }
-
-    // 3. Parenthesis mapping pattern: e.g. "改简历（找工作）、买菜（生活）、做瑜伽（运动）" or "改简历(找工作)"
-    var parenRegex = /([^\s:：，,、\(\)（）]+?)\s*[（\(]([^）\)]+?)[）\)]/g;
-    while((m = parenRegex.exec(text)) !== null){
-      var pTitle = cleanTaskTitle(m[1]);
-      var pProj = m[2].replace(/项目/g, '').replace(/[\*【】]/g, '').trim();
-      if(pTitle && pProj && pTitle.length <= 25 && pProj.length <= 20 && pTitle !== '今天' && pTitle !== '本周' && pTitle !== '三件事' && pTitle !== '三项任务' && pTitle !== '事项'){
-        if(!tasks.some(function(x){ return x.title === pTitle; })){
-          tasks.push({ action: 'create_task', title: pTitle, projectName: pProj, date: defaultDate });
-        }
-      }
-    }
-
-    return tasks;
-  }
-
-  // Multi-Task Reconciliation Check:
-  // If the AI reply confirmed multiple tasks (e.g. 2 or 3 tasks listed in reply), but actionObj only contains 0 or 1 task,
-  // upgrade actionObj to execute all confirmed tasks!
-  var confirmedMultiTasks = extractAllMultiTasks(cleanText, (actionObj && actionObj.date) || extractDate(cleanText) || extractDate(userPromptText) || todayStr);
-  if(confirmedMultiTasks.length > 1){
-    if(!actionObj || !Array.isArray(actionObj.actions) || actionObj.actions.length < confirmedMultiTasks.length){
-      actionObj = { actions: confirmedMultiTasks };
-    }
-  }
+  } // end if(!isReviewIntent)
 
   console.log('[WeekFlow AI Debug] Action to execute:', actionObj);
 
@@ -6962,8 +7005,8 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
     } else {
       intentDesc = '识别到【系统控制与状态更新】意图';
     }
-  } else if(promptStr.indexOf('复盘') >= 0 || promptStr.indexOf('周报') >= 0 || promptStr.indexOf('/review') >= 0 || cleanText.indexOf('全景概览') >= 0 || cleanText.indexOf('每日轨迹') >= 0 || cleanText.indexOf('分项目进展') >= 0){
-    intentDesc = '识别到【时间脉络与跨周项目深度复盘】意图';
+  } else if(isReviewIntent){
+    intentDesc = '识别到【一周总结】技能请求';
   } else if(promptStr.indexOf('@') >= 0){
     intentDesc = '识别到【特定项目上下文关联问答】意图';
   } else {
@@ -6993,9 +7036,9 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
     } else if(actionObj.actions && Array.isArray(actionObj.actions)){
       toolDesc = '调用 <code>manage_tasks.batch_execute</code> 批量执行 ' + actionObj.actions.length + ' 项原子指令';
     }
-  } else if(promptStr.indexOf('复盘') >= 0 || promptStr.indexOf('周报') >= 0 || promptStr.indexOf('/review') >= 0 || cleanText.indexOf('全景概览') >= 0 || cleanText.indexOf('每日轨迹') >= 0 || cleanText.indexOf('分项目进展') >= 0){
+  } else if(isReviewIntent){
     var rData = getWeeklyReviewData();
-    toolDesc = '调用 <code>get_weekly_review_data()</code> 聚合本周 7 天日程与 ' + rData.projectData.length + ' 个跨周项目演进对比数据';
+    toolDesc = '调用 <code>get_weekly_review_data()</code> 聚合本周 7 天时间脉络与 ' + rData.projectData.length + ' 个跨周项目演进数据';
   }
   reactSteps.push({
     icon: '🛠️',
@@ -7016,8 +7059,8 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
   var verifyTitle = '结果校验与总结 (Verification & Summary)';
   var verifyDesc = actionResult
     ? '完成状态原子写入，并生成防误触撤销快照 (Action Undo Registry: ' + (actionResult.actionId || 'OK') + ')'
-    : ((promptStr.indexOf('复盘') >= 0 || cleanText.indexOf('全景概览') >= 0)
-        ? '完成三层结构化深度复盘报告生成，已就绪一键存入「小纸条」记忆库 📥'
+    : (isReviewIntent
+        ? '完成【一周总结】结构化报告生成，已就绪一键存入「小纸条」记忆库 📥'
         : '完成思维链逻辑推理，生成去负罪感温暖伴跑反馈 🐾');
   reactSteps.push({
     icon: '🎯',
@@ -7696,7 +7739,7 @@ function triggerWeeklyReviewSkill(){
   openFloatingAIChat();
   var input = document.getElementById('aiFloatingInput');
   if(input){
-    input.value = '请结合我本周看板的真实任务与跨周项目演进，为我做一次【周度时间脉络与分项目深度复盘】📊';
+    input.value = '一周总结';
     sendFloatingAIChat();
   }
 }
@@ -7711,8 +7754,8 @@ async function sendFloatingAIChat(){
   if(!rawInputText) return;
 
   var text = rawInputText;
-  if(text === '/review' || text === '/weekly-review' || text === '周复盘' || text === '周度复盘'){
-    text = '请结合我本周看板的真实任务与跨周项目演进，为我做一次【周度时间脉络与分项目深度复盘】📊';
+  if(text === '/review' || text === '/weekly-review' || text === '周复盘' || text === '周度复盘' || text === '一周总结' || text === '周总结'){
+    text = '一周总结';
   }
   
   var targetProjId = selectedFloatingMentionProjId;
