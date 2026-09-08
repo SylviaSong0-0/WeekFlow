@@ -6155,6 +6155,17 @@ function getWeeklyReviewData(){
   var dates = getWeekDates();
   var dateStrs = dates.map(function(d){ return d.date; });
 
+  var curMon = getMonday(new Date());
+  curMon.setDate(curMon.getDate() + weekOffset * 7);
+  var prevMon = new Date(curMon);
+  prevMon.setDate(prevMon.getDate() - 7);
+  var prevDates = [];
+  for(var i=0; i<7; i++){
+    var pdd = new Date(prevMon);
+    pdd.setDate(pdd.getDate() + i);
+    prevDates.push(formatLocalDate(pdd));
+  }
+
   // 1. Group this week's tasks by day (周一 ~ 周日)
   var dailyTimeline = {};
   dates.forEach(function(d){
@@ -6172,24 +6183,38 @@ function getWeeklyReviewData(){
     });
   });
 
-  // 2. Group tasks by project (comparing this week vs last week)
-  var projs = sortedProjects();
-  var projectData = projs.map(function(p){
+  // 2. Group tasks by project (comparing this week vs last week by Project Name)
+  var curProjs = data.projects.filter(function(p){ return p.weekId === curWid; });
+  var prevProjs = data.projects.filter(function(p){ return p.weekId === prevWid; });
+  
+  var allProjNamesMap = {};
+  curProjs.forEach(function(p){ if(p.name) allProjNamesMap[p.name] = true; });
+  prevProjs.forEach(function(p){ if(p.name) allProjNamesMap[p.name] = true; });
+  // Also collect any project names from all existing projects
+  data.projects.forEach(function(p){ if(p.name) allProjNamesMap[p.name] = true; });
+  var allProjNames = Object.keys(allProjNamesMap);
+
+  var projectData = allProjNames.map(function(projName){
+    var matchingProjIds = data.projects.filter(function(p){
+      return p.name === projName;
+    }).map(function(p){ return p.id; });
+
     var thisWeekTasks = data.tasks.filter(function(t){
       var isThisWeek = (t.weekId === curWid) || (t.date && dateStrs.indexOf(t.date) >= 0);
-      return isThisWeek && t.projectId === p.id;
+      return isThisWeek && matchingProjIds.indexOf(t.projectId) >= 0;
     }).map(function(t){
       return { title: t.title, status: t.status === 'done' ? '已完成' : '待办' };
     });
 
     var lastWeekTasks = data.tasks.filter(function(t){
-      return t.weekId === prevWid && t.projectId === p.id;
+      var isLastWeek = (t.weekId === prevWid) || (t.date && prevDates.indexOf(t.date) >= 0);
+      return isLastWeek && matchingProjIds.indexOf(t.projectId) >= 0;
     }).map(function(t){
       return { title: t.title, status: t.status === 'done' ? '已完成' : '待办' };
     });
 
     return {
-      projectName: p.name,
+      projectName: projName,
       thisWeekTasks: thisWeekTasks,
       lastWeekTasks: lastWeekTasks
     };
@@ -6245,6 +6270,16 @@ function buildAIContext(userText, projectId){
   
   var reviewData = getWeeklyReviewData();
 
+  var crossWeekProjectText = reviewData.projectData.map(function(p){
+    var prevStr = p.lastWeekTasks.length > 0
+      ? p.lastWeekTasks.map(function(t){ return "  - [" + t.status + "] " + t.title; }).join("\n")
+      : "  - (上周暂无记录，本周为新开辟主线)";
+    var thisStr = p.thisWeekTasks.length > 0
+      ? p.thisWeekTasks.map(function(t){ return "  - [" + t.status + "] " + t.title; }).join("\n")
+      : "  - (本周无任务)";
+    return "📌 项目【" + p.projectName + "】:\n⏪ 上周脉络:\n" + prevStr + "\n✨ 本周进展:\n" + thisStr;
+  }).join("\n\n");
+
   var fullSys = sysPrompt
     .replace('{project_name}', projectId ? (projById(projectId)||{}).name || '指定项目' : '全局项目')
     .replace('{project_goal}', projectId ? ((projById(projectId)||{}).context||{}).goal || '无特定目标' : '多维度个人成长')
@@ -6252,12 +6287,13 @@ function buildAIContext(userText, projectId){
     
   fullSys += "\n\n【系统实时时间上下文】:";
   fullSys += "\n- 当前真实日期: " + todayStr + " (" + todayWeekday + ")";
-  fullSys += "\n- 当前选中的周跨度: " + weekRangeStr + " (WeekId: " + currentWeekId() + ")";
+  fullSys += "\n- 当前选中的周跨度: " + weekRangeStr + " (WeekId: " + currentWeekId() + ", 上周WeekId: " + reviewData.lastWeekId + ")";
   fullSys += "\n- 本周每天的具体日期对照: " + dates.map(function(d){ return d.weekday + "=" + d.date; }).join(", ");
   fullSys += "\n\n【用户现有全部项目列表】:\n" + (projInfoArr.length > 0 ? projInfoArr.join("\n") : "暂无项目");
   fullSys += "\n\n【本周任务全景进度】:\n" + (taskSummary.trim() || '本周暂无任务');
-  fullSys += "\n\n【周度深度复盘专用事实数据（按日聚类与跨周对比）】:\n" + JSON.stringify(reviewData, null, 2);
-  fullSys += "\n\n【重要指令】：当用户希望新建项目、新建卡片、修改或删除卡片时，你必须在回答末尾附带严格合法的 ```json ... ``` Action 代码块！若用户请求复盘，严格基于上述专用事实数据按三段式输出！";
+  fullSys += "\n\n【跨周各项目对比全景】:\n" + (crossWeekProjectText || "暂无跨周项目数据");
+  fullSys += "\n\n【周度深度复盘专用事实数据（按日聚类与跨周对比 JSON）】:\n" + JSON.stringify(reviewData, null, 2);
+  fullSys += "\n\n【重要指令】：当用户希望新建项目、新建卡片、修改或删除卡片时，你必须在回答末尾附带严格合法的 ```json ... ``` Action 代码块！若用户请求复盘，严格基于上述专用事实数据按三段式输出（注意第三部分分项目进展中，必须体现上周脉络与本周进展）！";
   
   return {
     system: fullSys,
@@ -6265,7 +6301,8 @@ function buildAIContext(userText, projectId){
     difyInputs: {
       tasks_context: taskSummary.trim() || '本周暂无任务',
       projects_context: projInfoArr.length > 0 ? projInfoArr.join("\n") : '暂无项目',
-      today_info: todayStr + " (" + todayWeekday + "), 当前周: " + weekRangeStr
+      today_info: todayStr + " (" + todayWeekday + "), 当前周: " + weekRangeStr,
+      review_data: crossWeekProjectText
     }
   };
 }
@@ -7434,72 +7471,103 @@ function undoAIAction(actId, btnElem){
 }
 
 function seedDemoTestData(){
+  // Reset weekOffset to 0 so user is viewing current week
+  weekOffset = 0;
+
   var curWid = currentWeekId();
   var prevWid = getPreviousWeekId(curWid);
   var dates = getWeekDates();
+  var curDateStrs = dates.map(function(d){ return d.date; });
 
-  // 1. Setup Projects for this week and previous week
-  var wfProjId = 'p_demo_wf';
-  var jobProjId = 'p_demo_job';
-  var lifeProjId = 'p_demo_life';
+  var curMon = getMonday(new Date());
+  var prevMon = new Date(curMon);
+  prevMon.setDate(prevMon.getDate() - 7);
+  var prevDates = [];
+  for(var i=0; i<7; i++){
+    var pdd = new Date(prevMon);
+    pdd.setDate(pdd.getDate() + i);
+    prevDates.push(formatLocalDate(pdd));
+  }
 
-  // Remove existing demo projects or reset projects for curWid & prevWid
+  // 1. Setup Projects for this week and previous week with distinct IDs
+  var wfCurId = 'p_demo_wf_cur';
+  var jobCurId = 'p_demo_job_cur';
+  var lifeCurId = 'p_demo_life_cur';
+
+  var wfPrevId = 'p_demo_wf_prev';
+  var jobPrevId = 'p_demo_job_prev';
+
+  // Remove existing projects for curWid & prevWid
   data.projects = data.projects.filter(function(p){
     return p.weekId !== curWid && p.weekId !== prevWid;
   });
 
   var curProjects = [
-    { id: wfProjId, name: 'WeekFlow', color: '#3b82f6', order: 0, weekId: curWid },
-    { id: jobProjId, name: '求职与简历', color: '#8b5cf6', order: 1, weekId: curWid },
-    { id: lifeProjId, name: '生活日常', color: '#10b981', order: 2, weekId: curWid }
+    { id: wfCurId, name: 'WeekFlow', color: '#3b82f6', order: 0, weekId: curWid },
+    { id: jobCurId, name: '求职与简历', color: '#8b5cf6', order: 1, weekId: curWid },
+    { id: lifeCurId, name: '生活日常', color: '#10b981', order: 2, weekId: curWid }
   ];
   var prevProjects = [
-    { id: wfProjId, name: 'WeekFlow', color: '#3b82f6', order: 0, weekId: prevWid },
-    { id: jobProjId, name: '求职与简历', color: '#8b5cf6', order: 1, weekId: prevWid }
+    { id: wfPrevId, name: 'WeekFlow', color: '#3b82f6', order: 0, weekId: prevWid },
+    { id: jobPrevId, name: '求职与简历', color: '#8b5cf6', order: 1, weekId: prevWid }
   ];
 
   data.projects.push.apply(data.projects, curProjects);
   data.projects.push.apply(data.projects, prevProjects);
 
   // 2. Clear tasks in curWid and prevWid
-  var curDateStrs = dates.map(function(d){ return d.date; });
   data.tasks = data.tasks.filter(function(t){
     var isCur = (t.weekId === curWid) || (t.date && curDateStrs.indexOf(t.date) >= 0);
-    var isPrev = (t.weekId === prevWid);
+    var isPrev = (t.weekId === prevWid) || (t.date && prevDates.indexOf(t.date) >= 0);
     return !isCur && !isPrev;
   });
 
   // 3. Inject Previous Week Tasks (Baseline for cross-week comparison)
   var prevTasks = [
+    // 上周一 (Mon) - WeekFlow 原型设计
     {
       id: 't_prev_1',
-      title: '设计周看板三栏交互原型与高保真视觉规范',
-      projectId: wfProjId,
-      date: '',
-      startTime: '',
-      endTime: '',
+      title: '设计 WeekFlow 周看板三栏交互原型与视觉规范',
+      projectId: wfPrevId,
+      date: prevDates[0],
+      startTime: '09:30',
+      endTime: '12:00',
       status: 'done',
       weekId: prevWid,
       order: 0
     },
+    // 上周二 (Tue) - WeekFlow 本地存储
     {
       id: 't_prev_2',
       title: '搭建 LocalStorage 本地离线持久化与数据导出模块',
-      projectId: wfProjId,
-      date: '',
-      startTime: '',
-      endTime: '',
+      projectId: wfPrevId,
+      date: prevDates[1],
+      startTime: '14:00',
+      endTime: '17:30',
       status: 'done',
       weekId: prevWid,
-      order: 1
+      order: 0
     },
+    // 上周三 (Wed) - 求职项目梳理
     {
       id: 't_prev_3',
-      title: '梳理近 3 年核心项目成果与代表性系统架构案例',
-      projectId: jobProjId,
-      date: '',
-      startTime: '',
-      endTime: '',
+      title: '梳理近 3 年核心技术成果与代表性系统架构案例',
+      projectId: jobPrevId,
+      date: prevDates[2],
+      startTime: '10:00',
+      endTime: '12:00',
+      status: 'done',
+      weekId: prevWid,
+      order: 0
+    },
+    // 上周四 (Thu) - 简历 STAR 重构
+    {
+      id: 't_prev_4',
+      title: '重构求职简历项目经历与 STAR 法则亮点提炼',
+      projectId: jobPrevId,
+      date: prevDates[3],
+      startTime: '15:00',
+      endTime: '17:30',
       status: 'done',
       weekId: prevWid,
       order: 0
@@ -7512,7 +7580,7 @@ function seedDemoTestData(){
     {
       id: 't_cur_1',
       title: '完成 ReAct 思考与工具感知链路架构设计',
-      projectId: wfProjId,
+      projectId: wfCurId,
       date: dates[0].date,
       startTime: '09:30',
       endTime: '12:00',
@@ -7523,7 +7591,7 @@ function seedDemoTestData(){
     {
       id: 't_cur_2',
       title: '实现 AI 执行痕迹折叠面板与四阶段感知动画',
-      projectId: wfProjId,
+      projectId: wfCurId,
       date: dates[0].date,
       startTime: '14:00',
       endTime: '17:30',
@@ -7535,7 +7603,7 @@ function seedDemoTestData(){
     {
       id: 't_cur_3',
       title: '完成中英文双语简历 V2.0 重塑与量化亮点提炼',
-      projectId: jobProjId,
+      projectId: jobCurId,
       date: dates[1].date,
       startTime: '10:00',
       endTime: '12:00',
@@ -7546,7 +7614,7 @@ function seedDemoTestData(){
     {
       id: 't_cur_4',
       title: '模拟两轮大厂系统设计与核心行为面试 (Mock Interview)',
-      projectId: jobProjId,
+      projectId: jobCurId,
       date: dates[1].date,
       startTime: '14:30',
       endTime: '16:30',
@@ -7558,7 +7626,7 @@ function seedDemoTestData(){
     {
       id: 't_cur_5',
       title: '开发周度深度复盘 Skill 与跨周数据联动引擎',
-      projectId: wfProjId,
+      projectId: wfCurId,
       date: dates[2].date,
       startTime: '10:00',
       endTime: '12:30',
@@ -7569,7 +7637,7 @@ function seedDemoTestData(){
     {
       id: 't_cur_6',
       title: '晚间 5 公里户外慢跑与体能拉伸恢复',
-      projectId: lifeProjId,
+      projectId: lifeCurId,
       date: dates[2].date,
       startTime: '19:00',
       endTime: '20:30',
@@ -7581,7 +7649,7 @@ function seedDemoTestData(){
     {
       id: 't_cur_7',
       title: '全面测试跨周项目演进对比与空状态防御逻辑',
-      projectId: wfProjId,
+      projectId: wfCurId,
       date: dates[3].date,
       startTime: '10:00',
       endTime: '11:30',
@@ -7592,7 +7660,7 @@ function seedDemoTestData(){
     {
       id: 't_cur_8',
       title: '向 3 家心仪一线团队投递简历并完成内推跟进',
-      projectId: jobProjId,
+      projectId: jobCurId,
       date: dates[3].date,
       startTime: '15:00',
       endTime: '16:30',
@@ -7604,7 +7672,7 @@ function seedDemoTestData(){
     {
       id: 't_cur_9',
       title: '采购周末精选料理食材并做深度工作台收纳',
-      projectId: lifeProjId,
+      projectId: lifeCurId,
       date: dates[4].date,
       startTime: '18:00',
       endTime: '19:30',
@@ -7618,9 +7686,9 @@ function seedDemoTestData(){
   data.tasks.push.apply(data.tasks, curTasks);
 
   save(data);
-  render();
+  refreshAll();
 
-  showAlert('🎉 测试日程注入成功', '已为当前周 (' + curWid + ') 及上周 (' + prevWid + ') 注入包含 WeekFlow、求职与简历、生活日常 等 3 个维度的跨周对比测试任务！<br/><br/>👉 点击聊天窗口的<b>【📊 周度深度复盘】</b>或输入 <code>/review</code> 即可立即测试！');
+  showAlert('🎉 测试日程注入成功', '已为<b>本周 (' + curWid + ')</b> 及<b>上周 (' + prevWid + ')</b> 成功注入完整的项目日程与跨周对比基线！<br/><br/>• 点击顶部 <b>◀ 上一周</b> 可直接在看板上查看看板上周的 4 张卡片；<br/>• 点击聊天窗口的<b>【📊 周度深度复盘】</b>即可体验跨周脉络联动复盘！');
   openFloatingAIChat();
 }
 
