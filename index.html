@@ -2452,10 +2452,37 @@ var DEFAULT_SYSTEM_PROMPT = `你是一只温柔、贴心、懂行为心理学与
 
 【你的核心能力与交互规范】：
 1. 💬 陪伴与聊天：当用户倾诉疲惫、焦虑或分享琐事时，给予真诚的共情与温柔鼓励，绝无爹味说教。
-2. 📊 复盘与诊断：当用户请求复盘（周度复盘/项目复盘/月度复盘）时，结合用户本周的真实卡片与完成情况，给出结构化分析：
-   - 🌟 高光时刻：总结完成的重点事项与亮点；
-   - ⏳ 精力去向：分析时间与精力分布；
-   - 💡 温暖洞察：根据未完成情况给出去负罪感的心态点评与下周极简微调建议。
+2. 📊 周度深度复盘技能（核心）：
+   当用户请求复盘（周复盘、周报、总结本周、/review 等）时，绝对不要统计虚假的拖延时间！必须严格基于系统注入的真实数据，按以下三层结构输出清晰、利落、有温度的报告：
+
+   # 📊 【周ID】周度深度复盘报告
+
+   ## 🌟 一、 本周全景概览
+   （用 80~120 字简练概括本周的整体节奏、核心突破与精力主线，语气温暖且有力量。）
+
+   ---
+
+   ## 📅 二、 每日轨迹与节奏脉络
+   - **周一 (MM/DD) · 【主导项目名称】**
+     - 核心推进：列出当天主要完成或推进的任务事项
+   - **周二 (MM/DD) · 【主导项目名称】**
+     - 核心推进：具体推进事项
+   - **周三 (MM/DD) · 【休息】**
+     - 暂无排期任务，休息蓄能
+     ...（周一至周日完整列出，无任务的日子关键词直接写【休息】）
+
+   ---
+
+   ## 📁 三、 分项目进展与跨周演进
+
+   ### 📌 【项目名 1】
+   - **⏪ 上周脉络**：若上周有推进记录，简述上周基础；若无则写“🌱 本周新开辟主线”
+   - **✨ 本周核心进展**：具体列出本周已完成或关键推进的里程碑
+
+   ### 📌 【项目名 2】
+   - **⏪ 上周脉络**：上周推进事项
+   - **✨ 本周核心进展**：本周核心进展
+
 3. ⚡ 自然语言操控卡片与项目（非常重要！）：
    当用户表达了“帮我加个任务”、“修改任务”、“删除任务”、“新建项目”等明确操作意图时，你必须在文字回复末尾附带一个且仅一个严格合法的 JSON Action 代码块，格式如下：
 
@@ -5788,10 +5815,10 @@ if ('serviceWorker' in navigator) {
 
   <!-- Quick Prompts Chips -->
   <div class="ai-chat-chips">
-    <button class="ai-chip" onclick="quickSendAI('请根据我本周的任务进度和各个项目背景，为我做一次温暖、深度的周度复盘总结，并给出下周的1-2个微调建议。')">📊 周度复盘</button>
+    <button class="ai-chip" style="background: #eff6ff; color: #1d4ed8; font-weight: 600; border-color: #bfdbfe;" onclick="triggerWeeklyReviewSkill()">📊 周度深度复盘</button>
     <button class="ai-chip" onclick="quickSendAI('分析一下我本周的时间与任务节奏，给我一句真诚暖心的鼓励与状态点评')">✨ 暖心鼓励</button>
-    <button class="ai-chip" onclick="quickSendAI('我想加个任务，比如：周三下午2点到4点在【找工作】项目下安排一次面试准备')">➕ 创建任务示范</button>
-    <button class="ai-chip" onclick="quickSendAI('帮我新建一个叫【小红书运营】的项目')">📁 新建项目示范</button>
+    <button class="ai-chip" onclick="quickSendAI('周三下午2点到4点在【找工作】项目下安排一次面试准备')">➕ 创建任务</button>
+    <button class="ai-chip" onclick="quickSendAI('帮我新建一个叫【小红书运营】的项目')">📁 新建项目</button>
   </div>
 
   <!-- Chat Messages Container -->
@@ -6108,6 +6135,73 @@ function showFloatingMentionMenu(query, atIdx){
 // ============================================================
 //  AI CONTEXT BUILDER & ACTION DISPATCHER
 // ============================================================
+function getPreviousWeekId(wid){
+  var parsed = parseWeekId(wid || currentWeekId());
+  var y = parsed.year;
+  var w = parsed.week - 1;
+  if(w <= 0){
+    y -= 1;
+    w = 52;
+  }
+  return y + '-W' + w;
+}
+
+function getWeeklyReviewData(){
+  var curWid = currentWeekId();
+  var prevWid = getPreviousWeekId(curWid);
+  var dates = getWeekDates();
+  var dateStrs = dates.map(function(d){ return d.date; });
+
+  // 1. Group this week's tasks by day (周一 ~ 周日)
+  var dailyTimeline = {};
+  dates.forEach(function(d){
+    var dayLabel = d.date.substring(5) + ' (' + d.weekday + ')';
+    var dayTasks = data.tasks.filter(function(t){
+      return t.date === d.date && (t.weekId === curWid || !t.weekId);
+    });
+    dailyTimeline[dayLabel] = dayTasks.map(function(t){
+      var p = projById(t.projectId);
+      return {
+        title: t.title,
+        project: p ? p.name : '未分类',
+        status: t.status === 'done' ? '已完成' : '待办'
+      };
+    });
+  });
+
+  // 2. Group tasks by project (comparing this week vs last week)
+  var projs = sortedProjects();
+  var projectData = projs.map(function(p){
+    var thisWeekTasks = data.tasks.filter(function(t){
+      var isThisWeek = (t.weekId === curWid) || (t.date && dateStrs.indexOf(t.date) >= 0);
+      return isThisWeek && t.projectId === p.id;
+    }).map(function(t){
+      return { title: t.title, status: t.status === 'done' ? '已完成' : '待办' };
+    });
+
+    var lastWeekTasks = data.tasks.filter(function(t){
+      return t.weekId === prevWid && t.projectId === p.id;
+    }).map(function(t){
+      return { title: t.title, status: t.status === 'done' ? '已完成' : '待办' };
+    });
+
+    return {
+      projectName: p.name,
+      thisWeekTasks: thisWeekTasks,
+      lastWeekTasks: lastWeekTasks
+    };
+  }).filter(function(p){
+    return p.thisWeekTasks.length > 0 || p.lastWeekTasks.length > 0;
+  });
+
+  return {
+    currentWeekId: curWid,
+    lastWeekId: prevWid,
+    dailyTimeline: dailyTimeline,
+    projectData: projectData
+  };
+}
+
 function buildAIContext(userText, projectId){
   var cfg = getAIConfig();
   var sysPrompt = cfg.systemPrompt || DEFAULT_SYSTEM_PROMPT;
@@ -6146,6 +6240,8 @@ function buildAIContext(userText, projectId){
     taskSummary += "- [" + (t.status==='done'?'已完成':'待办') + "] " + (t.date || '未排期') + timeStr + " 【" + pName + "】 " + t.title + "\n";
   });
   
+  var reviewData = getWeeklyReviewData();
+
   var fullSys = sysPrompt
     .replace('{project_name}', projectId ? (projById(projectId)||{}).name || '指定项目' : '全局项目')
     .replace('{project_goal}', projectId ? ((projById(projectId)||{}).context||{}).goal || '无特定目标' : '多维度个人成长')
@@ -6157,7 +6253,8 @@ function buildAIContext(userText, projectId){
   fullSys += "\n- 本周每天的具体日期对照: " + dates.map(function(d){ return d.weekday + "=" + d.date; }).join(", ");
   fullSys += "\n\n【用户现有全部项目列表】:\n" + (projInfoArr.length > 0 ? projInfoArr.join("\n") : "暂无项目");
   fullSys += "\n\n【本周任务全景进度】:\n" + (taskSummary.trim() || '本周暂无任务');
-  fullSys += "\n\n【重要指令】：当用户希望新建项目、新建卡片、修改或删除卡片时，你必须在回答末尾附带严格合法的 ```json ... ``` Action 代码块！";
+  fullSys += "\n\n【周度深度复盘专用事实数据（按日聚类与跨周对比）】:\n" + JSON.stringify(reviewData, null, 2);
+  fullSys += "\n\n【重要指令】：当用户希望新建项目、新建卡片、修改或删除卡片时，你必须在回答末尾附带严格合法的 ```json ... ``` Action 代码块！若用户请求复盘，严格基于上述专用事实数据按三段式输出！";
   
   return {
     system: fullSys,
@@ -6825,8 +6922,8 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
     } else {
       intentDesc = '识别到【系统控制与状态更新】意图';
     }
-  } else if(promptStr.indexOf('复盘') >= 0 || cleanText.indexOf('高光') >= 0 || cleanText.indexOf('精力去向') >= 0){
-    intentDesc = '识别到【认知行为去负罪感周度复盘】意图';
+  } else if(promptStr.indexOf('复盘') >= 0 || promptStr.indexOf('周报') >= 0 || promptStr.indexOf('/review') >= 0 || cleanText.indexOf('全景概览') >= 0 || cleanText.indexOf('每日轨迹') >= 0 || cleanText.indexOf('分项目进展') >= 0){
+    intentDesc = '识别到【时间脉络与跨周项目深度复盘】意图';
   } else if(promptStr.indexOf('@') >= 0){
     intentDesc = '识别到【特定项目上下文关联问答】意图';
   } else {
@@ -6856,6 +6953,9 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
     } else if(actionObj.actions && Array.isArray(actionObj.actions)){
       toolDesc = '调用 <code>manage_tasks.batch_execute</code> 批量执行 ' + actionObj.actions.length + ' 项原子指令';
     }
+  } else if(promptStr.indexOf('复盘') >= 0 || promptStr.indexOf('周报') >= 0 || promptStr.indexOf('/review') >= 0 || cleanText.indexOf('全景概览') >= 0 || cleanText.indexOf('每日轨迹') >= 0 || cleanText.indexOf('分项目进展') >= 0){
+    var rData = getWeeklyReviewData();
+    toolDesc = '调用 <code>get_weekly_review_data()</code> 聚合本周 7 天日程与 ' + rData.projectData.length + ' 个跨周项目演进对比数据';
   }
   reactSteps.push({
     icon: '🛠️',
@@ -6876,7 +6976,9 @@ function parseAndExecuteAIAction(rawReplyObj, userPromptText){
   var verifyTitle = '结果校验与总结 (Verification & Summary)';
   var verifyDesc = actionResult
     ? '完成状态原子写入，并生成防误触撤销快照 (Action Undo Registry: ' + (actionResult.actionId || 'OK') + ')'
-    : '完成思维链逻辑推理，生成去负罪感温暖伴跑反馈 🐾';
+    : ((promptStr.indexOf('复盘') >= 0 || cleanText.indexOf('全景概览') >= 0)
+        ? '完成三层结构化深度复盘报告生成，已就绪一键存入「小纸条」记忆库 📥'
+        : '完成思维链逻辑推理，生成去负罪感温暖伴跑反馈 🐾');
   reactSteps.push({
     icon: '🎯',
     title: verifyTitle,
@@ -7328,14 +7430,28 @@ function undoAIAction(actId, btnElem){
   }
 }
 
+function triggerWeeklyReviewSkill(){
+  openFloatingAIChat();
+  var input = document.getElementById('aiFloatingInput');
+  if(input){
+    input.value = '请结合我本周看板的真实任务与跨周项目演进，为我做一次【周度时间脉络与分项目深度复盘】📊';
+    sendFloatingAIChat();
+  }
+}
+
 // ============================================================
 //  SEND MESSAGE & RENDER CHAT FLOW
 // ============================================================
 async function sendFloatingAIChat(){
   var input = document.getElementById('aiFloatingInput');
   var sendBtn = document.getElementById('aiFloatingSendBtn');
-  var text = input.value.trim();
-  if(!text) return;
+  var rawInputText = input.value.trim();
+  if(!rawInputText) return;
+
+  var text = rawInputText;
+  if(text === '/review' || text === '/weekly-review' || text === '周复盘' || text === '周度复盘'){
+    text = '请结合我本周看板的真实任务与跨周项目演进，为我做一次【周度时间脉络与分项目深度复盘】📊';
+  }
   
   var targetProjId = selectedFloatingMentionProjId;
   if(!targetProjId){
@@ -7449,7 +7565,7 @@ async function sendFloatingAIChat(){
     
     var parsed = parseAndExecuteAIAction(rawReply, text);
     var cleanReply = parsed.cleanText || (parsed.actionResult ? '喵呜~ 已经为你处理好啦！🐾' : '喵呜~ 收到！');
-    var isReview = (text.indexOf('复盘') >= 0 || cleanReply.indexOf('高光') >= 0 || cleanReply.indexOf('精力去向') >= 0);
+    var isReview = (text.indexOf('复盘') >= 0 || text.indexOf('周报') >= 0 || text.indexOf('/review') >= 0 || cleanReply.indexOf('全景概览') >= 0 || cleanReply.indexOf('每日轨迹') >= 0 || cleanReply.indexOf('分项目进展') >= 0 || cleanReply.indexOf('周度深度复盘') >= 0);
     
     // Finalize live streaming bubble
     if(bubbleElem){
